@@ -1,1 +1,26 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        format_sql : true # sql ??? ??
+        default_batch_fetch_size: 1000
+        globally_quoted_identifiers: true
+
+    show-sql: true  # sql ??
+    open-in-view: false
+
+logging:
+  level:
+    org.hibernate.type: trace
+
+
 

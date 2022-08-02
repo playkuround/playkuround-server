@@ -11,7 +11,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
     properties:
       hibernate:
@@ -35,7 +35,5 @@ management:
   endpoint:
     health:
       show-details: always
-
-
 
 

@@ -23,7 +23,7 @@ public enum ErrorCode {
     NOT_BEARER_GRANT_TYPE(401, "A002", "인증 타입이 Bearer 타입이 아닙니다."),
     INVALID_TOKEN(401, "A003", "유효하지 않은 토큰입니다."),
     ACCESS_TOKEN_EXPIRED(401, "A004", "해당 Access Token은 만료되었습니다."),
-    NOT_ACCESS_TOKEN_TYPE(401, "A003", "TokenType이 Access Token이 아닙니다."),
+    NOT_ACCESS_TOKEN_TYPE(401, "A005", "TokenType이 Access Token이 아닙니다."),
 
     ;
 

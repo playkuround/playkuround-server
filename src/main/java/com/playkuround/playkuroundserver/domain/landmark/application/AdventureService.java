@@ -63,14 +63,14 @@ public class AdventureService {
     public ResponseMostLandmarkUser findMemberMostLandmark(Long landmarkId) {
         /**
          * 해당 랜드마크에 가장 많이 방문한 회원
-         * 횟수가 같다면 방문한지 오래된 회원
+         * 횟수가 같다면 방문한지 오래된 회원 -> 수정?
          */
         Landmark landmark = landmarkRepository.findById(landmarkId)
                 .orElseThrow(() -> new EntityNotFoundException("랜드마크를 찾을 수 없습니다."));
 
         Map<Long, UserByMost> fre = new HashMap<>();
 
-        adventureRepository.findAllByLandmark(landmarkId)
+        adventureRepository.findAllByLandmark(landmark)
                 .forEach(adventure -> {
                     Long userId = adventure.getUser().getId();
                     if (fre.containsKey(userId)) {
@@ -82,6 +82,7 @@ public class AdventureService {
                     } else fre.put(userId, new UserByMost(1, adventure.getCreateAt()));
                 });
 
+        // TODO 성능 최적화
         Long userId = 0L;
         int maxCount = 0;
         LocalDateTime dateTime = LocalDateTime.of(2000, 1, 1, 0, 0);
@@ -92,7 +93,7 @@ public class AdventureService {
                 userId = id;
                 maxCount = userByMost.count;
                 dateTime = userByMost.recent;
-            } else if (maxCount == userByMost.count && dateTime.isBefore(userByMost.recent)) {
+            } else if (maxCount == userByMost.count && dateTime.isAfter(userByMost.recent)) {
                 userId = id;
                 dateTime = userByMost.recent;
             }

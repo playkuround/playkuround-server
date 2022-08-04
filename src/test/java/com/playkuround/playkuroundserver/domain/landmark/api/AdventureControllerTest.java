@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc //MockMvc 사용
@@ -122,5 +123,47 @@ class AdventureControllerTest {
                 hasProperty("landmarkId", is(3L)),
                 hasProperty("landmarkId", is(4L))
         ));
+    }
+
+    @Test
+    @DisplayName("특정 랜드마크에 가장 많이 방문한 회원 조회")
+    void findMemberMostAdventure() throws Exception {
+        // given
+        User user1 = userRepository.save(new User("test@email.com", "tester1", Major.CS));
+        User user2 = userRepository.save(new User("test2@email.com", "tester2", Major.CS));
+
+        adventureService.saveAdventure(user1.getEmail(), new RequestSaveAdventure(1L, 0D, 0D));
+        adventureService.saveAdventure(user1.getEmail(), new RequestSaveAdventure(1L, 0D, 0D));
+        adventureService.saveAdventure(user2.getEmail(), new RequestSaveAdventure(1L, 0D, 0D));
+
+        // expected
+        // 1. 한 번이라도 더 방문한 회원 응답
+        mockMvc.perform(get("/api/adventures/1/most")
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nickname").value("tester1"))
+                .andExpect(jsonPath("$.count").value(2))
+                .andDo(print());
+
+        // 2. 방문 횟수가 같다면, 방문한지 오래된 회원 응답
+        adventureService.saveAdventure(user2.getEmail(), new RequestSaveAdventure(1L, 0D, 0D));
+        mockMvc.perform(get("/api/adventures/1/most")
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nickname").value("tester1"))
+                .andExpect(jsonPath("$.count").value(2))
+                .andDo(print());
+
+        adventureService.saveAdventure(user2.getEmail(), new RequestSaveAdventure(1L, 0D, 0D));
+        mockMvc.perform(get("/api/adventures/1/most")
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nickname").value("tester2"))
+                .andExpect(jsonPath("$.count").value(3))
+                .andDo(print());
+
     }
 }

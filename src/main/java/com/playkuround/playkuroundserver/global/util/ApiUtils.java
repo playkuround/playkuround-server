@@ -8,8 +8,8 @@ public class ApiUtils {
 
     private ApiUtils() {}
 
-    public static <T> ResponseEntity<ApiResult<T>> success(T response) {
-        return ResponseEntity.ok(ApiResult.create(true, response, null));
+    public static <T> ApiResult<T> success(T response) {
+        return ApiResult.create(true, response, null);
     }
 
     public static ResponseEntity<?> error(ErrorResponse errorResponse) {

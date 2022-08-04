@@ -11,7 +11,7 @@ public class ApiUtils {
         return new ApiResult<>(true, response, null);
     }
 
-    public static ApiResult<?> error(ErrorResponse errorResponse) {
+    public static ApiResult<ErrorResponse> error(ErrorResponse errorResponse) {
         return new ApiResult<>(false, null, errorResponse);
     }
 

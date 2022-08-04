@@ -1,4 +1,4 @@
 package com.playkuround.playkuroundserver.domain.user.domain;
 
-public enum Major {
+public enum Major {CS
 }

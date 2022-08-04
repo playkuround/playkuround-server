@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface AdventureRepository extends JpaRepository<Adventure, Long> {
     List<Adventure> findAllByUser(User user);
+
+    List<Adventure> findAllByLandmark(Long landmarkId);
 }

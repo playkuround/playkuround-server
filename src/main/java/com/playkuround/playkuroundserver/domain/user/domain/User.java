@@ -13,6 +13,7 @@ import javax.validation.constraints.Email;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "USERS") // H2 test
 public class User extends BaseTimeEntity {
 
     @Id

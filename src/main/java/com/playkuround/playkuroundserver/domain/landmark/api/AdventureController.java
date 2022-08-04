@@ -22,6 +22,7 @@ public class AdventureController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void saveAdventure(@UserEmail String userEmail, @RequestBody RequestSaveAdventure dto) {
+        log.info("userEmail={}", userEmail);
         adventureService.saveAdventure(userEmail, dto);
     }
 
@@ -30,8 +31,8 @@ public class AdventureController {
         return adventureService.findAdventureByUserEmail(userEmail);
     }
 
-    @GetMapping("/{adventureId}/most")
-    public void findMemberMostAdventure(@PathVariable Long adventureId) {
-
+    @GetMapping("/{landmarkId}/most")
+    public void findMemberMostAdventure(@PathVariable Long landmarkId) {
+        adventureService.findMemberMostLandmark(landmarkId);
     }
 }

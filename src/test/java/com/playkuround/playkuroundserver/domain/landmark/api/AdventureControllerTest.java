@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playkuround.playkuroundserver.domain.landmark.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.landmark.dto.RequestSaveAdventure;
+import com.playkuround.playkuroundserver.domain.token.application.TokenManager;
+import com.playkuround.playkuroundserver.domain.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.domain.dao.UserRepository;
@@ -14,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,8 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc //MockMvc 사용
-@SpringBootTest
-@TestPropertySource(properties = { "spring.config.location=classpath:application-test.yml" })
+@SpringBootTest(properties = {"spring.config.location=classpath:application-test.yml"})
 class AdventureControllerTest {
 
     @Autowired
@@ -35,6 +35,9 @@ class AdventureControllerTest {
 
     @Autowired
     private AdventureRepository adventureRepository;
+
+    @Autowired
+    private TokenManager tokenManager;
 
     @Autowired
     private MockMvc mockMvc;
@@ -48,16 +51,20 @@ class AdventureControllerTest {
     @Test
     @DisplayName("탐험 저장")
     void saveAdventure() throws Exception {
+
         // given
         User user = userRepository.save(new User("test@email.com", "nickname", Major.CS));
+        TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
 
         RequestSaveAdventure requestSaveAdventure = new RequestSaveAdventure(1L, 0d, 0d);
         String content = objectMapper.writeValueAsString(requestSaveAdventure);
 
+
         // expected
-        mockMvc.perform(post("/manager/signup")
+        mockMvc.perform(post("/api/adventures")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
+                        .header("Authorization", "Bearer " + tokenDto.getAccessToken())
                 )
                 .andExpect(status().isCreated())
                 .andDo(print());
@@ -66,6 +73,8 @@ class AdventureControllerTest {
         Adventure adventure = adventureRepository.findAll().get(0);
 
         assertEquals(1L, adventure.getLandmark().getId());
-        assertEquals(user, adventure.getUser());
+        assertEquals(user.getId(), adventure.getUser().getId());
+
+
     }
 }

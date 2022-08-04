@@ -25,4 +25,8 @@ public class Adventure extends BaseTimeEntity {
     @JoinColumn(name = "landmark_id")
     private Landmark landmark;
 
+    public Adventure(User user, Landmark landmark) {
+        this.user = user;
+        this.landmark = landmark;
+    }
 }

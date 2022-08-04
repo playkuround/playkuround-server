@@ -1,9 +1,15 @@
 package com.playkuround.playkuroundserver.domain.landmark.api;
 
 import com.playkuround.playkuroundserver.domain.landmark.application.AdventureService;
+import com.playkuround.playkuroundserver.domain.landmark.dto.RequestSaveAdventure;
+import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseFindAdventure;
+import com.playkuround.playkuroundserver.global.resolver.UserEmail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -14,13 +20,14 @@ public class AdventureController {
 
 
     @PostMapping
-    public void saveAdventure() {
-
+    @ResponseStatus(HttpStatus.CREATED)
+    public void saveAdventure(@UserEmail String userEmail, @RequestBody RequestSaveAdventure dto) {
+        adventureService.saveAdventure(userEmail, dto);
     }
 
     @GetMapping
-    public void getAdventure() {
-
+    public List<ResponseFindAdventure> findAdventureByUserEmail(@UserEmail String userEmail) {
+        return adventureService.findAdventureByUserEmail(userEmail);
     }
 
     @GetMapping("/{adventureId}/most")

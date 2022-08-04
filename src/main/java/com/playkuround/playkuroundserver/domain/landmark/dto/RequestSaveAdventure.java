@@ -3,19 +3,19 @@ package com.playkuround.playkuroundserver.domain.landmark.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
 public class RequestSaveAdventure {
 
-    @NotBlank
+    @NotNull
     private Long landmarkId;
 
-    @NotBlank
+    @NotNull
     private Double latitude;
 
-    @NotBlank
+    @NotNull
     private Double longitude;
 
 }

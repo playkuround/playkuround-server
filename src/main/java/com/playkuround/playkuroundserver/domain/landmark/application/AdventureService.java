@@ -33,7 +33,6 @@ public class AdventureService {
 
     @Transactional
     public void saveAdventure(String userEmail, RequestSaveAdventure dto) {
-        log.info("userEmail={}", userEmail);
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -56,10 +55,9 @@ public class AdventureService {
         return adventureRepository.findAllByUser(user).stream()
                 .map(adventure -> ResponseFindAdventure.builder()
                         .landmarkId(adventure.getLandmark().getId())
-                        .createdDateTime(adventure.getCreateAt())
+                        .visitedDateTime(adventure.getCreateAt())
                         .build())
                 .collect(Collectors.toList());
-
     }
 
     public ResponseMostLandmarkUser findMemberMostLandmark(Long landmarkId) {

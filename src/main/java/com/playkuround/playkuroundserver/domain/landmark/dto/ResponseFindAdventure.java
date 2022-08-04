@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 public class ResponseFindAdventure {
 
     private Long landmarkId;
-    private LocalDateTime createdDateTime;
+    private LocalDateTime visitedDateTime;
 
     @Builder
-    public ResponseFindAdventure(Long landmarkId, LocalDateTime createdDateTime) {
+    public ResponseFindAdventure(Long landmarkId, LocalDateTime visitedDateTime) {
         this.landmarkId = landmarkId;
-        this.createdDateTime = createdDateTime;
+        this.visitedDateTime = visitedDateTime;
     }
 }

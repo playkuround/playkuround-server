@@ -8,6 +8,7 @@ import com.playkuround.playkuroundserver.global.common.response.ApiResult;
 import com.playkuround.playkuroundserver.global.resolver.UserEmail;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,13 +25,13 @@ public class UserApi {
     private final UserLoginService userLoginService;
 
     @PostMapping
-    public ApiResult<UserRegisterDto.Response> UserRegister(@RequestBody @Valid UserRegisterDto.Request registerRequest) {
+    public ResponseEntity<ApiResult<UserRegisterDto.Response>> UserRegister(@RequestBody @Valid UserRegisterDto.Request registerRequest) {
         UserRegisterDto.Response registerResponse = userRegisterService.registerUser(registerRequest);
         return ApiUtils.success(registerResponse);
     }
 
     @PostMapping("/login")
-    public ApiResult<UserLoginDto.Response> UserLogin(@UserEmail String userEmail) {
+    public ResponseEntity<ApiResult<UserLoginDto.Response>> UserLogin(@UserEmail String userEmail) {
         UserLoginDto.Response loginResponse = userLoginService.login(userEmail);
         return ApiUtils.success(loginResponse);
     }

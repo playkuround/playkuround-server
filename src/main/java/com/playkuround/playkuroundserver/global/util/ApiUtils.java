@@ -2,17 +2,18 @@ package com.playkuround.playkuroundserver.global.util;
 
 import com.playkuround.playkuroundserver.global.common.response.ApiResult;
 import com.playkuround.playkuroundserver.global.error.ErrorResponse;
+import org.springframework.http.ResponseEntity;
 
 public class ApiUtils {
 
     private ApiUtils() {}
 
-    public static <T> ApiResult<T> success(T response) {
-        return new ApiResult<>(true, response, null);
+    public static <T> ResponseEntity<ApiResult<T>> success(T response) {
+        return ResponseEntity.ok(ApiResult.create(true, response, null));
     }
 
-    public static ApiResult<ErrorResponse> error(ErrorResponse errorResponse) {
-        return new ApiResult<>(false, null, errorResponse);
+    public static ResponseEntity<?> error(ErrorResponse errorResponse) {
+        return ResponseEntity.status(errorResponse.getStatus()).body(ApiResult.create(false, null, errorResponse));
     }
 
 }

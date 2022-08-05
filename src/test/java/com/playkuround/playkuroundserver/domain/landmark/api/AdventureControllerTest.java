@@ -8,10 +8,11 @@ import com.playkuround.playkuroundserver.domain.landmark.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.landmark.dto.RequestSaveAdventure;
 import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.token.application.TokenManager;
-import com.playkuround.playkuroundserver.domain.token.dto.TokenDto;
-import com.playkuround.playkuroundserver.domain.user.domain.Major;
+import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
+import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
+import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.domain.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,13 +47,16 @@ class AdventureControllerTest {
     private AdventureService adventureService;
 
     @Autowired
+    private UserRegisterService userRegisterService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private AdventureRepository adventureRepository;
 
     @Autowired
-    private TokenManager tokenManager;
+    private UserLoginService userLoginService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -67,26 +71,28 @@ class AdventureControllerTest {
     @DisplayName("탐험 저장")
     void saveAdventure() throws Exception {
         // given
-        User user = userRepository.save(new User("test@email.com", "nickname", Major.CS));
-        TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
+        String userEmail = "test@email.com";
+        userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
+        String accessToken = userLoginService.login(userEmail).getAccessToken();
 
         RequestSaveAdventure requestSaveAdventure = new RequestSaveAdventure(1L, 0D, 0D);
         String content = objectMapper.writeValueAsString(requestSaveAdventure);
-
 
         // expected
         mockMvc.perform(post("/api/adventures")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
-                        .header("Authorization", "Bearer " + tokenDto.getAccessToken())
+                        .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isCreated())
                 .andDo(print());
 
-        assertEquals(1L, adventureRepository.count());
         Adventure adventure = adventureRepository.findAll().get(0);
-
+        assertEquals(1L, adventureRepository.count());
         assertEquals(1L, adventure.getLandmark().getId());
+
+        User user = userRepository.findAll().get(0);
+        assertEquals(1L, userRepository.count());
         assertEquals(user.getId(), adventure.getUser().getId());
     }
 
@@ -94,18 +100,19 @@ class AdventureControllerTest {
     @DisplayName("로그인 회원의 탐험 기록 조회")
     void findAdventure() throws Exception {
         // given
-        User user = userRepository.save(new User("test@email.com", "nickname", Major.CS));
-        TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
+        String userEmail = "test@email.com";
+        userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
+        String accessToken = userLoginService.login(userEmail).getAccessToken();
 
-        adventureService.saveAdventure(user.getEmail(), new RequestSaveAdventure(1L, 0D, 0D));
-        adventureService.saveAdventure(user.getEmail(), new RequestSaveAdventure(2L, 0D, 0D));
-        adventureService.saveAdventure(user.getEmail(), new RequestSaveAdventure(3L, 0D, 0D));
-        adventureService.saveAdventure(user.getEmail(), new RequestSaveAdventure(4L, 0D, 0D));
+        adventureService.saveAdventure(userEmail, new RequestSaveAdventure(1L, 0D, 0D));
+        adventureService.saveAdventure(userEmail, new RequestSaveAdventure(2L, 0D, 0D));
+        adventureService.saveAdventure(userEmail, new RequestSaveAdventure(3L, 0D, 0D));
+        adventureService.saveAdventure(userEmail, new RequestSaveAdventure(4L, 0D, 0D));
 
         // expected
         MvcResult result = mockMvc.perform(get("/api/adventures")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + tokenDto.getAccessToken())
+                        .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -129,17 +136,21 @@ class AdventureControllerTest {
     @DisplayName("특정 랜드마크에 가장 많이 방문한 회원 조회")
     void findMemberMostAdventure() throws Exception {
         // given
-        User user1 = userRepository.save(new User("test@email.com", "tester1", Major.CS));
-        User user2 = userRepository.save(new User("test2@email.com", "tester2", Major.CS));
+        String user1Email = "test@email.com";
+        String user2Email = "test2@email.com";
+        userRegisterService.registerUser(new UserRegisterDto.Request(user1Email, "tester1", "컴퓨터공학부"));
+        userRegisterService.registerUser(new UserRegisterDto.Request(user2Email, "tester2", "컴퓨터공학부"));
+        String accessToken = userLoginService.login(user1Email).getAccessToken();
 
-        adventureService.saveAdventure(user1.getEmail(), new RequestSaveAdventure(1L, 0D, 0D));
-        adventureService.saveAdventure(user1.getEmail(), new RequestSaveAdventure(1L, 0D, 0D));
-        adventureService.saveAdventure(user2.getEmail(), new RequestSaveAdventure(1L, 0D, 0D));
+        adventureService.saveAdventure(user1Email, new RequestSaveAdventure(1L, 0D, 0D));
+        adventureService.saveAdventure(user1Email, new RequestSaveAdventure(1L, 0D, 0D));
+        adventureService.saveAdventure(user2Email, new RequestSaveAdventure(1L, 0D, 0D));
 
         // expected
         // 1. 한 번이라도 더 방문한 회원 응답
         mockMvc.perform(get("/api/adventures/1/most")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value("tester1"))
@@ -147,18 +158,20 @@ class AdventureControllerTest {
                 .andDo(print());
 
         // 2. 방문 횟수가 같다면, 방문한지 오래된 회원 응답
-        adventureService.saveAdventure(user2.getEmail(), new RequestSaveAdventure(1L, 0D, 0D));
+        adventureService.saveAdventure(user2Email, new RequestSaveAdventure(1L, 0D, 0D));
         mockMvc.perform(get("/api/adventures/1/most")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value("tester1"))
                 .andExpect(jsonPath("$.count").value(2))
                 .andDo(print());
 
-        adventureService.saveAdventure(user2.getEmail(), new RequestSaveAdventure(1L, 0D, 0D));
+        adventureService.saveAdventure(user2Email, new RequestSaveAdventure(1L, 0D, 0D));
         mockMvc.perform(get("/api/adventures/1/most")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value("tester2"))

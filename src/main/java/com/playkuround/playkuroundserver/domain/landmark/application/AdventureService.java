@@ -8,7 +8,7 @@ import com.playkuround.playkuroundserver.domain.landmark.dto.RequestSaveAdventur
 import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseMostLandmarkUser;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.domain.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.global.error.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

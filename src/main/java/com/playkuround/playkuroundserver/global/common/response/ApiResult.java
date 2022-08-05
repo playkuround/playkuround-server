@@ -8,14 +8,18 @@ import lombok.Setter;
 @Setter
 public class ApiResult<T> {
 
-    private final boolean isSuccess;
+    private final boolean success;
     private final T response;
     private final ErrorResponse errorResponse;
 
-    public ApiResult(boolean isSuccess, T response, ErrorResponse errorResponse) {
-        this.isSuccess = isSuccess;
+    private ApiResult(boolean success, T response, ErrorResponse errorResponse) {
+        this.success = success;
         this.response = response;
         this.errorResponse = errorResponse;
+    }
+
+    public static <T> ApiResult<T> create(boolean success, T response, ErrorResponse errorResponse) {
+        return new ApiResult<>(success, response, errorResponse);
     }
 
 }

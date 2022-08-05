@@ -30,17 +30,17 @@ public class TokenManager {
     private String tokenSecret;
 
     public TokenDto createTokenDto(String email) {
-        Date accessTokenExpireTime = createAccessTokenExpirationTime();
-        Date refreshTokenExpireTime = createRefreshTokenExpirationTime();
+        Date accessTokenExpiredAt = createAccessTokenExpirationTime();
+        Date refreshTokenExpiredAt = createRefreshTokenExpirationTime();
 
-        String accessToken = createAccessToken(email, accessTokenExpireTime);
-        String refreshToken = createRefreshToken(email, refreshTokenExpireTime);
+        String accessToken = createAccessToken(email, accessTokenExpiredAt);
+        String refreshToken = createRefreshToken(email, refreshTokenExpiredAt);
         return TokenDto.builder()
                 .grantType(GrantType.BEARER.getType())
                 .accessToken(accessToken)
-                .accessTokenExpireTime(accessTokenExpireTime)
+                .accessTokenExpiredAt(accessTokenExpiredAt)
                 .refreshToken(refreshToken)
-                .refreshTokenExpireTime(refreshTokenExpireTime)
+                .refreshTokenExpiredAt(refreshTokenExpiredAt)
                 .build();
     }
 
@@ -52,28 +52,26 @@ public class TokenManager {
         return new Date(System.currentTimeMillis() + Long.parseLong(refreshTokenExpirationTime));
     }
 
-    public String createAccessToken(String email, Date expirationTime) {
-        String accessToken = Jwts.builder()
+    public String createAccessToken(String email, Date expiredAt) {
+        return Jwts.builder()
                 .setSubject(TokenType.ACCESS.name())
                 .setAudience(email)
                 .setIssuedAt(new Date())
-                .setExpiration(expirationTime)
+                .setExpiration(expiredAt)
                 .signWith(SignatureAlgorithm.HS512, tokenSecret)
                 .setHeaderParam("typ", "JWT")
                 .compact();
-        return accessToken;
     }
 
-    public String createRefreshToken(String email, Date expirationTime) {
-        String refreshToken = Jwts.builder()
+    public String createRefreshToken(String email, Date expiredAt) {
+        return Jwts.builder()
                 .setSubject(TokenType.REFRESH.name())
                 .setAudience(email)
                 .setIssuedAt(new Date())
-                .setExpiration(expirationTime)
+                .setExpiration(expiredAt)
                 .signWith(SignatureAlgorithm.HS512, tokenSecret)
                 .setHeaderParam("typ", "JWT")
                 .compact();
-        return refreshToken;
     }
 
     public String getUserEmail(String accessToken) {
@@ -94,7 +92,7 @@ public class TokenManager {
             Jwts.parser().setSigningKey(tokenSecret)
                     .parseClaimsJws(token);
             return true;
-        } catch (JwtException e) {  //토큰 변조
+        } catch (JwtException e) {  // 토큰 변조
             log.info("잘못된 jwt token", e);
         } catch (Exception e) {
             log.info("jwt token 검증 중 에러 발생", e);
@@ -130,24 +128,7 @@ public class TokenManager {
 
     public boolean isTokenExpired(Date tokenExpiredTime) {
         Date now = new Date();
-        if (now.after(tokenExpiredTime)) {
-            return true;
-        }
-        return false;
-    }
-
-    public String getRole(String token) {
-        String role;
-        try {
-            Claims claims = Jwts.parser().setSigningKey(tokenSecret)
-                    .parseClaimsJws(token).getBody();
-            role = (String) claims.get("role");
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new InvalidTokenException(token);
-        }
-
-        return role;
+        return now.after(tokenExpiredTime);
     }
 
 }

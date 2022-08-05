@@ -7,8 +7,8 @@ import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.dto.RequestSaveAdventure;
 import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseMostLandmarkUser;
-import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.error.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +63,7 @@ public class AdventureService {
     public ResponseMostLandmarkUser findMemberMostLandmark(Long landmarkId) {
         /**
          * 해당 랜드마크에 가장 많이 방문한 회원
-         * 횟수가 같다면 방문한지 오래된 회원 -> 수정?
+         * 횟수가 같다면 방문한지 오래된 회원 -> 정책 논의 필요
          */
         Landmark landmark = landmarkRepository.findById(landmarkId)
                 .orElseThrow(() -> new EntityNotFoundException("랜드마크를 찾을 수 없습니다."));

@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/adventures")
-public class AdventureController {
+public class AdventureApi {
     private final AdventureService adventureService;
 
 

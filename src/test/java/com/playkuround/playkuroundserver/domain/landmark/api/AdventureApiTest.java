@@ -7,7 +7,6 @@ import com.playkuround.playkuroundserver.domain.landmark.dao.AdventureRepository
 import com.playkuround.playkuroundserver.domain.landmark.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.landmark.dto.RequestSaveAdventure;
 import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseFindAdventure;
-import com.playkuround.playkuroundserver.domain.token.application.TokenManager;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -38,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc //MockMvc 사용
 @SpringBootTest(properties = {"spring.config.location=classpath:application-test.yml"})
-class AdventureControllerTest {
+class AdventureApiTest {
 
     @Autowired
     private ObjectMapper objectMapper; // 스프링에서 자동으로 주입해줌
@@ -168,6 +167,7 @@ class AdventureControllerTest {
                 .andExpect(jsonPath("$.count").value(2))
                 .andDo(print());
 
+        // 3. 한 번이라도 더 방문한 회원 응답
         adventureService.saveAdventure(user2Email, new RequestSaveAdventure(1L, 0D, 0D));
         mockMvc.perform(get("/api/adventures/1/most")
                         .contentType(MediaType.APPLICATION_JSON)

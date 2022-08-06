@@ -1,9 +1,9 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
-import com.playkuround.playkuroundserver.domain.user.application.UserInfoService;
+import com.playkuround.playkuroundserver.domain.user.application.UserProfileService;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
-import com.playkuround.playkuroundserver.domain.user.dto.UserInfoDto;
+import com.playkuround.playkuroundserver.domain.user.dto.UserProfileDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserLoginDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.global.common.response.ApiResult;
@@ -21,7 +21,7 @@ public class UserApi {
 
     private final UserRegisterService userRegisterService;
     private final UserLoginService userLoginService;
-    private final UserInfoService userInfoService;
+    private final UserProfileService userProfileService;
 
     @PostMapping("/register")
     public ApiResult<UserRegisterDto.Response> UserRegister(@RequestBody @Valid UserRegisterDto.Request registerRequest) {
@@ -36,9 +36,9 @@ public class UserApi {
     }
 
     @GetMapping
-    public ApiResult<UserInfoDto.Response> UserInfo(@UserEmail String userEmail) {
-        UserInfoDto.Response infoResponse = userInfoService.getUserInfo(userEmail);
-        return ApiUtils.success(infoResponse);
+    public ApiResult<UserProfileDto.Response> UserProfile(@UserEmail String userEmail) {
+        UserProfileDto.Response profileResponse = userProfileService.getUserProfile(userEmail);
+        return ApiUtils.success(profileResponse);
     }
 
 }

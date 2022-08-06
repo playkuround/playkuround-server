@@ -51,4 +51,9 @@ public class User extends BaseTimeEntity {
         this.refreshTokenExpiredAt = DateTimeUtils.convertToLocalDateTime(tokenDto.getRefreshTokenExpiredAt());
     }
 
+    // 로그아웃을 위한 리프레시 토큰 만료시키기
+    public void revokeRefreshToken() {
+        this.refreshTokenExpiredAt = LocalDateTime.now();
+    }
+
 }

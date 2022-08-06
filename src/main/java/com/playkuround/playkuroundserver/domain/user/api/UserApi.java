@@ -1,10 +1,11 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
-import com.playkuround.playkuroundserver.domain.user.application.UserProfileService;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
+import com.playkuround.playkuroundserver.domain.user.application.UserLogoutService;
+import com.playkuround.playkuroundserver.domain.user.application.UserProfileService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
-import com.playkuround.playkuroundserver.domain.user.dto.UserProfileDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserLoginDto;
+import com.playkuround.playkuroundserver.domain.user.dto.UserProfileDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.global.common.response.ApiResult;
 import com.playkuround.playkuroundserver.global.resolver.UserEmail;
@@ -21,6 +22,7 @@ public class UserApi {
 
     private final UserRegisterService userRegisterService;
     private final UserLoginService userLoginService;
+    private final UserLogoutService userLogoutService;
     private final UserProfileService userProfileService;
 
     @PostMapping("/register")
@@ -39,6 +41,12 @@ public class UserApi {
     public ApiResult<UserProfileDto.Response> UserProfile(@UserEmail String userEmail) {
         UserProfileDto.Response profileResponse = userProfileService.getUserProfile(userEmail);
         return ApiUtils.success(profileResponse);
+    }
+
+    @PostMapping("/logout")
+    public ApiResult<Void> UserLogout(@UserEmail String userEmail) {
+        userLogoutService.logout(userEmail);
+        return ApiUtils.success(null);
     }
 
 }

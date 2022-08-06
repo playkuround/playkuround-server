@@ -118,7 +118,7 @@ class AdventureApiTest {
                 .andReturn();
         String responseBody = result.getResponse().getContentAsString();
         List<ResponseFindAdventure> response =
-                objectMapper.readValue(responseBody, new TypeReference<List<ResponseFindAdventure>>() {
+                objectMapper.readValue(responseBody, new TypeReference<>() {
                 });
 
 
@@ -141,22 +141,20 @@ class AdventureApiTest {
         userRegisterService.registerUser(new UserRegisterDto.Request(user2Email, "tester2", "컴퓨터공학부"));
         String accessToken = userLoginService.login(user1Email).getAccessToken();
 
-        adventureService.saveAdventure(user1Email, new RequestSaveAdventure(1L, 0D, 0D));
-        adventureService.saveAdventure(user1Email, new RequestSaveAdventure(1L, 0D, 0D));
-        adventureService.saveAdventure(user2Email, new RequestSaveAdventure(1L, 0D, 0D));
-
         // expected
-        // 1. 한 번이라도 더 방문한 회원 응답
+        // 1. 해당 위치에 한 명도 방문한 적이 없는 경우
         mockMvc.perform(get("/api/adventures/1/most")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nickname").value("tester1"))
-                .andExpect(jsonPath("$.count").value(2))
+                .andExpect(jsonPath("$.message").value("해당 장소에 방문한 회원이 한 명도 없습니다."))
+                .andExpect(jsonPath("$.count").value(0))
                 .andDo(print());
 
-        // 2. 방문 횟수가 같다면, 방문한지 오래된 회원 응답
+        // 2. 한 번이라도 더 방문한 회원 응답
+        adventureService.saveAdventure(user1Email, new RequestSaveAdventure(1L, 0D, 0D));
+        adventureService.saveAdventure(user1Email, new RequestSaveAdventure(1L, 0D, 0D));
         adventureService.saveAdventure(user2Email, new RequestSaveAdventure(1L, 0D, 0D));
         mockMvc.perform(get("/api/adventures/1/most")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -167,7 +165,18 @@ class AdventureApiTest {
                 .andExpect(jsonPath("$.count").value(2))
                 .andDo(print());
 
-        // 3. 한 번이라도 더 방문한 회원 응답
+        // 3. 방문 횟수가 같다면, 방문한지 오래된 회원 응답
+        adventureService.saveAdventure(user2Email, new RequestSaveAdventure(1L, 0D, 0D));
+        mockMvc.perform(get("/api/adventures/1/most")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nickname").value("tester1"))
+                .andExpect(jsonPath("$.count").value(2))
+                .andDo(print());
+
+        // 4. 한 번이라도 더 방문한 회원 응답
         adventureService.saveAdventure(user2Email, new RequestSaveAdventure(1L, 0D, 0D));
         mockMvc.perform(get("/api/adventures/1/most")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -177,6 +186,5 @@ class AdventureApiTest {
                 .andExpect(jsonPath("$.nickname").value("tester2"))
                 .andExpect(jsonPath("$.count").value(3))
                 .andDo(print());
-
     }
 }

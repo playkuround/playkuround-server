@@ -4,22 +4,23 @@ import com.playkuround.playkuroundserver.domain.landmark.dao.AdventureRepository
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
+import com.playkuround.playkuroundserver.domain.landmark.dto.MostVisitedInfo;
 import com.playkuround.playkuroundserver.domain.landmark.dto.RequestSaveAdventure;
 import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseMostLandmarkUser;
+import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.domain.user.exception.UserNotFoundException;
 import com.playkuround.playkuroundserver.global.error.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,23 +35,24 @@ public class AdventureService {
     @Transactional
     public void saveAdventure(String userEmail, RequestSaveAdventure dto) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException(userEmail));
 
         Landmark landmark = landmarkRepository.findById(dto.getLandmarkId())
-                .orElseThrow(() -> new EntityNotFoundException("랜드마크를 찾을 수 없습니다."));
+                .orElseThrow(() -> new LandmarkNotFoundException(dto.getLandmarkId()));
 
-        validateLocation(dto.getLatitude(), dto.getLongitude(), landmark);
+        validateLocation(landmark, dto.getLatitude(), dto.getLongitude());
 
         adventureRepository.save(new Adventure(user, landmark));
     }
 
-    private void validateLocation(Double latitude, Double longitude, Landmark landmark) {
+    private void validateLocation(Landmark landmark, Double latitude, Double longitude) {
         // TODO 랜드마크와 현재 위치에 대한 거리 검증 -> 검증 실패면 에러 발생
+        // 검증 실패일 경우, 발생하는 오류 -> LocationValidateException
     }
 
     public List<ResponseFindAdventure> findAdventureByUserEmail(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException(userEmail));
 
         return adventureRepository.findAllByUser(user).stream()
                 .map(adventure -> ResponseFindAdventure.builder()
@@ -61,60 +63,49 @@ public class AdventureService {
     }
 
     public ResponseMostLandmarkUser findMemberMostLandmark(Long landmarkId) {
-        /**
+        /*
          * 해당 랜드마크에 가장 많이 방문한 회원
          * 횟수가 같다면 방문한지 오래된 회원 -> 정책 논의 필요
          */
         Landmark landmark = landmarkRepository.findById(landmarkId)
-                .orElseThrow(() -> new EntityNotFoundException("랜드마크를 찾을 수 없습니다."));
+                .orElseThrow(() -> new LandmarkNotFoundException(landmarkId));
 
-        Map<Long, UserByMost> fre = new HashMap<>();
-
+        // TODO 성능 최적화
+        // count[유저 id] = {방문횟수, 최근 방문일}
+        Map<Long, MostVisitedInfo> count = new HashMap<>();
         adventureRepository.findAllByLandmark(landmark)
                 .forEach(adventure -> {
                     Long userId = adventure.getUser().getId();
-                    if (fre.containsKey(userId)) {
-                        UserByMost userByMost = fre.get(userId);
-                        LocalDateTime recent = userByMost.recent;
-                        if (recent.isBefore(adventure.getCreateAt())) recent = adventure.getCreateAt();
-
-                        fre.put(userId, new UserByMost(userByMost.count + 1, recent));
-                    } else fre.put(userId, new UserByMost(1, adventure.getCreateAt()));
+                    if (count.containsKey(userId)) {
+                        count.get(userId).updateData(adventure.getCreateAt());
+                    } else {
+                        count.put(userId, new MostVisitedInfo(userId, adventure.getCreateAt()));
+                    }
                 });
 
-        // TODO 성능 최적화
-        Long userId = 0L;
-        int maxCount = 0;
-        LocalDateTime dateTime = LocalDateTime.of(2000, 1, 1, 0, 0);
-        Set<Long> keySet = fre.keySet();
-        for (Long id : keySet) {
-            UserByMost userByMost = fre.get(id);
-            if (maxCount < userByMost.count) {
-                userId = id;
-                maxCount = userByMost.count;
-                dateTime = userByMost.recent;
-            } else if (maxCount == userByMost.count && dateTime.isAfter(userByMost.recent)) {
-                userId = id;
-                dateTime = userByMost.recent;
-            }
+
+        MostVisitedInfo res = null;
+        for (Long id : count.keySet()) {
+            MostVisitedInfo value = count.get(id);
+            if (res == null) res = value;
+            if (res.isSatisfyUpdate(value)) res = value;
         }
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        if (res == null) {
+            return ResponseMostLandmarkUser.builder()
+                    .count(0)
+                    .message("해당 장소에 방문한 회원이 한 명도 없습니다.")
+                    .build();
+        } else {
+            User user = userRepository.findById(res.getUserId())
+                    .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
-        return ResponseMostLandmarkUser.builder()
-                .count(maxCount)
-                .nickname(user.getNickname())
-                .build();
-    }
-
-    private static class UserByMost {
-        public Integer count;
-        public LocalDateTime recent;
-
-        public UserByMost(Integer count, LocalDateTime recent) {
-            this.count = count;
-            this.recent = recent;
+            return ResponseMostLandmarkUser.builder()
+                    .count(res.getCount())
+                    .nickname(user.getNickname())
+                    .userId(user.getId())
+                    .build();
         }
     }
+
 }

@@ -25,6 +25,9 @@ public enum ErrorCode {
     ACCESS_TOKEN_EXPIRED(401, "A004", "해당 Access Token은 만료되었습니다."),
     NOT_ACCESS_TOKEN_TYPE(401, "A005", "TokenType이 Access Token이 아닙니다."),
 
+    // Adventure, Landmark,
+    LOCATION_VALIDATE(401, "L001", "현재 위치와 랜드마크 위치가 너무 멉니다.")
+
     ;
 
     private final int status;

@@ -11,13 +11,13 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class RequestSaveAdventure {
 
-    @NotNull
+    @NotNull(message = "랜드마크id는 필수입니다.")
     private Long landmarkId;
 
-    @NotNull
+    @NotNull(message = "위도(latitude)는 필수입니다.")
     private Double latitude;
 
-    @NotNull
+    @NotNull(message = "경도(longitude)는 필수입니다.")
     private Double longitude;
 
 }

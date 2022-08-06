@@ -1,17 +1,16 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
+import com.playkuround.playkuroundserver.domain.user.application.UserInfoService;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
+import com.playkuround.playkuroundserver.domain.user.dto.UserInfoDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserLoginDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.global.common.response.ApiResult;
 import com.playkuround.playkuroundserver.global.resolver.UserEmail;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -22,8 +21,9 @@ public class UserApi {
 
     private final UserRegisterService userRegisterService;
     private final UserLoginService userLoginService;
+    private final UserInfoService userInfoService;
 
-    @PostMapping
+    @PostMapping("/register")
     public ApiResult<UserRegisterDto.Response> UserRegister(@RequestBody @Valid UserRegisterDto.Request registerRequest) {
         UserRegisterDto.Response registerResponse = userRegisterService.registerUser(registerRequest);
         return ApiUtils.success(registerResponse);
@@ -33,6 +33,12 @@ public class UserApi {
     public ApiResult<UserLoginDto.Response> UserLogin(@UserEmail String userEmail) {
         UserLoginDto.Response loginResponse = userLoginService.login(userEmail);
         return ApiUtils.success(loginResponse);
+    }
+
+    @GetMapping
+    public ApiResult<UserInfoDto.Response> UserInfo(@UserEmail String userEmail) {
+        UserInfoDto.Response infoResponse = userInfoService.getUserInfo(userEmail);
+        return ApiUtils.success(infoResponse);
     }
 
 }

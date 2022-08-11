@@ -5,9 +5,11 @@ import com.playkuround.playkuroundserver.domain.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 public class UserRegisterDto {
@@ -20,6 +22,8 @@ public class UserRegisterDto {
         private String email;
 
         @NotEmpty(message = "닉네임은 필수값입니다.")
+        @Length(min = 2, max = 8, message = "닉네임은 2글자 이상 8글자 이하여야 합니다.")
+        @Pattern(regexp = "^[0-9a-zA-Z가-힣]*$", message = "닉네임은 한글, 영어, 숫자만 허용됩니다.")
         private String nickname;
 
         @NotEmpty(message = "학과는 필수값입니다.")

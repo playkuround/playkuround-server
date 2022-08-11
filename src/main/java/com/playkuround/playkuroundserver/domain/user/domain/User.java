@@ -11,6 +11,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,6 +29,7 @@ public class User extends BaseTimeEntity {
 
     @Column(nullable = false)
     @Length(min = 2, max = 8)
+    @Pattern(regexp = "^[0-9a-zA-Z가-힣]*$")
     private String nickname;
 
     @Enumerated(EnumType.STRING)

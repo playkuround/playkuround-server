@@ -20,4 +20,12 @@ public class ErrorResponse {
                 .build();
     }
 
+    public static ErrorResponse of(final ErrorCode errorCode, String message) {
+        return ErrorResponse.builder()
+                .status(errorCode.getStatus())
+                .code(errorCode.getCode())
+                .message(message)
+                .build();
+    }
+
 }

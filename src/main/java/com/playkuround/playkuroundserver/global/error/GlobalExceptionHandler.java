@@ -19,14 +19,12 @@ public class GlobalExceptionHandler {
 
     /**
      * javax.validation.Valid 또는 @Validated binding error가 발생할 경우
-     * javax.validation.Valid or @Validated 으로 binding error 발생 시 발생한다.
-     * HttpMessageConverter 에서 등록한 HttpMessageConverter binding 못할경 우 발생
      * 주로 @RequestBody, @RequestPart 어노테이션에서 발생
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("handleMethodArgumentNotValidException", e);
-        final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_VALUE, e.getMessage());
+        log.error("MethodArgumentNotValidException", e);
+        final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_VALUE, e.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
         return ApiUtils.error(errorResponse);
     }
 
@@ -36,7 +34,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        log.error("handleMethodArgumentTypeMismatchException", e);
+        log.error("MethodArgumentTypeMismatchException", e);
         final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_VALUE, e.getMessage());
         return ApiUtils.error(errorResponse);
     }
@@ -46,24 +44,24 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     protected ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        log.error("handleHttpRequestMethodNotSupportedException", e);
+        log.error("HttpRequestMethodNotSupportedException", e);
         final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.METHOD_NOT_ALLOWED);
         return ApiUtils.error(errorResponse);
     }
 
     /**
-     * Authentication 객체가 필요한 권한을 보유하지 않은 경우 발생합
+     * Authentication 객체가 필요한 권한을 보유하지 않은 경우 발생
      */
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
-        log.error("handleAccessDeniedException", e);
+        log.error("AccessDeniedException", e);
         final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.ACCESS_DENIED);
         return ApiUtils.error(errorResponse);
     }
 
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<?> handleBusinessException(final BusinessException e) {
-        log.error("handleEntityNotFoundException", e);
+        log.error("BusinessException", e);
         final ErrorCode errorCode = e.getErrorCode();
         final ErrorResponse errorResponse = ErrorResponse.of(errorCode);
         return ApiUtils.error(errorResponse);
@@ -71,7 +69,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<?> handleException(Exception e) {
-        log.error("handleEntityNotFoundException", e);
+        log.error("Exception", e);
         final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return ApiUtils.error(errorResponse);
     }

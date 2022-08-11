@@ -4,7 +4,7 @@ import com.playkuround.playkuroundserver.domain.user.application.*;
 import com.playkuround.playkuroundserver.domain.user.dto.UserLoginDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserProfileDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
-import com.playkuround.playkuroundserver.global.common.response.ApiResult;
+import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.resolver.UserEmail;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import lombok.RequiredArgsConstructor;
@@ -24,31 +24,31 @@ public class UserApi {
     private final UserProfileService userProfileService;
 
     @PostMapping("/register")
-    public ApiResult<UserRegisterDto.Response> UserRegister(@RequestBody @Valid UserRegisterDto.Request registerRequest) {
+    public ApiResponse<UserRegisterDto.Response> UserRegister(@RequestBody @Valid UserRegisterDto.Request registerRequest) {
         UserRegisterDto.Response registerResponse = userRegisterService.registerUser(registerRequest);
         return ApiUtils.success(registerResponse);
     }
 
     @PostMapping("/login")
-    public ApiResult<UserLoginDto.Response> UserLogin(@UserEmail String userEmail) {
+    public ApiResponse<UserLoginDto.Response> UserLogin(@UserEmail String userEmail) {
         UserLoginDto.Response loginResponse = userLoginService.login(userEmail);
         return ApiUtils.success(loginResponse);
     }
 
     @GetMapping
-    public ApiResult<UserProfileDto.Response> UserProfile(@UserEmail String userEmail) {
+    public ApiResponse<UserProfileDto.Response> UserProfile(@UserEmail String userEmail) {
         UserProfileDto.Response profileResponse = userProfileService.getUserProfile(userEmail);
         return ApiUtils.success(profileResponse);
     }
 
     @PostMapping("/logout")
-    public ApiResult<Void> UserLogout(@UserEmail String userEmail) {
+    public ApiResponse<Void> UserLogout(@UserEmail String userEmail) {
         userLogoutService.logout(userEmail);
         return ApiUtils.success(null);
     }
 
     @GetMapping("/duplication")
-    public ApiResult<Boolean> nicknameDuplication(@Param("nickname") String nickname) {
+    public ApiResponse<Boolean> nicknameDuplication(@Param("nickname") String nickname) {
         boolean isDuplicate = userProfileService.checkDuplicateNickname(nickname);
         return ApiUtils.success(isDuplicate);
     }

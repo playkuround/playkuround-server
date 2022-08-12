@@ -16,6 +16,7 @@ public class UserRegisterDto {
 
     @Getter
     @Setter
+    @AllArgsConstructor
     public static class Request {
 
         @Email(message = "올바른 이메일 형식이 아닙니다.")

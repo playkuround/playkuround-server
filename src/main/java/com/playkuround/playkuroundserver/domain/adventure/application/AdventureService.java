@@ -1,13 +1,13 @@
-package com.playkuround.playkuroundserver.domain.landmark.application;
+package com.playkuround.playkuroundserver.domain.adventure.application;
 
-import com.playkuround.playkuroundserver.domain.landmark.dao.AdventureRepository;
+import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
-import com.playkuround.playkuroundserver.domain.landmark.domain.Adventure;
+import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
-import com.playkuround.playkuroundserver.domain.landmark.dto.MostVisitedInfo;
-import com.playkuround.playkuroundserver.domain.landmark.dto.RequestSaveAdventure;
-import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseFindAdventure;
-import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseMostLandmarkUser;
+import com.playkuround.playkuroundserver.domain.adventure.dto.MostVisitedInfo;
+import com.playkuround.playkuroundserver.domain.adventure.dto.RequestSaveAdventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostLandmarkUser;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;

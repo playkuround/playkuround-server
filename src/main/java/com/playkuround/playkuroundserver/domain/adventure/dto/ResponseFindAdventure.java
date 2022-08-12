@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.landmark.dto;
+package com.playkuround.playkuroundserver.domain.adventure.dto;
 
 import lombok.Builder;
 import lombok.Data;

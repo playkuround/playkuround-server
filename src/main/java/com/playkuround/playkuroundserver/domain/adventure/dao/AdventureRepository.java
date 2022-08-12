@@ -1,6 +1,6 @@
-package com.playkuround.playkuroundserver.domain.landmark.dao;
+package com.playkuround.playkuroundserver.domain.adventure.dao;
 
-import com.playkuround.playkuroundserver.domain.landmark.domain.Adventure;
+import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

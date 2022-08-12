@@ -2,11 +2,11 @@ package com.playkuround.playkuroundserver.domain.landmark.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.playkuround.playkuroundserver.domain.landmark.application.AdventureService;
-import com.playkuround.playkuroundserver.domain.landmark.dao.AdventureRepository;
-import com.playkuround.playkuroundserver.domain.landmark.domain.Adventure;
-import com.playkuround.playkuroundserver.domain.landmark.dto.RequestSaveAdventure;
-import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseFindAdventure;
+import com.playkuround.playkuroundserver.domain.adventure.application.AdventureService;
+import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
+import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.RequestSaveAdventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;

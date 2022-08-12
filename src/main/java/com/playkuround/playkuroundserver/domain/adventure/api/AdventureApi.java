@@ -1,9 +1,9 @@
-package com.playkuround.playkuroundserver.domain.landmark.api;
+package com.playkuround.playkuroundserver.domain.adventure.api;
 
-import com.playkuround.playkuroundserver.domain.landmark.application.AdventureService;
-import com.playkuround.playkuroundserver.domain.landmark.dto.RequestSaveAdventure;
-import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseFindAdventure;
-import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseMostLandmarkUser;
+import com.playkuround.playkuroundserver.domain.adventure.application.AdventureService;
+import com.playkuround.playkuroundserver.domain.adventure.dto.RequestSaveAdventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostLandmarkUser;
 import com.playkuround.playkuroundserver.global.resolver.UserEmail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.landmark.exception;
+package com.playkuround.playkuroundserver.domain.adventure.exception;
 
 import com.playkuround.playkuroundserver.global.error.exception.BusinessException;
 import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;

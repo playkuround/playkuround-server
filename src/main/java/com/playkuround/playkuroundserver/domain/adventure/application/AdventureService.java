@@ -9,6 +9,7 @@ import com.playkuround.playkuroundserver.domain.adventure.dto.RequestSaveAdventu
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostLandmarkUser;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
+import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNotFoundException;
@@ -31,11 +32,11 @@ public class AdventureService {
     private final AdventureRepository adventureRepository;
     private final LandmarkRepository landmarkRepository;
     private final UserRepository userRepository;
+    private final UserFindDao userFindDao;
 
     @Transactional
     public void saveAdventure(String userEmail, RequestSaveAdventure dto) {
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UserNotFoundException(userEmail));
+        User user = userFindDao.findByEmail(userEmail);
 
         Landmark landmark = landmarkRepository.findById(dto.getLandmarkId())
                 .orElseThrow(() -> new LandmarkNotFoundException(dto.getLandmarkId()));
@@ -51,14 +52,10 @@ public class AdventureService {
     }
 
     public List<ResponseFindAdventure> findAdventureByUserEmail(String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UserNotFoundException(userEmail));
+        User user = userFindDao.findByEmail(userEmail);
 
         return adventureRepository.findAllByUser(user).stream()
-                .map(adventure -> ResponseFindAdventure.builder()
-                        .landmarkId(adventure.getLandmark().getId())
-                        .visitedDateTime(adventure.getCreateAt())
-                        .build())
+                .map(ResponseFindAdventure::of)
                 .collect(Collectors.toList());
     }
 
@@ -70,7 +67,7 @@ public class AdventureService {
         Landmark landmark = landmarkRepository.findById(landmarkId)
                 .orElseThrow(() -> new LandmarkNotFoundException(landmarkId));
 
-        // TODO 성능 최적화
+        // TODO 성능 최적화 -> JPQL 사용 (@Query)
         // count[유저 id] = {방문횟수, 최근 방문일}
         Map<Long, MostVisitedInfo> count = new HashMap<>();
         adventureRepository.findAllByLandmark(landmark)
@@ -94,7 +91,7 @@ public class AdventureService {
         if (res == null) {
             return ResponseMostLandmarkUser.builder()
                     .count(0)
-                    .message("해당 장소에 방문한 회원이 한 명도 없습니다.")
+                    .message("해당 장소에 방문한 회원이 없습니다.")
                     .build();
         } else {
             User user = userRepository.findById(res.getUserId())

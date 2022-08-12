@@ -1,11 +1,13 @@
 package com.playkuround.playkuroundserver.domain.adventure.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class ResponseFindAdventure {
 
     private Long landmarkId;
@@ -15,5 +17,12 @@ public class ResponseFindAdventure {
     public ResponseFindAdventure(Long landmarkId, LocalDateTime visitedDateTime) {
         this.landmarkId = landmarkId;
         this.visitedDateTime = visitedDateTime;
+    }
+
+    public static ResponseFindAdventure of(Adventure adventure) {
+        return ResponseFindAdventure.builder()
+                .landmarkId(adventure.getLandmark().getId())
+                .visitedDateTime(adventure.getCreateAt())
+                .build();
     }
 }

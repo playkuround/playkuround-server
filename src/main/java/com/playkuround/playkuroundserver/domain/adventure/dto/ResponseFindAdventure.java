@@ -1,7 +1,10 @@
 package com.playkuround.playkuroundserver.domain.adventure.dto;
 
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 

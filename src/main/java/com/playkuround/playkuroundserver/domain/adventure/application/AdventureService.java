@@ -48,7 +48,7 @@ public class AdventureService {
 
     private void validateLocation(Landmark landmark, Double latitude, Double longitude) {
         // TODO 랜드마크와 현재 위치에 대한 거리 검증 -> 검증 실패면 에러 발생
-        // 검증 실패일 경우, 발생하는 오류 -> LocationValidateException
+        // 검증 실패일 경우, 발생하는 오류 -> LocationInvalidException
     }
 
     public List<ResponseFindAdventure> findAdventureByUserEmail(String userEmail) {

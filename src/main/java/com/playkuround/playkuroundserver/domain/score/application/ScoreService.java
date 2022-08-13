@@ -23,12 +23,4 @@ public class ScoreService {
         scoreRepository.save(saveScore.toEntity(user));
     }
 
-    public int getTotalScorePointByUserEmail(String email) {
-        User user = userFindDao.findByEmail(email);
-
-        return scoreRepository.findByUser(user).stream()
-                .mapToInt(score -> score.getScoreType().getPoint())
-                .sum();
-    }
-
 }

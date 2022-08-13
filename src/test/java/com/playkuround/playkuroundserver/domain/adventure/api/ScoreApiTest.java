@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.domain.adventure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playkuround.playkuroundserver.domain.score.application.ScoreService;
+import com.playkuround.playkuroundserver.domain.score.dao.ScoreFindDao;
 import com.playkuround.playkuroundserver.domain.score.dao.ScoreRepository;
 import com.playkuround.playkuroundserver.domain.score.domain.Score;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
@@ -50,6 +51,9 @@ class ScoreApiTest {
     private UserRepository userRepository;
 
     @Autowired
+    private ScoreFindDao scoreFindDao;
+
+    @Autowired
     private MockMvc mockMvc;
 
     @AfterEach
@@ -86,7 +90,7 @@ class ScoreApiTest {
         assertEquals(1L, scoreRepository.count());
         Score score = scoreRepository.findAll().get(0);
         assertEquals(ScoreType.ATTENDANCE, score.getScoreType());
-        assertEquals(ScoreType.ATTENDANCE.getPoint(), scoreService.getTotalScorePointByUserEmail(userEmail));
+        assertEquals(ScoreType.ATTENDANCE.getPoint(), scoreFindDao.findTotalScorePointByUserEmail(userEmail));
     }
 
     @Test
@@ -107,7 +111,7 @@ class ScoreApiTest {
         assertEquals(1L, scoreRepository.count());
         Score score = scoreRepository.findAll().get(0);
         assertEquals(ScoreType.ADVENTURE, score.getScoreType());
-        assertEquals(ScoreType.ADVENTURE.getPoint(), scoreService.getTotalScorePointByUserEmail(userEmail));
+        assertEquals(ScoreType.ADVENTURE.getPoint(), scoreFindDao.findTotalScorePointByUserEmail(userEmail));
     }
 
     @Test
@@ -128,7 +132,7 @@ class ScoreApiTest {
         assertEquals(1L, scoreRepository.count());
         Score score = scoreRepository.findAll().get(0);
         assertEquals(ScoreType.EXTRA_ADVENTURE, score.getScoreType());
-        assertEquals(ScoreType.EXTRA_ADVENTURE.getPoint(), scoreService.getTotalScorePointByUserEmail(userEmail));
+        assertEquals(ScoreType.EXTRA_ADVENTURE.getPoint(), scoreFindDao.findTotalScorePointByUserEmail(userEmail));
     }
 
 }

@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.landmark.api;
+package com.playkuround.playkuroundserver.domain.adventure.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

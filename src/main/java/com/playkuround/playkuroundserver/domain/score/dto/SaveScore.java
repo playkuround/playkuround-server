@@ -18,7 +18,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class SaveScore {
 
-    @NotBlank
+    @NotBlank(message = "scoreType은 필수입니다.")
     private String scoreType;
 
 

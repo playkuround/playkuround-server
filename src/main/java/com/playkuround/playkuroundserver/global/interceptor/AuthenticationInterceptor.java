@@ -5,7 +5,6 @@ import com.playkuround.playkuroundserver.domain.auth.token.domain.GrantType;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
 import com.playkuround.playkuroundserver.global.error.exception.AuthenticationException;
 import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -51,8 +50,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         // 엑세스 토큰 만료 시간 검증
-        Claims tokenClaims = tokenManager.getTokenClaims(accessToken);
-        if (tokenManager.isTokenExpired(tokenClaims.getExpiration())) {
+        if (tokenManager.isTokenExpired(accessToken)) {
             throw new AuthenticationException(ErrorCode.ACCESS_TOKEN_EXPIRED);
         }
 

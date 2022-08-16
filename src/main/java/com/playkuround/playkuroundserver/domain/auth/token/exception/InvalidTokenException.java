@@ -1,11 +1,12 @@
 package com.playkuround.playkuroundserver.domain.auth.token.exception;
 
-import com.playkuround.playkuroundserver.global.error.exception.InvalidValueException;
+import com.playkuround.playkuroundserver.global.error.exception.AuthenticationException;
+import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
 
-public class InvalidTokenException extends InvalidValueException {
+public class InvalidTokenException extends AuthenticationException {
 
-    public InvalidTokenException(String token) {
-        super(token + " 은(는) 유효하지 않은 토큰입니다.");
+    public InvalidTokenException() {
+        super(ErrorCode.INVALID_TOKEN);
     }
 
 }

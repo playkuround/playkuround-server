@@ -16,6 +16,7 @@ public class UserRegisterDto {
 
     @Getter
     @Setter
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class Request {
 

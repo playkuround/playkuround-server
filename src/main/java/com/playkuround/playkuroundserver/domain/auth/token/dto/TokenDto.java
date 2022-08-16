@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.token.dto;
+package com.playkuround.playkuroundserver.domain.auth.token.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;

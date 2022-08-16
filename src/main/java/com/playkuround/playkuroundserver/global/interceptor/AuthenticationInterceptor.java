@@ -1,8 +1,8 @@
 package com.playkuround.playkuroundserver.global.interceptor;
 
-import com.playkuround.playkuroundserver.domain.token.application.TokenManager;
-import com.playkuround.playkuroundserver.domain.token.domain.GrantType;
-import com.playkuround.playkuroundserver.domain.token.domain.TokenType;
+import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
+import com.playkuround.playkuroundserver.domain.auth.token.domain.GrantType;
+import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
 import com.playkuround.playkuroundserver.global.error.exception.AuthenticationException;
 import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
 import io.jsonwebtoken.Claims;

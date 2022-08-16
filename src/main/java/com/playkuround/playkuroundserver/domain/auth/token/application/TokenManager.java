@@ -1,9 +1,9 @@
-package com.playkuround.playkuroundserver.domain.token.application;
+package com.playkuround.playkuroundserver.domain.auth.token.application;
 
-import com.playkuround.playkuroundserver.domain.token.domain.GrantType;
-import com.playkuround.playkuroundserver.domain.token.domain.TokenType;
-import com.playkuround.playkuroundserver.domain.token.dto.TokenDto;
-import com.playkuround.playkuroundserver.domain.token.exception.InvalidTokenException;
+import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
+import com.playkuround.playkuroundserver.domain.auth.token.domain.GrantType;
+import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
+import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.token.domain;
+package com.playkuround.playkuroundserver.domain.auth.token.domain;
 
 public enum TokenType {
 

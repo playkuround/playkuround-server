@@ -76,7 +76,8 @@ class ScoreApiTest {
     @DisplayName("score 저장(출석)")
     void saveScoreAttendance() throws Exception {
         // given
-        String content = objectMapper.writeValueAsString(new SaveScore("ATTENDANCE"));
+        //String content = objectMapper.writeValueAsString(new SaveScore("ATTENDANCE"));
+        String content = objectMapper.writeValueAsString(new SaveScore(ScoreType.ATTENDANCE));
 
         // expected
         mockMvc.perform(post("/api/scores")
@@ -97,7 +98,8 @@ class ScoreApiTest {
     @DisplayName("score 저장(탐험)")
     void saveScoreAdventure() throws Exception {
         // given
-        String content = objectMapper.writeValueAsString(new SaveScore("ADVENTURE"));
+        //String content = objectMapper.writeValueAsString(new SaveScore("ADVENTURE"));
+        String content = objectMapper.writeValueAsString(new SaveScore(ScoreType.ADVENTURE));
 
         // expected
         mockMvc.perform(post("/api/scores")
@@ -118,7 +120,8 @@ class ScoreApiTest {
     @DisplayName("score 저장(추가 탐험)")
     void saveScoreExtraAdventure() throws Exception {
         // given
-        String content = objectMapper.writeValueAsString(new SaveScore("EXTRA_ADVENTURE"));
+        //String content = objectMapper.writeValueAsString(new SaveScore("EXTRA_ADVENTURE"));
+        String content = objectMapper.writeValueAsString(new SaveScore(ScoreType.EXTRA_ADVENTURE));
 
         // expected
         mockMvc.perform(post("/api/scores")

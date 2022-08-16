@@ -51,7 +51,7 @@ public class TokenManager {
     }
 
     public Date createRefreshTokenExpirationTime() {
-        return new Date(System.currentTimeMillis() + Long.parseLong(refreshTokenExpirationTime));
+        return new Date(System.currentTimeMillis() + (long) Double.parseDouble(refreshTokenExpirationTime));
     }
 
     public String createAccessToken(String email, Date expiredAt) {

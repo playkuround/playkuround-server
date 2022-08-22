@@ -16,7 +16,7 @@ public class AttendanceFindDao {
 
     private final AttendanceRepository attendanceRepository;
 
-    public List<Attendance> findByUserLast30Days(User user) {
+    public List<Attendance> findByUserMonthLong(User user) {
         return attendanceRepository.findByUserAndCreateAtAfter(user, LocalDateTime.now().minusMonths(1));
     }
 

@@ -32,7 +32,6 @@ public class UserEmailArgumentResolver implements HandlerMethodArgumentResolver 
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         token = token.split(" ")[1];
         String userEmail = tokenManager.getUserEmail(token);
-        System.out.println("userEmail="+userEmail);
         return userEmail;
     }
 

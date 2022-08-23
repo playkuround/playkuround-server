@@ -1,1 +1,39 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+
+  redis:
+    host: localhost
+    port: 6379
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 1000
+        globally_quoted_identifiers: true
+
+    show-sql: true
+    open-in-view: false
+
+logging:
+  level:
+    org.hibernate.type: trace
+
+token:
+  secret: ENC(P7i3h2tf8pxFcVRjXhOQYT//HTk/u7MgwKpcPHkd6+A=)
+  access-token-expiration-time: 900000  # 15분
+  refresh-token-expiration-time: 1210500000 # 2주
+
+management:
+  endpoint:
+    health:
+      show-details: always
+
 

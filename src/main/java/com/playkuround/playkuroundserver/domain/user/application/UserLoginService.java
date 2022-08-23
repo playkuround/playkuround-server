@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
-import com.playkuround.playkuroundserver.domain.token.application.TokenManager;
-import com.playkuround.playkuroundserver.domain.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
+import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserLoginDto;

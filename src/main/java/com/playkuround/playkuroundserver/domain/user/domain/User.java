@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.user.domain;
 
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
-import com.playkuround.playkuroundserver.domain.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
 import lombok.AccessLevel;
 import lombok.Builder;

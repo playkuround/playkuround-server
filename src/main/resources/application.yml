@@ -29,7 +29,7 @@ logging:
 token:
   secret: ENC(P7i3h2tf8pxFcVRjXhOQYT//HTk/u7MgwKpcPHkd6+A=)
   access-token-expiration-time: 900000  # 15분
-  refresh-token-expiration-time: 1210500000 # 2주
+  refresh-token-expiration-time: 1.577e+10 # 6개월
 
 management:
   endpoint:

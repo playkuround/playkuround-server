@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.playkuround.playkuroundserver.domain.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.*;
@@ -16,6 +16,7 @@ public class UserRegisterDto {
 
     @Getter
     @Setter
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class Request {
 

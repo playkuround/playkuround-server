@@ -28,7 +28,10 @@ public enum ErrorCode {
     NOT_REFRESH_TOKEN_TYPE(401, "A007", "TokenType이 REFRESH가 아닙니다."),
 
     // Adventure
-    LOCATION_INVALID(401, "L001", "현재 위치와 랜드마크 위치가 너무 멉니다.")
+    LOCATION_INVALID(401, "L001", "현재 위치와 랜드마크 위치가 너무 멉니다."),
+
+    // Score
+    INVALID_SCORE_TYPE(401, "S001", "올바르지 않은 ScoreType입니다.")
 
     ;
 

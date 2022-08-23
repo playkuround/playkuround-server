@@ -5,10 +5,12 @@ name: test
 on:
   # 특정 브랜치가 Push 되는 경우 실행
   #push:
-  #  branches: [ ]
+    #branches:
+      
   # 특정 브랜치가 Pull Request 되는 경우 실행
-  #pull_request:
-  #  branches: [  ]
+  pull_request:
+    branches:
+      - "**"
 
   # 수동으로 workflow 실행 가능 -> 자동 실행보다는 수동으로 빌드/배포 실행하는게 더 안전?
   workflow_dispatch:

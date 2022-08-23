@@ -41,7 +41,7 @@ jobs:
         shell: bash
 
       - name: Build with Gradle
-        run: ./gradlew build -Pjasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }}
+        run: ./gradlew build -Djasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }} -Dspring.profiles.active=dev
         shell: bash
 
       # 현재 workflow를 실행시키는 커밋의 해쉬값

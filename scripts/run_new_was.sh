@@ -24,6 +24,6 @@ fi
 
 
 JASYPT_PASSWORD=$(cat /home/ec2-user/jasypt_password)
-nohup java -jar -Djasypt.encryptor.password=${JASYPT_PASSWORD} -Dserver.port=${TARGET_PORT} /home/ec2-user/playkuround-server/build/libs/* > /home/ubuntu/nohup.out 2>&1 &
+nohup java -jar -Djasypt.encryptor.password=${JASYPT_PASSWORD} -Dspring.profiles.active=dev -Dserver.port=${TARGET_PORT} /home/ec2-user/playkuround-server/build/libs/* > /home/ubuntu/nohup.out 2>&1 &
 echo "> Now new WAS runs at ${TARGET_PORT}."
 exit 0

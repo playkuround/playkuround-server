@@ -1,12 +1,12 @@
-package com.playkuround.playkuroundserver.domain.landmark.api;
+package com.playkuround.playkuroundserver.domain.adventure.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.playkuround.playkuroundserver.domain.landmark.application.AdventureService;
-import com.playkuround.playkuroundserver.domain.landmark.dao.AdventureRepository;
-import com.playkuround.playkuroundserver.domain.landmark.domain.Adventure;
-import com.playkuround.playkuroundserver.domain.landmark.dto.RequestSaveAdventure;
-import com.playkuround.playkuroundserver.domain.landmark.dto.ResponseFindAdventure;
+import com.playkuround.playkuroundserver.domain.adventure.application.AdventureService;
+import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
+import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.RequestSaveAdventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -36,7 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc //MockMvc 사용
-@SpringBootTest(properties = {"spring.config.location=classpath:application-test.yml"})
+@SpringBootTest
+@ActiveProfiles("test")
 class AdventureApiTest {
 
     @Autowired
@@ -148,7 +150,7 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("해당 장소에 방문한 회원이 한 명도 없습니다."))
+                .andExpect(jsonPath("$.message").value("해당 장소에 방문한 회원이 없습니다."))
                 .andExpect(jsonPath("$.count").value(0))
                 .andDo(print());
 

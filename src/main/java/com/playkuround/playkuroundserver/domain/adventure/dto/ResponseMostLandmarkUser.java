@@ -1,10 +1,13 @@
-package com.playkuround.playkuroundserver.domain.landmark.dto;
+package com.playkuround.playkuroundserver.domain.adventure.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 public class ResponseMostLandmarkUser {
 

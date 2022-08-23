@@ -3,6 +3,7 @@ package com.playkuround.playkuroundserver.domain.score.domain;
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
@@ -26,4 +27,9 @@ public class Score extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ScoreType scoreType;
 
+    @Builder
+    public Score(User user, ScoreType scoreType) {
+        this.user = user;
+        this.scoreType = scoreType;
+    }
 }

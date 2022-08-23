@@ -1,6 +1,7 @@
-package com.playkuround.playkuroundserver.domain.landmark.domain;
+package com.playkuround.playkuroundserver.domain.adventure.domain;
 
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
+import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -1,12 +1,14 @@
-package com.playkuround.playkuroundserver.domain.landmark.dto;
+package com.playkuround.playkuroundserver.domain.adventure.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestSaveAdventure {

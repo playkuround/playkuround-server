@@ -1,6 +1,6 @@
 package com.playkuround.playkuroundserver.global.resolver;
 
-import com.playkuround.playkuroundserver.domain.token.application.TokenManager;
+import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;

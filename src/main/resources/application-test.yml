@@ -13,12 +13,3 @@ spring:
   h2:
     console:
       enabled: true
-
-  redis:
-    host: localhost
-    port: 6379
-
-token:
-  secret: ENC(P7i3h2tf8pxFcVRjXhOQYT//HTk/u7MgwKpcPHkd6+A=)
-  access-token-expiration-time: 900000  # 15분
-  refresh-token-expiration-time: 1210500000 # 2주

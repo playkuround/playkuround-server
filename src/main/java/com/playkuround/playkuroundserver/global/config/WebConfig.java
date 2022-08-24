@@ -24,7 +24,9 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(authenticationInterceptor)
                 .order(1)
                 .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/users/register", "/api/users/duplication");
+                .excludePathPatterns("/api/users/register", "/api/users/duplication", "/api/auth/tokens")
+        ;
+
     }
 
     @Override

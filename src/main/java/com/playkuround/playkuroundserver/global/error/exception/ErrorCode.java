@@ -23,10 +23,15 @@ public enum ErrorCode {
     NOT_BEARER_GRANT_TYPE(401, "A002", "인증 타입이 Bearer 타입이 아닙니다."),
     INVALID_TOKEN(401, "A003", "유효하지 않은 토큰입니다."),
     ACCESS_TOKEN_EXPIRED(401, "A004", "해당 Access Token은 만료되었습니다."),
-    NOT_ACCESS_TOKEN_TYPE(401, "A005", "TokenType이 Access Token이 아닙니다."),
+    NOT_ACCESS_TOKEN_TYPE(401, "A005", "TokenType이 ACCESS가 아닙니다."),
+    REFRESH_TOKEN_EXPIRED(401, "A006", "해당 Refresh Token은 만료되었습니다."),
+    NOT_REFRESH_TOKEN_TYPE(401, "A007", "TokenType이 REFRESH가 아닙니다."),
 
     // Adventure
-    LOCATION_INVALID(401, "L001", "현재 위치와 랜드마크 위치가 너무 멉니다.")
+    LOCATION_INVALID(401, "L001", "현재 위치와 랜드마크 위치가 너무 멉니다."),
+
+    // Score
+    INVALID_SCORE_TYPE(401, "S001", "올바르지 않은 ScoreType입니다.")
 
     ;
 

@@ -1,9 +1,11 @@
-package com.playkuround.playkuroundserver.domain.token.application;
+package com.playkuround.playkuroundserver.domain.auth.token.application;
 
-import com.playkuround.playkuroundserver.domain.token.domain.GrantType;
-import com.playkuround.playkuroundserver.domain.token.domain.TokenType;
-import com.playkuround.playkuroundserver.domain.token.dto.TokenDto;
-import com.playkuround.playkuroundserver.domain.token.exception.InvalidTokenException;
+import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
+import com.playkuround.playkuroundserver.domain.auth.token.domain.GrantType;
+import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
+import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.global.error.exception.AuthenticationException;
+import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -49,7 +51,7 @@ public class TokenManager {
     }
 
     public Date createRefreshTokenExpirationTime() {
-        return new Date(System.currentTimeMillis() + Long.parseLong(refreshTokenExpirationTime));
+        return new Date(System.currentTimeMillis() + (long) Double.parseDouble(refreshTokenExpirationTime));
     }
 
     public String createAccessToken(String email, Date expiredAt) {
@@ -74,15 +76,15 @@ public class TokenManager {
                 .compact();
     }
 
-    public String getUserEmail(String accessToken) {
+    public String getUserEmail(String token) {
         String email;
         try {
             Claims claims = Jwts.parser().setSigningKey(tokenSecret)
-                    .parseClaimsJws(accessToken).getBody();
+                    .parseClaimsJws(token).getBody();
             email = claims.getAudience();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new InvalidTokenException(accessToken);
+            throw new InvalidTokenException();
         }
         return email;
     }
@@ -94,6 +96,7 @@ public class TokenManager {
             return true;
         } catch (JwtException e) {  // 토큰 변조
             log.info("잘못된 jwt token", e);
+            throw new AuthenticationException(ErrorCode.INVALID_TOKEN);
         } catch (Exception e) {
             log.info("jwt token 검증 중 에러 발생", e);
         }
@@ -107,7 +110,7 @@ public class TokenManager {
                     .parseClaimsJws(token).getBody();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new InvalidTokenException(token);
+            throw new InvalidTokenException();
         }
         return claims;
     }
@@ -120,15 +123,16 @@ public class TokenManager {
             tokenType = claims.getSubject();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new InvalidTokenException(token);
+            throw new InvalidTokenException();
         }
 
         return tokenType;
     }
 
-    public boolean isTokenExpired(Date tokenExpiredTime) {
+    public boolean isTokenExpired(String token) {
+        Claims claims = getTokenClaims(token);
         Date now = new Date();
-        return now.after(tokenExpiredTime);
+        return now.after(claims.getExpiration());
     }
 
 }

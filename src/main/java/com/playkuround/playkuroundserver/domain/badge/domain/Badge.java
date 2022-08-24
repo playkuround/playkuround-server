@@ -3,6 +3,7 @@ package com.playkuround.playkuroundserver.domain.badge.domain;
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,5 +25,18 @@ public class Badge extends BaseTimeEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private BadgeType badgeType;
+
+    @Builder
+    public Badge(User user, BadgeType badgeType) {
+        this.user = user;
+        this.badgeType = badgeType;
+    }
+
+    public static Badge createBadge(User user, BadgeType badgeType) {
+        return Badge.builder()
+                .user(user)
+                .badgeType(badgeType)
+                .build();
+    }
 
 }

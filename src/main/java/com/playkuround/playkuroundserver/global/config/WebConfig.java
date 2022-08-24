@@ -26,6 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/api/users/register", "/api/users/duplication", "/api/auth/tokens")
         ;
+
     }
 
     @Override

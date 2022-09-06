@@ -6,7 +6,7 @@ import com.playkuround.playkuroundserver.domain.score.dao.ScoreFindDao;
 import com.playkuround.playkuroundserver.domain.score.dao.ScoreRepository;
 import com.playkuround.playkuroundserver.domain.score.domain.Score;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
-import com.playkuround.playkuroundserver.domain.score.dto.SaveScore;
+import com.playkuround.playkuroundserver.domain.score.dto.ScoreRegisterDto;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -76,8 +76,7 @@ class ScoreApiTest {
     @DisplayName("score 저장(출석)")
     void saveScoreAttendance() throws Exception {
         // given
-        //String content = objectMapper.writeValueAsString(new SaveScore("ATTENDANCE"));
-        String content = objectMapper.writeValueAsString(new SaveScore(ScoreType.ATTENDANCE));
+        String content = objectMapper.writeValueAsString(new ScoreRegisterDto("ATTENDANCE"));
 
         // expected
         mockMvc.perform(post("/api/scores")
@@ -98,8 +97,7 @@ class ScoreApiTest {
     @DisplayName("score 저장(탐험)")
     void saveScoreAdventure() throws Exception {
         // given
-        //String content = objectMapper.writeValueAsString(new SaveScore("ADVENTURE"));
-        String content = objectMapper.writeValueAsString(new SaveScore(ScoreType.ADVENTURE));
+        String content = objectMapper.writeValueAsString(new ScoreRegisterDto("ADVENTURE"));
 
         // expected
         mockMvc.perform(post("/api/scores")
@@ -120,8 +118,7 @@ class ScoreApiTest {
     @DisplayName("score 저장(추가 탐험)")
     void saveScoreExtraAdventure() throws Exception {
         // given
-        //String content = objectMapper.writeValueAsString(new SaveScore("EXTRA_ADVENTURE"));
-        String content = objectMapper.writeValueAsString(new SaveScore(ScoreType.EXTRA_ADVENTURE));
+        String content = objectMapper.writeValueAsString(new ScoreRegisterDto("EXTRA_ADVENTURE"));
 
         // expected
         mockMvc.perform(post("/api/scores")

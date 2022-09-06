@@ -31,7 +31,12 @@ public enum ErrorCode {
     LOCATION_INVALID(401, "L001", "현재 위치와 랜드마크 위치가 너무 멉니다."),
 
     // Score
-    INVALID_SCORE_TYPE(401, "S001", "올바르지 않은 ScoreType입니다.")
+    INVALID_SCORE_TYPE(401, "S001", "올바르지 않은 ScoreType입니다."),
+
+    // Email
+    NOT_KU_EMAIL(400, "E001", "건국대학교 이메일이 아닙니다."),
+    EMAIL_SEND_FAIL(500, "E002", "이메일 전송에 실패하였습니다."),
+    EXPIRED_AUTH_CODE(400, "E003", "만료된 코드입니다."),
 
     ;
 

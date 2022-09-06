@@ -25,7 +25,7 @@ public class ResponseFindAdventure {
     public static ResponseFindAdventure of(Adventure adventure) {
         return ResponseFindAdventure.builder()
                 .landmarkId(adventure.getLandmark().getId())
-                .visitedDateTime(adventure.getCreateAt())
+                .visitedDateTime(adventure.getCreatedAt())
                 .build();
     }
 }

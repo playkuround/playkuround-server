@@ -10,6 +10,7 @@ import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class AttendanceApi {
     private final AttendanceRegisterService attendanceRegisterService;
 
     @PostMapping
-    public ApiResponse<Void> attendanceRegister(@UserEmail String userEmail, @RequestBody AttendanceRegisterDto.Request registerRequest) {
+    public ApiResponse<Void> attendanceRegister(@UserEmail String userEmail, @Valid @RequestBody AttendanceRegisterDto.Request registerRequest) {
         attendanceRegisterService.registerAttendance(userEmail, registerRequest);
         return ApiUtils.success(null);
     }

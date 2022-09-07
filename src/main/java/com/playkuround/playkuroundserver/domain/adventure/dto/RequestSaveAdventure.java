@@ -1,5 +1,7 @@
 package com.playkuround.playkuroundserver.domain.adventure.dto;
 
+import com.playkuround.playkuroundserver.global.validation.Latitude;
+import com.playkuround.playkuroundserver.global.validation.Longitude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +18,10 @@ public class RequestSaveAdventure {
     @NotNull(message = "랜드마크id는 필수입니다.")
     private Long landmarkId;
 
-    @NotNull(message = "위도(latitude)는 필수입니다.")
+    @Latitude
     private Double latitude;
 
-    @NotNull(message = "경도(longitude)는 필수입니다.")
+    @Longitude
     private Double longitude;
 
 }

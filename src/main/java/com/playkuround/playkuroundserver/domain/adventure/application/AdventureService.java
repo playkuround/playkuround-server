@@ -1,18 +1,17 @@
 package com.playkuround.playkuroundserver.domain.adventure.application;
 
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
-import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
-import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.adventure.dto.MostVisitedInfo;
 import com.playkuround.playkuroundserver.domain.adventure.dto.RequestSaveAdventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostLandmarkUser;
+import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
+import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
 import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.exception.UserNotFoundException;
 import com.playkuround.playkuroundserver.global.error.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -74,9 +73,9 @@ public class AdventureService {
                 .forEach(adventure -> {
                     Long userId = adventure.getUser().getId();
                     if (count.containsKey(userId)) {
-                        count.get(userId).updateData(adventure.getCreateAt());
+                        count.get(userId).updateData(adventure.getCreatedAt());
                     } else {
-                        count.put(userId, new MostVisitedInfo(userId, adventure.getCreateAt()));
+                        count.put(userId, new MostVisitedInfo(userId, adventure.getCreatedAt()));
                     }
                 });
 

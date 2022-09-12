@@ -26,11 +26,15 @@ public class Landmark extends BaseTimeEntity {
     @Column(nullable = false)
     private double longitude;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private GameType gameType;
 
     @Builder
-    public Landmark(String name, double latitude, double longitude) {
+    public Landmark(String name, double latitude, double longitude, GameType gameType) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.gameType = gameType;
     }
 }

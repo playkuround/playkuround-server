@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.adventure.api;
+package com.playkuround.playkuroundserver.domain.score.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playkuround.playkuroundserver.domain.score.application.ScoreService;
@@ -11,7 +11,6 @@ import com.playkuround.playkuroundserver.domain.user.application.UserLoginServic
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +55,7 @@ class ScoreApiTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @AfterEach
+    @BeforeEach
     void clean() {
         scoreRepository.deleteAll();
         userRepository.deleteAll();

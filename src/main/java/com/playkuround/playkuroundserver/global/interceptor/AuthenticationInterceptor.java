@@ -49,11 +49,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             throw new AuthenticationException(ErrorCode.NOT_ACCESS_TOKEN_TYPE);
         }
 
-        // 엑세스 토큰 만료 시간 검증
-        if (tokenManager.isTokenExpired(accessToken)) {
-            throw new AuthenticationException(ErrorCode.ACCESS_TOKEN_EXPIRED);
-        }
-
         return true;
     }
 

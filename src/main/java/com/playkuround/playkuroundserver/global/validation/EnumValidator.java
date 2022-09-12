@@ -3,7 +3,8 @@ package com.playkuround.playkuroundserver.global.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class EnumValidator implements ConstraintValidator<ValidEnum, Enum> {
+public class EnumValidator implements ConstraintValidator<ValidEnum, String> {
+
     private ValidEnum annotation;
 
     @Override
@@ -12,16 +13,18 @@ public class EnumValidator implements ConstraintValidator<ValidEnum, Enum> {
     }
 
     @Override
-    public boolean isValid(Enum value, ConstraintValidatorContext context) {
+    public boolean isValid(String value, ConstraintValidatorContext context) {
         Object[] enumValues = this.annotation.enumClass().getEnumConstants();
+
         if (enumValues != null) {
             for (Object enumValue : enumValues) {
-                //if (value.equals(enumValue.toString())) {
-                if (value == enumValue) {
+                // 대소문자 구분하지 않기
+                if (value.equalsIgnoreCase(enumValue.toString())) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 }

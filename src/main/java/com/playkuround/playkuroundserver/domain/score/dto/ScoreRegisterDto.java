@@ -13,15 +13,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SaveScore {
+public class ScoreRegisterDto {
 
-    @ValidEnum(enumClass = ScoreType.class, message = "잘못된 scoreType 입니다.")
-    private ScoreType scoreType;
+    @ValidEnum(enumClass = ScoreType.class, message = "잘못된 ScoreType 입니다.")
+    private String scoreType;
 
     public Score toEntity(User user) {
         return Score.builder()
                 .user(user)
-                .scoreType(scoreType)
+                .scoreType(ScoreType.valueOf(scoreType))
                 .build();
     }
+
 }

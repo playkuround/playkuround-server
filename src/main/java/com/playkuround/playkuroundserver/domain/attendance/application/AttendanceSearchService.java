@@ -23,9 +23,9 @@ public class AttendanceSearchService {
 
     public List<LocalDateTime> findByUserMonthLong(String userEmail) {
         User user = userFindDao.findByEmail(userEmail);
-        List<Attendance> attendances = attendanceRepository.findByUserAndCreateAtAfter(user, LocalDateTime.now().minusMonths(1));
+        List<Attendance> attendances = attendanceRepository.findByUserAndCreatedAtAfter(user, LocalDateTime.now().minusMonths(1));
         return attendances.stream()
-                .map(BaseTimeEntity::getCreateAt)
+                .map(BaseTimeEntity::getCreatedAt)
                 .collect(Collectors.toList());
     }
 

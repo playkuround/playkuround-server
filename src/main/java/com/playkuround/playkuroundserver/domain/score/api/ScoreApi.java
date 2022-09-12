@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.score.api;
 
 import com.playkuround.playkuroundserver.domain.score.application.ScoreService;
-import com.playkuround.playkuroundserver.domain.score.dto.SaveScore;
+import com.playkuround.playkuroundserver.domain.score.dto.ScoreRegisterDto;
 import com.playkuround.playkuroundserver.domain.score.dto.ScoreRankingDto;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.resolver.UserEmail;
@@ -25,7 +25,7 @@ public class ScoreApi {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveAdventure(@UserEmail String userEmail, @RequestBody @Valid SaveScore saveScore) {
+    public void saveAdventure(@UserEmail String userEmail, @RequestBody @Valid ScoreRegisterDto saveScore) {
         scoreService.saveScore(userEmail, saveScore);
     }
 

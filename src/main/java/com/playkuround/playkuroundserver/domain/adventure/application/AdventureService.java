@@ -76,10 +76,9 @@ public class AdventureService {
                 .forEach(adventure -> {
                     Long userId = adventure.getUser().getId();
                     if (count.containsKey(userId)) {
-                        count.get(userId).updateData(adventure.getCreateAt());
-                    }
-                    else {
-                        count.put(userId, new MostVisitedInfo(userId, adventure.getCreateAt()));
+                        count.get(userId).updateData(adventure.getCreatedAt());
+                    } else {
+                        count.put(userId, new MostVisitedInfo(userId, adventure.getCreatedAt()));
                     }
                 });
 

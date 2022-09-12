@@ -6,6 +6,7 @@ import com.playkuround.playkuroundserver.domain.adventure.dto.MostVisitedInfo;
 import com.playkuround.playkuroundserver.domain.adventure.dto.RequestSaveAdventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostLandmarkUser;
+import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
@@ -13,6 +14,7 @@ import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.error.exception.EntityNotFoundException;
+import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -45,9 +47,10 @@ public class AdventureService {
         adventureRepository.save(new Adventure(user, landmark));
     }
 
-    private void validateLocation(Landmark landmark, Double latitude, Double longitude) {
-        // TODO 랜드마크와 현재 위치에 대한 거리 검증 -> 검증 실패면 에러 발생
-        // 검증 실패일 경우, 발생하는 오류 -> LocationInvalidException
+    private void validateLocation(Landmark landmark, double latitude, double longitude) {
+        double distance = LocationDistanceUtils.distance(landmark.getLatitude(), landmark.getLongitude(), latitude, longitude);
+        // 10미터 초과이면 에러
+        if (distance > 10) throw new InvalidLandmarkLocationException();
     }
 
     public List<ResponseFindAdventure> findAdventureByUserEmail(String userEmail) {
@@ -92,7 +95,8 @@ public class AdventureService {
                     .count(0)
                     .message("해당 장소에 방문한 회원이 없습니다.")
                     .build();
-        } else {
+        }
+        else {
             User user = userRepository.findById(res.getUserId())
                     .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 

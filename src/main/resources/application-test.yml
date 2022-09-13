@@ -9,7 +9,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+    defer-datasource-initialization: true
 
   h2:
     console:
       enabled: true
+
+  sql: # data-h2.sql 을 실행하기 위한 설정입니다.
+    init:
+      platform: h2
+      mode: always

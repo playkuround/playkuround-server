@@ -25,8 +25,9 @@ public class ScoreApi {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveAdventure(@UserEmail String userEmail, @RequestBody @Valid ScoreRegisterDto saveScore) {
+    public ApiResponse<Void> saveAdventure(@UserEmail String userEmail, @RequestBody @Valid ScoreRegisterDto saveScore) {
         scoreService.saveScore(userEmail, saveScore);
+        return ApiUtils.success(null);
     }
 
     @GetMapping("/rankings/top100")

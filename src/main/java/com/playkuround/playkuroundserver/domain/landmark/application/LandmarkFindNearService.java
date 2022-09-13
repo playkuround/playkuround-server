@@ -2,7 +2,7 @@ package com.playkuround.playkuroundserver.domain.landmark.application;
 
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
-import com.playkuround.playkuroundserver.domain.landmark.dto.FindNearestLandmark;
+import com.playkuround.playkuroundserver.domain.landmark.dto.FindNearLandmark;
 import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,28 +12,21 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
-public class LandmarkFindNearestService {
+public class LandmarkFindNearService {
 
     private final LandmarkRepository landmarkRepository;
 
-    public FindNearestLandmark.Response findNearestLandmark(FindNearestLandmark.Request requestForm) {
-        List<Landmark> landmarks = landmarkRepository.findAll();
-
+    @Transactional(readOnly = true)
+    public FindNearLandmark.Response findNearLandmark(FindNearLandmark.Request requestForm) {
         double latitude = requestForm.getLatitude();
         double longitude = requestForm.getLongitude();
 
-        Landmark nearLandmark = landmarks.get(0);
-        double nearDistance = LocationDistanceUtils.distance(nearLandmark.getLatitude(), nearLandmark.getLongitude(), latitude, longitude);
-
+        List<Landmark> landmarks = landmarkRepository.findAll();
         for (Landmark landmark : landmarks) {
             double distance = LocationDistanceUtils.distance(landmark.getLatitude(), landmark.getLongitude(), latitude, longitude);
-            if (distance < nearDistance) {
-                nearLandmark = landmark;
-                nearDistance = distance;
-            }
+            if (distance <= 10) return FindNearLandmark.Response.of(landmark, distance);
         }
 
-        return FindNearestLandmark.Response.of(nearLandmark, nearDistance);
+        return FindNearLandmark.Response.of();
     }
 }

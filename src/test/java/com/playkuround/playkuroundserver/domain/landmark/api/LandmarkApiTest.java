@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.landmark.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.playkuround.playkuroundserver.domain.landmark.dto.FindNearestLandmark;
+import com.playkuround.playkuroundserver.domain.landmark.dto.FindNearLandmark;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -47,18 +47,18 @@ class LandmarkApiTest {
     }
 
     @Test
-    @DisplayName("현재 위치에서 가장 가까운 landmark 조회1 - 위치 완전 동일")
+    @DisplayName("주변 landmark 조회1 - 위치 완전 동일")
     void findNearestLandmark1() throws Exception {
         // given
         String userEmail = "test@email.com";
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
         String accessToken = userLoginService.login(userEmail).getAccessToken();
 
-        FindNearestLandmark.Request request = new FindNearestLandmark.Request(37.5424445, 127.0779958);
+        FindNearLandmark.Request request = new FindNearLandmark.Request(37.5424445, 127.0779958);
         String content = objectMapper.writeValueAsString(request);
 
         // expected
-        mockMvc.perform(get("/api/landmarks/nearest")
+        mockMvc.perform(get("/api/landmarks")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .header("Authorization", "Bearer " + accessToken)
@@ -72,18 +72,18 @@ class LandmarkApiTest {
     }
 
     @Test
-    @DisplayName("현재 위치에서 가장 가까운 landmark 조회2 - 아주 약간 옆에서 조회")
+    @DisplayName("주변 landmark 조회2 - 아주 약간 옆에서 조회")
     void findNearestLandmark2() throws Exception {
         // given
         String userEmail = "test@email.com";
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
         String accessToken = userLoginService.login(userEmail).getAccessToken();
 
-        FindNearestLandmark.Request request = new FindNearestLandmark.Request(37.5424444, 127.077995);
+        FindNearLandmark.Request request = new FindNearLandmark.Request(37.5424444, 127.077995);
         String content = objectMapper.writeValueAsString(request);
 
         // expected
-        mockMvc.perform(get("/api/landmarks/nearest")
+        mockMvc.perform(get("/api/landmarks")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .header("Authorization", "Bearer " + accessToken)
@@ -93,6 +93,28 @@ class LandmarkApiTest {
                 .andExpect(jsonPath("$.response.name").value("인문학관(인문대)"))
                 .andExpect(jsonPath("$.response.distance").value(0))
                 .andExpect(jsonPath("$.response.gameType").value("QUIZ"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("주변 landmark 조회3 - 건대 밖에서 조회")
+    void findNearestLandmark3() throws Exception {
+        // given
+        String userEmail = "test@email.com";
+        userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
+        String accessToken = userLoginService.login(userEmail).getAccessToken();
+
+        FindNearLandmark.Request request = new FindNearLandmark.Request(13D, 12D);
+        String content = objectMapper.writeValueAsString(request);
+
+        // expected
+        mockMvc.perform(get("/api/landmarks")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.length()").value(0))
                 .andDo(print());
     }
 }

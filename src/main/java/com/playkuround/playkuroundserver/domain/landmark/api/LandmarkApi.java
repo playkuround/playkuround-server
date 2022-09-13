@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.landmark.api;
 
-import com.playkuround.playkuroundserver.domain.landmark.application.LandmarkFindNearestService;
-import com.playkuround.playkuroundserver.domain.landmark.dto.FindNearestLandmark;
+import com.playkuround.playkuroundserver.domain.landmark.application.LandmarkFindNearService;
+import com.playkuround.playkuroundserver.domain.landmark.dto.FindNearLandmark;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +17,11 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class LandmarkApi {
 
-    private final LandmarkFindNearestService landmarkFindNearestService;
+    private final LandmarkFindNearService landmarkFindNearService;
 
-    @GetMapping("/nearest")
-    public ApiResponse<FindNearestLandmark.Response> LandmarkFindNearest(@RequestBody @Valid FindNearestLandmark.Request findNearestLandmark) {
-        FindNearestLandmark.Response nearestLandmarkResponse = landmarkFindNearestService.findNearestLandmark(findNearestLandmark);
-        return ApiUtils.success(nearestLandmarkResponse);
+    @GetMapping
+    public ApiResponse<FindNearLandmark.Response> LandmarkFindNear(@RequestBody @Valid FindNearLandmark.Request findNearLandmark) {
+        FindNearLandmark.Response nearLandmarkResponse = landmarkFindNearService.findNearLandmark(findNearLandmark);
+        return ApiUtils.success(nearLandmarkResponse);
     }
 }

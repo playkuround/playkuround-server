@@ -1,7 +1,5 @@
 package com.playkuround.playkuroundserver.domain.landmark.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.playkuround.playkuroundserver.domain.landmark.dto.FindNearLandmark;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -25,9 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 class LandmarkApiTest {
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private UserRegisterService userRegisterService;
@@ -54,13 +49,11 @@ class LandmarkApiTest {
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
         String accessToken = userLoginService.login(userEmail).getAccessToken();
 
-        FindNearLandmark.Request request = new FindNearLandmark.Request(37.5424445, 127.0779958);
-        String content = objectMapper.writeValueAsString(request);
-
         // expected
         mockMvc.perform(get("/api/landmarks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("latitude", "37.5424445")
+                        .param("longitude", "127.0779958")
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
@@ -79,13 +72,11 @@ class LandmarkApiTest {
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
         String accessToken = userLoginService.login(userEmail).getAccessToken();
 
-        FindNearLandmark.Request request = new FindNearLandmark.Request(37.5424444, 127.077995);
-        String content = objectMapper.writeValueAsString(request);
-
         // expected
         mockMvc.perform(get("/api/landmarks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("latitude", "37.5424444")
+                        .param("longitude", "127.077995")
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
@@ -104,13 +95,11 @@ class LandmarkApiTest {
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
         String accessToken = userLoginService.login(userEmail).getAccessToken();
 
-        FindNearLandmark.Request request = new FindNearLandmark.Request(13D, 12D);
-        String content = objectMapper.writeValueAsString(request);
-
         // expected
         mockMvc.perform(get("/api/landmarks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("latitude", "13")
+                        .param("longitude", "13")
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())

@@ -2,24 +2,12 @@ package com.playkuround.playkuroundserver.domain.landmark.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
-import com.playkuround.playkuroundserver.global.validation.Latitude;
-import com.playkuround.playkuroundserver.global.validation.Longitude;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class FindNearLandmark {
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Request {
-
-        @Latitude
-        private Double latitude;
-
-        @Longitude
-        private Double longitude;
-    }
 
     @Getter
     @Builder

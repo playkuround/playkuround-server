@@ -17,10 +17,7 @@ public class LandmarkFindNearService {
     private final LandmarkRepository landmarkRepository;
 
     @Transactional(readOnly = true)
-    public FindNearLandmark.Response findNearLandmark(FindNearLandmark.Request requestForm) {
-        double latitude = requestForm.getLatitude();
-        double longitude = requestForm.getLongitude();
-
+    public FindNearLandmark.Response findNearLandmark(double latitude, double longitude) {
         List<Landmark> landmarks = landmarkRepository.findAll();
         for (Landmark landmark : landmarks) {
             double distance = LocationDistanceUtils.distance(landmark.getLatitude(), landmark.getLongitude(), latitude, longitude);

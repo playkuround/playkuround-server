@@ -29,9 +29,12 @@ public class AuthEmailSendDto {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime expireAt;
 
-        public static Response of(LocalDateTime expireAt) {
+        private Long sendingCount;
+
+        public static Response of(LocalDateTime expireAt, Long sendingCount) {
             return Response.builder()
                     .expireAt(expireAt)
+                    .sendingCount(sendingCount)
                     .build();
         }
     }

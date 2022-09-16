@@ -38,6 +38,7 @@ public enum ErrorCode {
     NOT_KU_EMAIL(400, "E001", "건국대학교 이메일이 아닙니다."),
     EMAIL_SEND_FAIL(500, "E002", "이메일 전송에 실패하였습니다."),
     EXPIRED_AUTH_CODE(400, "E003", "만료된 코드입니다."),
+    SENDING_LIMIT_EXCEEDED(429, "E004", "인증 메일 전송 횟수를 초과하였습니다."),
 
     ;
 

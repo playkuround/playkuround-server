@@ -2,8 +2,8 @@ package com.playkuround.playkuroundserver.domain.auth.email.application;
 
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
-import com.playkuround.playkuroundserver.domain.auth.exception.AuthCodeExpiredException;
-import com.playkuround.playkuroundserver.domain.auth.exception.AuthEmailNotFoundException;
+import com.playkuround.playkuroundserver.domain.auth.email.exception.AuthCodeExpiredException;
+import com.playkuround.playkuroundserver.domain.auth.email.exception.AuthEmailNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

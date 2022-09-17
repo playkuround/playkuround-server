@@ -9,10 +9,10 @@ import java.awt.geom.Path2D;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LocationUtils {
 
-    private static final Path2D.Double polygonKU = new Path2D.Double();
+    private static Path2D.Double polygonKU;
 
-    @PostConstruct
-    private static void initPolygonKU() {
+    static {
+        polygonKU = new Path2D.Double();
         polygonKU.moveTo(37.539563, 127.072121);
         polygonKU.lineTo(37.541176, 127.072846);
         polygonKU.lineTo(37.541647, 127.072494);

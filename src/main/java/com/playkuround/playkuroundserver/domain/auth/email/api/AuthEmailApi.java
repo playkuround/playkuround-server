@@ -3,7 +3,7 @@ package com.playkuround.playkuroundserver.domain.auth.email.api;
 import com.playkuround.playkuroundserver.domain.auth.email.application.AuthEmailSendService;
 import com.playkuround.playkuroundserver.domain.auth.email.application.AuthEmailVerifyService;
 import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthEmailSendDto;
-import com.playkuround.playkuroundserver.domain.auth.exception.NotKUEmailException;
+import com.playkuround.playkuroundserver.domain.auth.email.exception.NotKUEmailException;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import lombok.RequiredArgsConstructor;

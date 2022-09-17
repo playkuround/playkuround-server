@@ -6,15 +6,15 @@ import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.global.error.exception.AuthenticationException;
 import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.time.*;
+import java.util.Calendar;
 import java.util.Date;
 
 @Component
@@ -22,11 +22,11 @@ import java.util.Date;
 @Slf4j
 public class TokenManager {
 
-    @Value("${token.access-token-expiration-time}")
-    private String accessTokenExpirationTime;
+    @Value("${token.access-token-expiration}")
+    private String accessTokenExpiration;
 
-    @Value("${token.refresh-token-expiration-time}")
-    private String refreshTokenExpirationTime;
+    @Value("${token.refresh-token-expiration}")
+    private String refreshTokenExpiration;
 
     @Value("${token.secret}")
     private String tokenSecret;
@@ -47,11 +47,14 @@ public class TokenManager {
     }
 
     public Date createAccessTokenExpirationTime() {
-        return new Date(System.currentTimeMillis() + Long.parseLong(accessTokenExpirationTime));
+        return new Date(System.currentTimeMillis() + Long.parseLong(accessTokenExpiration));
     }
 
     public Date createRefreshTokenExpirationTime() {
-        return new Date(System.currentTimeMillis() + (long) Double.parseDouble(refreshTokenExpirationTime));
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.MONTH, Integer.parseInt(refreshTokenExpiration));
+        return cal.getTime();
     }
 
     public String createAccessToken(String email, Date expiredAt) {
@@ -94,6 +97,9 @@ public class TokenManager {
             Jwts.parser().setSigningKey(tokenSecret)
                     .parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            log.info("토큰 기한 만료", e);
+            throw new AuthenticationException(ErrorCode.EXPIRED_TOKEN);
         } catch (JwtException e) {  // 토큰 변조
             log.info("잘못된 jwt token", e);
             throw new AuthenticationException(ErrorCode.INVALID_TOKEN);
@@ -101,18 +107,6 @@ public class TokenManager {
             log.info("jwt token 검증 중 에러 발생", e);
         }
         return false;
-    }
-
-    public Claims getTokenClaims(String token) {
-        Claims claims;
-        try {
-            claims = Jwts.parser().setSigningKey(tokenSecret)
-                    .parseClaimsJws(token).getBody();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new InvalidTokenException();
-        }
-        return claims;
     }
 
     public String getTokenType(String token) {
@@ -127,12 +121,6 @@ public class TokenManager {
         }
 
         return tokenType;
-    }
-
-    public boolean isTokenExpired(String token) {
-        Claims claims = getTokenClaims(token);
-        Date now = new Date();
-        return now.after(claims.getExpiration());
     }
 
 }

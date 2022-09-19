@@ -1,5 +1,6 @@
 package com.playkuround.playkuroundserver.domain.adventure.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 public class ResponseFindAdventure {
 
     private Long landmarkId;
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private LocalDateTime visitedDateTime;
 
     @Builder

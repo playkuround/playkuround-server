@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.adventure.api;
+package com.playkuround.playkuroundserver.domain.score.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playkuround.playkuroundserver.domain.score.application.ScoreService;

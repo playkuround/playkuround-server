@@ -16,8 +16,6 @@ public class QuizService {
 
     public QuizDto.Response getQuizzes(Long landmarkId) {
         Quiz quiz = quizFindDao.findByLandmarkId(landmarkId);
-        QuizDto.Response quizResponse = QuizDto.Response.of(quiz);
-
-        return quizResponse;
+        return QuizDto.Response.of(quiz);
     }
 }

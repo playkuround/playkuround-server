@@ -39,9 +39,6 @@ class ScoreApiTest {
     private UserRegisterService userRegisterService;
 
     @Autowired
-    private ScoreService scoreService;
-
-    @Autowired
     private UserLoginService userLoginService;
 
     @Autowired

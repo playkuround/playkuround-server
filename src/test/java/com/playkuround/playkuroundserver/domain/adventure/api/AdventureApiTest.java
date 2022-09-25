@@ -1,18 +1,15 @@
 package com.playkuround.playkuroundserver.domain.adventure.api;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playkuround.playkuroundserver.domain.adventure.application.AdventureService;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.RequestSaveAdventure;
-import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,13 +21,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.in;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasProperty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

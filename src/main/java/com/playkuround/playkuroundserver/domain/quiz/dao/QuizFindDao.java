@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.quiz.dao;
 
-import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
 import com.playkuround.playkuroundserver.domain.quiz.domain.Quiz;
+import com.playkuround.playkuroundserver.domain.quiz.exception.QuizNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +15,6 @@ public class QuizFindDao {
 
     public Quiz findByLandmarkId(Long landmarkId) {
         return quizRepository.findByLandmarkId(landmarkId)
-                .orElseThrow(() -> new LandmarkNotFoundException(landmarkId));
+                .orElseThrow(() -> new QuizNotFoundException(landmarkId));
     }
 }

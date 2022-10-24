@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserRegisterService {
 
+    private final UserFindDao userFindDao;
     private final UserRepository userRepository;
     private final UserValidator userValidator;
     private final TokenManager tokenManager;
@@ -32,6 +34,11 @@ public class UserRegisterService {
         user.updateRefreshToken(tokenDto);
 
         return UserRegisterDto.Response.of(tokenDto);
+    }
+
+    public void deleteUser(String userEmail) {
+        User user = userFindDao.findByEmail(userEmail);
+        userRepository.delete(user);
     }
 
 }

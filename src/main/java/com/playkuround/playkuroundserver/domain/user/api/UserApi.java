@@ -24,25 +24,25 @@ public class UserApi {
     private final UserProfileService userProfileService;
 
     @PostMapping("/register")
-    public ApiResponse<UserRegisterDto.Response> UserRegister(@RequestBody @Valid UserRegisterDto.Request registerRequest) {
+    public ApiResponse<UserRegisterDto.Response> userRegister(@RequestBody @Valid UserRegisterDto.Request registerRequest) {
         UserRegisterDto.Response registerResponse = userRegisterService.registerUser(registerRequest);
         return ApiUtils.success(registerResponse);
     }
 
     @PostMapping("/login")
-    public ApiResponse<UserLoginDto.Response> UserLogin(@UserEmail String userEmail) {
+    public ApiResponse<UserLoginDto.Response> userLogin(@UserEmail String userEmail) {
         UserLoginDto.Response loginResponse = userLoginService.login(userEmail);
         return ApiUtils.success(loginResponse);
     }
 
     @GetMapping
-    public ApiResponse<UserProfileDto.Response> UserProfile(@UserEmail String userEmail) {
+    public ApiResponse<UserProfileDto.Response> userProfile(@UserEmail String userEmail) {
         UserProfileDto.Response profileResponse = userProfileService.getUserProfile(userEmail);
         return ApiUtils.success(profileResponse);
     }
 
     @PostMapping("/logout")
-    public ApiResponse<Void> UserLogout(@UserEmail String userEmail) {
+    public ApiResponse<Void> userLogout(@UserEmail String userEmail) {
         userLogoutService.logout(userEmail);
         return ApiUtils.success(null);
     }
@@ -51,6 +51,12 @@ public class UserApi {
     public ApiResponse<Boolean> nicknameDuplication(@Param("nickname") String nickname) {
         boolean isDuplicate = userProfileService.checkDuplicateNickname(nickname);
         return ApiUtils.success(isDuplicate);
+    }
+
+    @DeleteMapping
+    public ApiResponse<Void> userDelete(@UserEmail String userEmail) {
+        userRegisterService.deleteUser(userEmail);
+        return ApiUtils.success(null);
     }
 
 }

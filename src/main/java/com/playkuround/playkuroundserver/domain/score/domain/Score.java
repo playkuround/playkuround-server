@@ -2,11 +2,9 @@ package com.playkuround.playkuroundserver.domain.score.domain;
 
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -21,6 +19,7 @@ public class Score extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @Column(nullable = false)

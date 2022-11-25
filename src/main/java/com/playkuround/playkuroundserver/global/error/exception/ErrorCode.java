@@ -22,16 +22,22 @@ public enum ErrorCode {
     EMPTY_AUTHORIZATION(401, "A001", "Authorization Header가 빈 값입니다."),
     NOT_BEARER_GRANT_TYPE(401, "A002", "인증 타입이 Bearer 타입이 아닙니다."),
     INVALID_TOKEN(401, "A003", "유효하지 않은 토큰입니다."),
-    ACCESS_TOKEN_EXPIRED(401, "A004", "해당 Access Token은 만료되었습니다."),
+    EXPIRED_TOKEN(401, "A004", "만료된 토큰입니다."),
     NOT_ACCESS_TOKEN_TYPE(401, "A005", "TokenType이 ACCESS가 아닙니다."),
-    REFRESH_TOKEN_EXPIRED(401, "A006", "해당 Refresh Token은 만료되었습니다."),
-    NOT_REFRESH_TOKEN_TYPE(401, "A007", "TokenType이 REFRESH가 아닙니다."),
+    NOT_REFRESH_TOKEN_TYPE(401, "A006", "TokenType이 REFRESH가 아닙니다."),
 
-    // Adventure
-    LOCATION_INVALID(401, "L001", "현재 위치와 랜드마크 위치가 너무 멉니다."),
+    // Location
+    INVALID_LOCATION_LANDMARK(401, "L001", "현재 위치와 랜드마크 위치가 너무 멉니다."),
+    INVALID_LOCATION_KU(401, "L002", "건국대학교 내에 위치하고 있지 않습니다."),
 
     // Score
-    INVALID_SCORE_TYPE(401, "S001", "올바르지 않은 ScoreType입니다.")
+    INVALID_SCORE_TYPE(401, "S001", "올바르지 않은 ScoreType입니다."),
+
+    // Email
+    NOT_KU_EMAIL(400, "E001", "건국대학교 이메일이 아닙니다."),
+    EMAIL_SEND_FAIL(500, "E002", "이메일 전송에 실패하였습니다."),
+    EXPIRED_AUTH_CODE(400, "E003", "만료된 코드입니다."),
+    SENDING_LIMIT_EXCEEDED(429, "E004", "인증 메일 전송 횟수를 초과하였습니다."),
 
     ;
 

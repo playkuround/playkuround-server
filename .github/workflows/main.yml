@@ -1,5 +1,5 @@
 # workflow 이름 지정
-name: test
+name: deploy
 
 # 이 workflow가 언제 실행될 것인가?
 on:
@@ -41,7 +41,7 @@ jobs:
         shell: bash
 
       - name: Build with Gradle
-        run: ./gradlew build -Djasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }} -Dspring.profiles.active=dev
+        run: ./gradlew build -Djasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }} -Dspring.profiles.active=dev -Duser.timezone=Asia/Seoul
         shell: bash
 
       # 현재 workflow를 실행시키는 커밋의 해쉬값

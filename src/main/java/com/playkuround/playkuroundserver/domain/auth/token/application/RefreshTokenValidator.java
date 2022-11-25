@@ -37,11 +37,6 @@ public class RefreshTokenValidator {
         if (!TokenType.REFRESH.name().equals(tokenType)) {
             throw new AuthenticationException(ErrorCode.NOT_REFRESH_TOKEN_TYPE);
         }
-
-        // 엑세스 토큰 만료 시간 검증
-        if (tokenManager.isTokenExpired(refreshToken)) {
-            throw new AuthenticationException(ErrorCode.REFRESH_TOKEN_EXPIRED);
-        }
     }
 
 }

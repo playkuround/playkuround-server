@@ -23,9 +23,9 @@ public class AttendanceApi {
     private final AttendanceRegisterService attendanceRegisterService;
 
     @PostMapping
-    public ApiResponse<Void> attendanceRegister(@UserEmail String userEmail, @Valid @RequestBody AttendanceRegisterDto.Request registerRequest) {
-        attendanceRegisterService.registerAttendance(userEmail, registerRequest);
-        return ApiUtils.success(null);
+    public ApiResponse<AttendanceRegisterDto.Response> attendanceRegister(@UserEmail String userEmail, @Valid @RequestBody AttendanceRegisterDto.Request registerRequest) {
+        AttendanceRegisterDto.Response response = attendanceRegisterService.registerAttendance(userEmail, registerRequest);
+        return ApiUtils.success(response);
     }
 
     @GetMapping

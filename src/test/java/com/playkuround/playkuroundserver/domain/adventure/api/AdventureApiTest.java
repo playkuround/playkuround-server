@@ -5,6 +5,7 @@ import com.playkuround.playkuroundserver.domain.adventure.application.AdventureS
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -19,7 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,7 +61,7 @@ class AdventureApiTest {
     }
 
     @Test
-    @DisplayName("탐험 저장")
+    @DisplayName("탐험 저장 + 첫 탐험 배지(ADVENTURE_1) 획득")
     void saveAdventure() throws Exception {
         // given
         String userEmail = "test@email.com";
@@ -78,6 +78,8 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.ADVENTURE_1.name()).exists())
+                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.ADVENTURE_1.getDescription()).exists())
                 .andDo(print());
 
         Adventure adventure = adventureRepository.findAll().get(0);
@@ -87,6 +89,89 @@ class AdventureApiTest {
         User user = userRepository.findAll().get(0);
         assertEquals(1L, userRepository.count());
         assertEquals(user.getId(), adventure.getUser().getId());
+    }
+
+    @Test
+    @DisplayName("탐험 5번 배지(ADVENTURE_5) 획득")
+    void adventureBadge_5() throws Exception {
+        // given
+        String userEmail = "test@email.com";
+        userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
+        String accessToken = userLoginService.login(userEmail).getAccessToken();
+
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(2L, 37.540158, 127.073463));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(3L, 37.539314, 127.074319));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(4L, 37.540099, 127.073976));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(5L, 37.541211, 127.073883));
+
+        AdventureSaveDto.Request adventureSaveDto = new AdventureSaveDto.Request(1L, 37.539927, 127.073006);
+        String content = objectMapper.writeValueAsString(adventureSaveDto);
+
+        // expected
+        mockMvc.perform(post("/api/adventures")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.ADVENTURE_5.name()).exists())
+                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.ADVENTURE_5.getDescription()).exists())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("탐험 5번 배지(ADVENTURE_5) + 공대 건물(ENGINEER) 배지 획득")
+    void adventureBadge_5_ENGINEER() throws Exception {
+        // given
+        String userEmail = "test@email.com";
+        userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
+        String accessToken = userLoginService.login(userEmail).getAccessToken();
+
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(22L, 37.541755, 127.078681));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(23L, 37.542101, 127.079445));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(24L, 37.541135, 127.079324));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(25L, 37.540884, 127.079518));
+
+        AdventureSaveDto.Request adventureSaveDto = new AdventureSaveDto.Request(26L, 37.541250, 127.080375);
+        String content = objectMapper.writeValueAsString(adventureSaveDto);
+
+        // expected
+        mockMvc.perform(post("/api/adventures")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.ADVENTURE_5.name()).exists())
+                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.ADVENTURE_5.getDescription()).exists())
+                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.ENGINEER.name()).exists())
+                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.ENGINEER.getDescription()).exists())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("예술가(ARTIST) 배지 획득")
+    void adventureBadge_ARTIST() throws Exception {
+        // given
+        String userEmail = "test@email.com";
+        userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
+        String accessToken = userLoginService.login(userEmail).getAccessToken();
+
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(8L, 37.542775, 127.073131));
+
+        AdventureSaveDto.Request adventureSaveDto = new AdventureSaveDto.Request(28L, 37.542095, 127.080905);
+        String content = objectMapper.writeValueAsString(adventureSaveDto);
+
+        // expected
+        mockMvc.perform(post("/api/adventures")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.ARTIST.name()).exists())
+                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.ARTIST.getDescription()).exists())
+                .andDo(print());
     }
 
     @Test

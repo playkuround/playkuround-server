@@ -74,8 +74,8 @@ public class AdventureService {
         if (22 <= saveLandmarkId && saveLandmarkId <= 26) {
             boolean[] isExist = {false, false, false, false, false};
             for (Adventure adventure : adventures) {
-                if (22 <= adventure.getId() && adventure.getId() <= 26)
-                    isExist[(int) (adventure.getId() - 22)] = true;
+                if (22 <= adventure.getLandmark().getId() && adventure.getLandmark().getId() <= 26)
+                    isExist[(int) (adventure.getLandmark().getId() - 22)] = true;
             }
             if (isExist[0] && isExist[1] && isExist[2] && isExist[3] && isExist[4]) {
                 ret.addBadge(BadgeType.ENGINEER);
@@ -84,8 +84,8 @@ public class AdventureService {
         else if (saveLandmarkId == 8 || saveLandmarkId == 28) {
             boolean[] isExist = {false, false};
             for (Adventure adventure : adventures) {
-                if (adventure.getId() == 8) isExist[0] = true;
-                else if (adventure.getId() == 28) isExist[1] = true;
+                if (adventure.getLandmark().getId() == 8) isExist[0] = true;
+                else if (adventure.getLandmark().getId() == 28) isExist[1] = true;
             }
             if (isExist[0] && isExist[1]) {
                 ret.addBadge(BadgeType.ARTIST);
@@ -94,7 +94,7 @@ public class AdventureService {
         else if (saveLandmarkId == 15) { // TODO 경제학관이 어디?
             boolean[] isExist = {false};
             for (Adventure adventure : adventures) {
-                if (adventure.getId() == 15) isExist[0] = true;
+                if (adventure.getLandmark().getId() == 15) isExist[0] = true;
             }
             if (isExist[0]) {
                 ret.addBadge(BadgeType.CEO);
@@ -103,8 +103,8 @@ public class AdventureService {
         else if (saveLandmarkId == 37 || saveLandmarkId == 38) {
             boolean[] isExist = {false, false};
             for (Adventure adventure : adventures) {
-                if (adventure.getId() == 37) isExist[0] = true;
-                if (adventure.getId() == 38) isExist[1] = true;
+                if (adventure.getLandmark().getId() == 37) isExist[0] = true;
+                if (adventure.getLandmark().getId() == 38) isExist[1] = true;
             }
             if (isExist[0] && isExist[1]) {
                 ret.addBadge(BadgeType.NATIONAL_PLAYER);
@@ -113,8 +113,8 @@ public class AdventureService {
         else if (39 <= saveLandmarkId && saveLandmarkId <= 44) {
             boolean[] isExist = {false, false, false, false, false, false};
             for (Adventure adventure : adventures) {
-                if (39 <= adventure.getId() && adventure.getId() <= 44)
-                    isExist[(int) (adventure.getId() - 39)] = true;
+                if (39 <= adventure.getLandmark().getId() && adventure.getLandmark().getId() <= 44)
+                    isExist[(int) (adventure.getLandmark().getId() - 39)] = true;
             }
             if (isExist[0] && isExist[1] && isExist[2] && isExist[3] && isExist[4] && isExist[5]) {
                 ret.addBadge(BadgeType.NEIL_ARMSTRONG);

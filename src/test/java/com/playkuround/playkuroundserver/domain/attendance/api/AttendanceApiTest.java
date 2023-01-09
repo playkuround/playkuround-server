@@ -3,6 +3,7 @@ package com.playkuround.playkuroundserver.domain.attendance.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.attendance.dto.AttendanceRegisterDto;
+import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -40,6 +41,9 @@ class AttendanceApiTest {
     private AttendanceRepository attendanceRepository;
 
     @Autowired
+    private BadgeRepository badgeRepository;
+
+    @Autowired
     private UserLoginService userLoginService;
 
     @Autowired
@@ -47,8 +51,9 @@ class AttendanceApiTest {
 
     @AfterEach
     void clean() {
-        userRepository.deleteAll();
+        badgeRepository.deleteAll();
         attendanceRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test

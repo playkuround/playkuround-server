@@ -5,6 +5,7 @@ import com.playkuround.playkuroundserver.domain.adventure.application.AdventureS
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
+import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
@@ -46,6 +47,9 @@ class AdventureApiTest {
     private UserRepository userRepository;
 
     @Autowired
+    private BadgeRepository badgeRepository;
+
+    @Autowired
     private AdventureRepository adventureRepository;
 
     @Autowired
@@ -57,6 +61,7 @@ class AdventureApiTest {
     @AfterEach
     void clean() {
         adventureRepository.deleteAll();
+        badgeRepository.deleteAll();
         userRepository.deleteAll();
     }
 

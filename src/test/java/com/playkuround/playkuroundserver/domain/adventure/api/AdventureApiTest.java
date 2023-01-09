@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playkuround.playkuroundserver.domain.adventure.application.AdventureService;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
-import com.playkuround.playkuroundserver.domain.adventure.dto.RequestSaveAdventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -68,8 +68,8 @@ class AdventureApiTest {
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
         String accessToken = userLoginService.login(userEmail).getAccessToken();
 
-        RequestSaveAdventure requestSaveAdventure = new RequestSaveAdventure(1L, 37.539927, 127.073006);
-        String content = objectMapper.writeValueAsString(requestSaveAdventure);
+        AdventureSaveDto.Request adventureSaveDto = new AdventureSaveDto.Request(1L, 37.539927, 127.073006);
+        String content = objectMapper.writeValueAsString(adventureSaveDto);
 
         // expected
         mockMvc.perform(post("/api/adventures")
@@ -97,13 +97,13 @@ class AdventureApiTest {
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
         String accessToken = userLoginService.login(userEmail).getAccessToken();
 
-        adventureService.saveAdventure(userEmail, new RequestSaveAdventure(1L, 37.539927, 127.073006));
-        adventureService.saveAdventure(userEmail, new RequestSaveAdventure(2L, 37.540158, 127.073463));
-        adventureService.saveAdventure(userEmail, new RequestSaveAdventure(3L, 37.539314, 127.074319));
-        adventureService.saveAdventure(userEmail, new RequestSaveAdventure(4L, 37.540099, 127.073976));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(2L, 37.540158, 127.073463));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(3L, 37.539314, 127.074319));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(4L, 37.540099, 127.073976));
 
         // expected
-        MvcResult result = mockMvc.perform(get("/api/adventures")
+        mockMvc.perform(get("/api/adventures")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken)
                 )
@@ -139,9 +139,9 @@ class AdventureApiTest {
                 .andDo(print());
 
         // 2. 한 번이라도 더 방문한 회원 응답
-        adventureService.saveAdventure(user1Email, new RequestSaveAdventure(1L, 37.539927, 127.073006));
-        adventureService.saveAdventure(user1Email, new RequestSaveAdventure(1L, 37.539927, 127.073006));
-        adventureService.saveAdventure(user2Email, new RequestSaveAdventure(1L, 37.539927, 127.073006));
+        adventureService.saveAdventure(user1Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
+        adventureService.saveAdventure(user1Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
+        adventureService.saveAdventure(user2Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
         mockMvc.perform(get("/api/adventures/1/most")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken)
@@ -152,7 +152,7 @@ class AdventureApiTest {
                 .andDo(print());
 
         // 3. 방문 횟수가 같다면, 방문한지 오래된 회원 응답
-        adventureService.saveAdventure(user2Email, new RequestSaveAdventure(1L, 37.539927, 127.073006));
+        adventureService.saveAdventure(user2Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
         mockMvc.perform(get("/api/adventures/1/most")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken)
@@ -163,7 +163,7 @@ class AdventureApiTest {
                 .andDo(print());
 
         // 4. 한 번이라도 더 방문한 회원 응답
-        adventureService.saveAdventure(user2Email, new RequestSaveAdventure(1L, 37.539927, 127.073006));
+        adventureService.saveAdventure(user2Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
         mockMvc.perform(get("/api/adventures/1/most")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken)

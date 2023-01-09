@@ -17,7 +17,7 @@ public enum BadgeType {
     ADVENTURE_10("탐험 10번 이상"),
     ADVENTURE_30("탐험 30번 이상"),
 
-    ENGINEER("공대생"), // 공대 건물 모두 탐험
+    ENGINEER("공대생"), // 공대 건물(A, B, C, 신공, 이과대) 모두 탐험
     ARTIST("예술가"), // 예디대, 공예관 탐험
     CEO("CEO"), // 경영관 경제학관 탐험
     NATIONAL_PLAYER("국가대표"), // 체육시설, 운동장, 실내 체육관

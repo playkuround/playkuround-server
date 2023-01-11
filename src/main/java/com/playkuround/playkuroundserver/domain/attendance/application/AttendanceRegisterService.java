@@ -86,10 +86,14 @@ public class AttendanceRegisterService {
                 ret.addBadge(BadgeType.ATTENDANCE_100);
         }
 
-        if (LocalDate.now().getMonth().getValue() == 5 && LocalDate.now().getDayOfMonth() == 15 && !hasAttendance_Foundation_Day) {
+        if (isTodayFoundationDay() && !hasAttendance_Foundation_Day) {
             ret.addBadge(BadgeType.ATTENDANCE_FOUNDATION_DAY);
         }
         return ret;
+    }
+
+    private boolean isTodayFoundationDay() {
+        return LocalDate.now().getMonth().getValue() == 5 && LocalDate.now().getDayOfMonth() == 15;
     }
 
 }

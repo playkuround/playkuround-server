@@ -1,5 +1,7 @@
 package com.playkuround.playkuroundserver.domain.badge.domain;
 
+import com.playkuround.playkuroundserver.domain.badge.exception.BadgeTypeNotFoundException;
+import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -29,5 +31,32 @@ public enum BadgeType {
 
     public String getDescription() {
         return description;
+    }
+
+    public static BadgeType findBadgeTypeByLandmarkId(Long landmarkId) {
+        if (22 <= landmarkId && landmarkId <= 26) return ENGINEER;
+        if (landmarkId == 8 || landmarkId == 28) return ARTIST;
+        if (landmarkId == 15) return CEO;
+        if (landmarkId == 37 || landmarkId == 38) return NATIONAL_PLAYER;
+        if (39 <= landmarkId && landmarkId <= 44) return NEIL_ARMSTRONG;
+        throw new BadgeTypeNotFoundException(ErrorCode.INVALID_Badge_TYPE);
+    }
+
+    public static Long requiredAdventureCountForBadge(BadgeType badgeType) {
+        if (badgeType == ENGINEER) return 5L;
+        if (badgeType == ARTIST) return 2L;
+        if (badgeType == CEO) return 1L;
+        if (badgeType == NATIONAL_PLAYER) return 2L;
+        if (badgeType == NEIL_ARMSTRONG) return 6L;
+        throw new BadgeTypeNotFoundException(ErrorCode.INVALID_Badge_TYPE);
+    }
+
+    public static BadgeType findBadgeTypeByAdventureCount(Long count) {
+        if (count == 1) return BadgeType.ADVENTURE_1;
+        else if (count == 5) return BadgeType.ADVENTURE_5;
+        else if (count == 10) return BadgeType.ADVENTURE_10;
+        else if (count == 30) return BadgeType.ADVENTURE_30;
+        else if (count == 44) return BadgeType.CONQUEROR;
+        throw new BadgeTypeNotFoundException(ErrorCode.INVALID_Badge_TYPE);
     }
 }

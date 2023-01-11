@@ -9,6 +9,7 @@ import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostLandma
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
+import com.playkuround.playkuroundserver.domain.badge.exception.BadgeTypeNotFoundException;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -57,69 +59,41 @@ public class AdventureService {
     }
 
     private AdventureSaveDto.Response findNewBadges(User user, Landmark requestSaveLandmark) {
-        List<Adventure> adventures = adventureRepository.findAllByUser(user);
         AdventureSaveDto.Response ret = new AdventureSaveDto.Response();
 
         if (badgeRepository.existsByUserAndBadgeType(user, BadgeType.CONQUEROR)) {
             return ret;
         }
 
-        if (adventures.size() == 1) ret.addBadge(BadgeType.ADVENTURE_1);
-        else if (adventures.size() == 5) ret.addBadge(BadgeType.ADVENTURE_5);
-        else if (adventures.size() == 10) ret.addBadge(BadgeType.ADVENTURE_10);
-        else if (adventures.size() == 30) ret.addBadge(BadgeType.ADVENTURE_30);
-        else if (adventures.size() == 44) ret.addBadge(BadgeType.CONQUEROR);
+        // 1. 탐험 횟수에 따른 배지
+        Long adventureCount = adventureRepository.countByUser(user);
+        try {
+            ret.addBadge(BadgeType.findBadgeTypeByAdventureCount(adventureCount));
+        } catch (BadgeTypeNotFoundException ignored) {
+        }
 
+        // 2. 탐험 장소에 따른 배지
         Long saveLandmarkId = requestSaveLandmark.getId();
-        if (22 <= saveLandmarkId && saveLandmarkId <= 26) {
-            boolean[] isExist = {false, false, false, false, false};
-            for (Adventure adventure : adventures) {
-                if (22 <= adventure.getLandmark().getId() && adventure.getLandmark().getId() <= 26)
-                    isExist[(int) (adventure.getLandmark().getId() - 22)] = true;
+        try {
+            BadgeType badgeType = BadgeType.findBadgeTypeByLandmarkId(saveLandmarkId);
+            Long adventureCountForBadge = -1L;
+            if (badgeType == BadgeType.ENGINEER)
+                adventureCountForBadge = adventureRepository.countAdventureForENGINEER();
+            if (badgeType == BadgeType.ARTIST)
+                adventureCountForBadge = adventureRepository.countAdventureForARTIST();
+            if (badgeType == BadgeType.CEO)
+                adventureCountForBadge = adventureRepository.countAdventureForCEO();
+            if (badgeType == BadgeType.NATIONAL_PLAYER)
+                adventureCountForBadge = adventureRepository.countAdventureForNATIONAL_PLAYER();
+            if (badgeType == BadgeType.NEIL_ARMSTRONG)
+                adventureCountForBadge = adventureRepository.countAdventureForNEIL_ARMSTRONG();
+
+            if (Objects.equals(adventureCountForBadge, BadgeType.requiredAdventureCountForBadge(badgeType))) {
+                ret.addBadge(badgeType);
             }
-            if (isExist[0] && isExist[1] && isExist[2] && isExist[3] && isExist[4]) {
-                ret.addBadge(BadgeType.ENGINEER);
-            }
+        } catch (BadgeTypeNotFoundException ignored) {
         }
-        else if (saveLandmarkId == 8 || saveLandmarkId == 28) {
-            boolean[] isExist = {false, false};
-            for (Adventure adventure : adventures) {
-                if (adventure.getLandmark().getId() == 8) isExist[0] = true;
-                else if (adventure.getLandmark().getId() == 28) isExist[1] = true;
-            }
-            if (isExist[0] && isExist[1]) {
-                ret.addBadge(BadgeType.ARTIST);
-            }
-        }
-        else if (saveLandmarkId == 15) { // TODO 경제학관이 어디?
-            boolean[] isExist = {false};
-            for (Adventure adventure : adventures) {
-                if (adventure.getLandmark().getId() == 15) isExist[0] = true;
-            }
-            if (isExist[0]) {
-                ret.addBadge(BadgeType.CEO);
-            }
-        }
-        else if (saveLandmarkId == 37 || saveLandmarkId == 38) {
-            boolean[] isExist = {false, false};
-            for (Adventure adventure : adventures) {
-                if (adventure.getLandmark().getId() == 37) isExist[0] = true;
-                if (adventure.getLandmark().getId() == 38) isExist[1] = true;
-            }
-            if (isExist[0] && isExist[1]) {
-                ret.addBadge(BadgeType.NATIONAL_PLAYER);
-            }
-        }
-        else if (39 <= saveLandmarkId && saveLandmarkId <= 44) {
-            boolean[] isExist = {false, false, false, false, false, false};
-            for (Adventure adventure : adventures) {
-                if (39 <= adventure.getLandmark().getId() && adventure.getLandmark().getId() <= 44)
-                    isExist[(int) (adventure.getLandmark().getId() - 39)] = true;
-            }
-            if (isExist[0] && isExist[1] && isExist[2] && isExist[3] && isExist[4] && isExist[5]) {
-                ret.addBadge(BadgeType.NEIL_ARMSTRONG);
-            }
-        }
+
         return ret;
     }
 

@@ -39,6 +39,9 @@ public enum ErrorCode {
     EXPIRED_AUTH_CODE(400, "E003", "만료된 코드입니다."),
     SENDING_LIMIT_EXCEEDED(429, "E004", "인증 메일 전송 횟수를 초과하였습니다."),
 
+    // Badge
+    INVALID_Badge_TYPE(500, "B001", "올바르지 않은 BadgeType입니다."),
+
     ;
 
     private final int status;

@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.adventure.api;
 
 import com.playkuround.playkuroundserver.domain.adventure.application.AdventureService;
-import com.playkuround.playkuroundserver.domain.adventure.dto.RequestSaveAdventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostLandmarkUser;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
@@ -24,9 +24,9 @@ public class AdventureApi {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<Void> saveAdventure(@UserEmail String userEmail, @RequestBody @Valid RequestSaveAdventure dto) {
-        adventureService.saveAdventure(userEmail, dto);
-        return ApiUtils.success(null);
+    public ApiResponse<AdventureSaveDto.Response> saveAdventure(@UserEmail String userEmail, @RequestBody @Valid AdventureSaveDto.Request dto) {
+        AdventureSaveDto.Response response = adventureService.saveAdventure(userEmail, dto);
+        return ApiUtils.success(response);
     }
 
     @GetMapping

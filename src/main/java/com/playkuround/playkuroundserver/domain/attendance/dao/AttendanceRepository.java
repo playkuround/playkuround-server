@@ -11,4 +11,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     List<Attendance> findByUserAndCreatedAtAfter(User user, LocalDateTime localDateTime);
 
+    Long countByUserAndCreatedAtAfter(User user, LocalDateTime localDateTime);
+
 }

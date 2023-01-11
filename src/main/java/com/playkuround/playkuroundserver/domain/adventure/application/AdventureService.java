@@ -2,11 +2,14 @@ package com.playkuround.playkuroundserver.domain.adventure.application;
 
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.adventure.dto.MostVisitedInfo;
-import com.playkuround.playkuroundserver.domain.adventure.dto.RequestSaveAdventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostLandmarkUser;
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
+import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
+import com.playkuround.playkuroundserver.domain.badge.exception.BadgeTypeNotFoundException;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
@@ -23,28 +26,30 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AdventureService {
 
     private final AdventureRepository adventureRepository;
     private final LandmarkRepository landmarkRepository;
     private final UserRepository userRepository;
+    private final BadgeRepository badgeRepository;
     private final UserFindDao userFindDao;
 
-    @Transactional
-    public void saveAdventure(String userEmail, RequestSaveAdventure dto) {
-        User user = userFindDao.findByEmail(userEmail);
 
+    public AdventureSaveDto.Response saveAdventure(String userEmail, AdventureSaveDto.Request dto) {
+        User user = userFindDao.findByEmail(userEmail);
         Landmark landmark = landmarkRepository.findById(dto.getLandmarkId())
                 .orElseThrow(() -> new LandmarkNotFoundException(dto.getLandmarkId()));
-
         validateLocation(landmark, dto.getLatitude(), dto.getLongitude());
-
         adventureRepository.save(new Adventure(user, landmark));
+
+        return findNewBadges(user, landmark);
     }
 
     private void validateLocation(Landmark landmark, double latitude, double longitude) {
@@ -53,6 +58,46 @@ public class AdventureService {
         if (distance > 10) throw new InvalidLandmarkLocationException();
     }
 
+    private AdventureSaveDto.Response findNewBadges(User user, Landmark requestSaveLandmark) {
+        AdventureSaveDto.Response ret = new AdventureSaveDto.Response();
+
+        if (badgeRepository.existsByUserAndBadgeType(user, BadgeType.CONQUEROR)) {
+            return ret;
+        }
+
+        // 1. 탐험 횟수에 따른 배지
+        Long adventureCount = adventureRepository.countByUser(user);
+        try {
+            ret.addBadge(BadgeType.findBadgeTypeByAdventureCount(adventureCount));
+        } catch (BadgeTypeNotFoundException ignored) {
+        }
+
+        // 2. 탐험 장소에 따른 배지
+        Long saveLandmarkId = requestSaveLandmark.getId();
+        try {
+            BadgeType badgeType = BadgeType.findBadgeTypeByLandmarkId(saveLandmarkId);
+            Long adventureCountForBadge = -1L;
+            if (badgeType == BadgeType.ENGINEER)
+                adventureCountForBadge = adventureRepository.countAdventureForENGINEER();
+            if (badgeType == BadgeType.ARTIST)
+                adventureCountForBadge = adventureRepository.countAdventureForARTIST();
+            if (badgeType == BadgeType.CEO)
+                adventureCountForBadge = adventureRepository.countAdventureForCEO();
+            if (badgeType == BadgeType.NATIONAL_PLAYER)
+                adventureCountForBadge = adventureRepository.countAdventureForNATIONAL_PLAYER();
+            if (badgeType == BadgeType.NEIL_ARMSTRONG)
+                adventureCountForBadge = adventureRepository.countAdventureForNEIL_ARMSTRONG();
+
+            if (Objects.equals(adventureCountForBadge, BadgeType.requiredAdventureCountForBadge(badgeType))) {
+                ret.addBadge(badgeType);
+            }
+        } catch (BadgeTypeNotFoundException ignored) {
+        }
+
+        return ret;
+    }
+
+    @Transactional(readOnly = true)
     public List<ResponseFindAdventure> findAdventureByUserEmail(String userEmail) {
         User user = userFindDao.findByEmail(userEmail);
 
@@ -61,6 +106,7 @@ public class AdventureService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public ResponseMostLandmarkUser findMemberMostLandmark(Long landmarkId) {
         /*
          * 해당 랜드마크에 가장 많이 방문한 회원
@@ -77,7 +123,8 @@ public class AdventureService {
                     Long userId = adventure.getUser().getId();
                     if (count.containsKey(userId)) {
                         count.get(userId).updateData(adventure.getCreatedAt());
-                    } else {
+                    }
+                    else {
                         count.put(userId, new MostVisitedInfo(userId, adventure.getCreatedAt()));
                     }
                 });

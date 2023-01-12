@@ -114,13 +114,6 @@ public class AdventureService {
         User user = userFindDao.findByEmail(userEmail);
 
         List<VisitedUserDto> visitedInfoes = adventureRepository.customQuery(landmarkId);
-        System.out.println("==================");
-        for (VisitedUserDto visitedUserDto2 : visitedInfoes) {
-            System.out.print("userId = " + visitedUserDto2.getUserId());
-            System.out.print("nickname = " + visitedUserDto2.getNickname());
-            System.out.println("count = " + visitedUserDto2.getNumber());
-        }
-        System.out.println("==================");
         Integer myVisitedCount = adventureRepository.countAdventureByUserAndLandmark(user, landmark);
         return ResponseMostVisitedUser.of(visitedInfoes, myVisitedCount);
     }

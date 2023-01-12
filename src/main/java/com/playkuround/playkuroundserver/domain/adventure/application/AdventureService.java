@@ -3,9 +3,9 @@ package com.playkuround.playkuroundserver.domain.adventure.application;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
-import com.playkuround.playkuroundserver.domain.adventure.dto.MostVisitedInfo;
+import com.playkuround.playkuroundserver.domain.adventure.dto.VisitedUserDto;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
-import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostLandmarkUser;
+import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostVisitedUser;
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
@@ -16,16 +16,13 @@ import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFo
 import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.global.error.exception.EntityNotFoundException;
 import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -107,52 +104,25 @@ public class AdventureService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseMostLandmarkUser findMemberMostLandmark(Long landmarkId) {
+    public ResponseMostVisitedUser findMemberMostLandmark(String userEmail, Long landmarkId) {
         /*
          * 해당 랜드마크에 가장 많이 방문한 회원
          * 횟수가 같다면 방문한지 오래된 회원 -> 정책 논의 필요
          */
         Landmark landmark = landmarkRepository.findById(landmarkId)
                 .orElseThrow(() -> new LandmarkNotFoundException(landmarkId));
+        User user = userFindDao.findByEmail(userEmail);
 
-        // TODO 성능 최적화 -> JPQL 사용 (@Query)
-        // count[유저 id] = {방문횟수, 최근 방문일}
-        Map<Long, MostVisitedInfo> count = new HashMap<>();
-        adventureRepository.findAllByLandmark(landmark)
-                .forEach(adventure -> {
-                    Long userId = adventure.getUser().getId();
-                    if (count.containsKey(userId)) {
-                        count.get(userId).updateData(adventure.getCreatedAt());
-                    }
-                    else {
-                        count.put(userId, new MostVisitedInfo(userId, adventure.getCreatedAt()));
-                    }
-                });
-
-
-        MostVisitedInfo res = null;
-        for (Long id : count.keySet()) {
-            MostVisitedInfo value = count.get(id);
-            if (res == null) res = value;
-            if (res.isSatisfyUpdate(value)) res = value;
+        List<VisitedUserDto> visitedInfoes = adventureRepository.customQuery(landmarkId);
+        System.out.println("==================");
+        for (VisitedUserDto visitedUserDto2 : visitedInfoes) {
+            System.out.print("userId = " + visitedUserDto2.getUserId());
+            System.out.print("nickname = " + visitedUserDto2.getNickname());
+            System.out.println("count = " + visitedUserDto2.getNumber());
         }
-
-        if (res == null) {
-            return ResponseMostLandmarkUser.builder()
-                    .count(0)
-                    .message("해당 장소에 방문한 회원이 없습니다.")
-                    .build();
-        }
-        else {
-            User user = userRepository.findById(res.getUserId())
-                    .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-
-            return ResponseMostLandmarkUser.builder()
-                    .count(res.getCount())
-                    .nickname(user.getNickname())
-                    .userId(user.getId())
-                    .build();
-        }
+        System.out.println("==================");
+        Integer myVisitedCount = adventureRepository.countAdventureByUserAndLandmark(user, landmark);
+        return ResponseMostVisitedUser.of(visitedInfoes, myVisitedCount);
     }
 
 }

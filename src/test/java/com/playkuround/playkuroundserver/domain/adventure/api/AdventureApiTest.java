@@ -224,8 +224,7 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.message").value("해당 장소에 방문한 회원이 없습니다."))
-                .andExpect(jsonPath("$.response.count").value(0))
+                .andExpect(jsonPath("$.response.myVisitedCount").value(0))
                 .andDo(print());
 
         // 2. 한 번이라도 더 방문한 회원 응답
@@ -237,8 +236,8 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.nickname").value("tester1"))
-                .andExpect(jsonPath("$.response.count").value(2))
+                .andExpect(jsonPath("$.response.top5Users.[?(@.nickname == '%s')]", "tester1").exists())
+                .andExpect(jsonPath("$.response.myVisitedCount").value(2))
                 .andDo(print());
 
         // 3. 방문 횟수가 같다면, 방문한지 오래된 회원 응답

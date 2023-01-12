@@ -1,17 +1,31 @@
 package com.playkuround.playkuroundserver.domain.adventure.dao;
 
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.VisitedUserDto;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface AdventureRepository extends JpaRepository<Adventure, Long> {
     List<Adventure> findAllByUser(User user);
 
-    List<Adventure> findAllByLandmark(Landmark landmarkId);
+    @Query(value =
+            "SELECT " +
+                    "count(a.\"user_id\") as number, u.\"nickname\" as nickname, a.\"user_id\" as userId " +
+                    "FROM \"adventure\" a " +
+                    "cross join \"user\" u " +
+                    "where a.\"user_id\"=u.\"id\" and a.\"landmark_id\"=:landmark " +
+                    "GROUP BY a.\"user_id\" " +
+                    "ORDER BY count(a.\"user_id\") DESC, max(a.\"updated_at\") ASC " +
+                    "limit 5",
+            nativeQuery = true
+    )
+    List<VisitedUserDto> customQuery(@Param(value = "landmark") Long landmarkId);
+
 
     @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id>=22 and a.landmark.id<=26")
     Long countAdventureForENGINEER();
@@ -29,4 +43,6 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
     Long countAdventureForNEIL_ARMSTRONG();
 
     Long countByUser(User user);
+
+    Integer countAdventureByUserAndLandmark(User user, Landmark landmark);
 }

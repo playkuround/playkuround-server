@@ -208,8 +208,8 @@ class AdventureApiTest {
     }
 
     @Test
-    @DisplayName("특정 랜드마크에 가장 많이 방문한 회원 조회")
-    void findMemberMostAdventure() throws Exception {
+    @DisplayName("특정 랜드마크에 가장 많이 방문한 회원 조회(2명)")
+    void findMemberMostAdventureWhenTwoPeople() throws Exception {
         // given
         String user1Email = "test@email.com";
         String user2Email = "test2@email.com";
@@ -224,8 +224,7 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.message").value("해당 장소에 방문한 회원이 없습니다."))
-                .andExpect(jsonPath("$.response.count").value(0))
+                .andExpect(jsonPath("$.response.myVisitedCount").value(0))
                 .andDo(print());
 
         // 2. 한 번이라도 더 방문한 회원 응답
@@ -237,8 +236,12 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.nickname").value("tester1"))
-                .andExpect(jsonPath("$.response.count").value(2))
+                .andExpect(jsonPath("$.response.top5Users.length()", "2").exists())
+                .andExpect(jsonPath("$.response.top5Users[0].[?(@.nickname == '%s')]", "tester1").exists())
+                .andExpect(jsonPath("$.response.top5Users[0].[?(@.count == '%s')]", "2").exists())
+                .andExpect(jsonPath("$.response.top5Users[1].[?(@.nickname == '%s')]", "tester2").exists())
+                .andExpect(jsonPath("$.response.top5Users[1].[?(@.count == '%s')]", "1").exists())
+                .andExpect(jsonPath("$.response.myVisitedCount").value(2))
                 .andDo(print());
 
         // 3. 방문 횟수가 같다면, 방문한지 오래된 회원 응답
@@ -248,8 +251,12 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.nickname").value("tester1"))
-                .andExpect(jsonPath("$.response.count").value(2))
+                .andExpect(jsonPath("$.response.top5Users.length()", "2").exists())
+                .andExpect(jsonPath("$.response.top5Users[0].[?(@.nickname == '%s')]", "tester1").exists())
+                .andExpect(jsonPath("$.response.top5Users[0].[?(@.count == '%s')]", "2").exists())
+                .andExpect(jsonPath("$.response.top5Users[1].[?(@.nickname == '%s')]", "tester2").exists())
+                .andExpect(jsonPath("$.response.top5Users[1].[?(@.count == '%s')]", "2").exists())
+                .andExpect(jsonPath("$.response.myVisitedCount").value(2))
                 .andDo(print());
 
         // 4. 한 번이라도 더 방문한 회원 응답
@@ -259,8 +266,96 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.nickname").value("tester2"))
-                .andExpect(jsonPath("$.response.count").value(3))
+                .andExpect(jsonPath("$.response.top5Users.length()", "2").exists())
+                .andExpect(jsonPath("$.response.top5Users[0].[?(@.nickname == '%s')]", "tester2").exists())
+                .andExpect(jsonPath("$.response.top5Users[0].[?(@.count == '%s')]", "3").exists())
+                .andExpect(jsonPath("$.response.top5Users[1].[?(@.nickname == '%s')]", "tester1").exists())
+                .andExpect(jsonPath("$.response.top5Users[1].[?(@.count == '%s')]", "2").exists())
+                .andExpect(jsonPath("$.response.myVisitedCount").value(2))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("특정 랜드마크에 가장 많이 방문한 회원 조회(6명)")
+    void findMemberMostAdventureWhenSixPeople() throws Exception {
+        // given
+        String user1Email = "test@email.com";
+        String user2Email = "test2@email.com";
+        String user3Email = "test3@email.com";
+        String user4Email = "test4@email.com";
+        String user5Email = "test5@email.com";
+        String user6Email = "test6@email.com";
+        userRegisterService.registerUser(new UserRegisterDto.Request(user1Email, "tester1", "컴퓨터공학부"));
+        userRegisterService.registerUser(new UserRegisterDto.Request(user2Email, "tester2", "컴퓨터공학부"));
+        userRegisterService.registerUser(new UserRegisterDto.Request(user3Email, "tester3", "컴퓨터공학부"));
+        userRegisterService.registerUser(new UserRegisterDto.Request(user4Email, "tester4", "컴퓨터공학부"));
+        userRegisterService.registerUser(new UserRegisterDto.Request(user5Email, "tester5", "컴퓨터공학부"));
+        userRegisterService.registerUser(new UserRegisterDto.Request(user6Email, "tester6", "컴퓨터공학부"));
+        String accessToken = userLoginService.login(user1Email).getAccessToken();
+
+        // expected
+        // 1. 3명이 한번씩 방문
+        adventureService.saveAdventure(user2Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
+        adventureService.saveAdventure(user3Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
+        adventureService.saveAdventure(user4Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
+        mockMvc.perform(get("/api/adventures/1/most")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.top5Users.length()", "3").exists())
+                .andExpect(jsonPath("$.response.top5Users[0].[?(@.nickname == '%s')]", "tester2").exists())
+                .andExpect(jsonPath("$.response.top5Users[0].[?(@.count == '%s')]", "1").exists())
+                .andExpect(jsonPath("$.response.top5Users[1].[?(@.nickname == '%s')]", "tester3").exists())
+                .andExpect(jsonPath("$.response.top5Users[1].[?(@.count == '%s')]", "1").exists())
+                .andExpect(jsonPath("$.response.top5Users[2].[?(@.nickname == '%s')]", "tester4").exists())
+                .andExpect(jsonPath("$.response.top5Users[2].[?(@.count == '%s')]", "1").exists())
+                .andExpect(jsonPath("$.response.myVisitedCount").value(0))
+                .andDo(print());
+
+        // 2. 6명이 한번씩 방문
+        adventureService.saveAdventure(user1Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
+        adventureService.saveAdventure(user5Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
+        adventureService.saveAdventure(user6Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
+        mockMvc.perform(get("/api/adventures/1/most")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.top5Users.length()", "5").exists())
+                .andExpect(jsonPath("$.response.top5Users[0].[?(@.nickname == '%s')]", "tester2").exists())
+                .andExpect(jsonPath("$.response.top5Users[0].[?(@.count == '%s')]", "1").exists())
+                .andExpect(jsonPath("$.response.top5Users[1].[?(@.nickname == '%s')]", "tester3").exists())
+                .andExpect(jsonPath("$.response.top5Users[1].[?(@.count == '%s')]", "1").exists())
+                .andExpect(jsonPath("$.response.top5Users[2].[?(@.nickname == '%s')]", "tester4").exists())
+                .andExpect(jsonPath("$.response.top5Users[2].[?(@.count == '%s')]", "1").exists())
+                .andExpect(jsonPath("$.response.top5Users[3].[?(@.nickname == '%s')]", "tester1").exists())
+                .andExpect(jsonPath("$.response.top5Users[3].[?(@.count == '%s')]", "1").exists())
+                .andExpect(jsonPath("$.response.top5Users[4].[?(@.nickname == '%s')]", "tester5").exists())
+                .andExpect(jsonPath("$.response.top5Users[4].[?(@.count == '%s')]", "1").exists())
+                .andExpect(jsonPath("$.response.myVisitedCount").value(1))
+                .andDo(print());
+
+        // 3. 2명이 한번씩 더 방문
+        adventureService.saveAdventure(user5Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
+        adventureService.saveAdventure(user6Email, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
+        mockMvc.perform(get("/api/adventures/1/most")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.top5Users.length()", "5").exists())
+                .andExpect(jsonPath("$.response.top5Users[0].[?(@.nickname == '%s')]", "tester5").exists())
+                .andExpect(jsonPath("$.response.top5Users[0].[?(@.count == '%s')]", "2").exists())
+                .andExpect(jsonPath("$.response.top5Users[1].[?(@.nickname == '%s')]", "tester6").exists())
+                .andExpect(jsonPath("$.response.top5Users[1].[?(@.count == '%s')]", "2").exists())
+                .andExpect(jsonPath("$.response.top5Users[2].[?(@.nickname == '%s')]", "tester2").exists())
+                .andExpect(jsonPath("$.response.top5Users[2].[?(@.count == '%s')]", "1").exists())
+                .andExpect(jsonPath("$.response.top5Users[3].[?(@.nickname == '%s')]", "tester3").exists())
+                .andExpect(jsonPath("$.response.top5Users[3].[?(@.count == '%s')]", "1").exists())
+                .andExpect(jsonPath("$.response.top5Users[4].[?(@.nickname == '%s')]", "tester4").exists())
+                .andExpect(jsonPath("$.response.top5Users[4].[?(@.count == '%s')]", "1").exists())
+                .andExpect(jsonPath("$.response.myVisitedCount").value(1))
                 .andDo(print());
     }
 }

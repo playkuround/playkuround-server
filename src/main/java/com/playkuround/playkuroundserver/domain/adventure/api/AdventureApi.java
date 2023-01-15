@@ -3,7 +3,7 @@ package com.playkuround.playkuroundserver.domain.adventure.api;
 import com.playkuround.playkuroundserver.domain.adventure.application.AdventureService;
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
-import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostLandmarkUser;
+import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostVisitedUser;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.resolver.UserEmail;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -37,8 +37,9 @@ public class AdventureApi {
     }
 
     @GetMapping("/{landmarkId}/most")
-    public ApiResponse<ResponseMostLandmarkUser> findMemberMostAdventure(@PathVariable Long landmarkId) {
-        ResponseMostLandmarkUser memberMostLandmark = adventureService.findMemberMostLandmark(landmarkId);
+    public ApiResponse<ResponseMostVisitedUser> findMemberMostAdventure(@UserEmail String userEmail,
+                                                                        @PathVariable Long landmarkId) {
+        ResponseMostVisitedUser memberMostLandmark = adventureService.findMemberMostLandmark(userEmail, landmarkId);
         return ApiUtils.success(memberMostLandmark);
     }
 }

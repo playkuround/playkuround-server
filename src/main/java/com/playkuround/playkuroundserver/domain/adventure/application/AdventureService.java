@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -93,13 +92,9 @@ public class AdventureService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResponseFindAdventure> findAdventureByUserEmail(String userEmail) {
+    public ResponseFindAdventure findAdventureByUserEmail(String userEmail) {
         User user = userFindDao.findByEmail(userEmail);
-
-        return adventureRepository.findDistinctLandmarkIdByUser(user)
-                .stream().map(ResponseFindAdventure::of)
-                .collect(Collectors.toList());
-
+        return ResponseFindAdventure.of(adventureRepository.findDistinctLandmarkIdByUser(user));
     }
 
     @Transactional(readOnly = true)

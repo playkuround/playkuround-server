@@ -198,11 +198,11 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.length()").value(4))
-                .andExpect(jsonPath("$.response.[?(@.landmarkId == '%s')]", 1).exists())
-                .andExpect(jsonPath("$.response.[?(@.landmarkId == '%s')]", 2).exists())
-                .andExpect(jsonPath("$.response.[?(@.landmarkId == '%s')]", 3).exists())
-                .andExpect(jsonPath("$.response.[?(@.landmarkId == '%s')]", 4).exists())
+                .andExpect(jsonPath("$.response.landmarkIdList.length()").value(4))
+                .andExpect(jsonPath("$.response.landmarkIdList", 1).exists())
+                .andExpect(jsonPath("$.response.landmarkIdList", 2).exists())
+                .andExpect(jsonPath("$.response.landmarkIdList", 3).exists())
+                .andExpect(jsonPath("$.response.landmarkIdList", 4).exists())
                 .andDo(print())
                 .andReturn();
     }
@@ -229,11 +229,11 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.length()").value(4))
-                .andExpect(jsonPath("$.response.[?(@.landmarkId == '%s')]", 1).exists())
-                .andExpect(jsonPath("$.response.[?(@.landmarkId == '%s')]", 2).exists())
-                .andExpect(jsonPath("$.response.[?(@.landmarkId == '%s')]", 3).exists())
-                .andExpect(jsonPath("$.response.[?(@.landmarkId == '%s')]", 4).exists())
+                .andExpect(jsonPath("$.response.landmarkIdList.length()").value(4))
+                .andExpect(jsonPath("$.response.landmarkIdList", 1).exists())
+                .andExpect(jsonPath("$.response.landmarkIdList", 2).exists())
+                .andExpect(jsonPath("$.response.landmarkIdList", 3).exists())
+                .andExpect(jsonPath("$.response.landmarkIdList", 4).exists())
                 .andDo(print())
                 .andReturn();
     }

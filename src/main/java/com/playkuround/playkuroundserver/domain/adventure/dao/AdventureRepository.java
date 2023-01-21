@@ -13,7 +13,7 @@ import java.util.List;
 public interface AdventureRepository extends JpaRepository<Adventure, Long> {
 
     @Query(value = "SELECT DISTINCT a.landmark.id FROM Adventure a WHERE a.user.id=:#{#user.id}")
-    List<Long> findAllByUser(@Param(value = "user") User user);
+    List<Long> findDistinctLandmarkIdByUser(@Param(value = "user") User user);
 
     @Query(value =
             "SELECT " +

@@ -14,7 +14,6 @@ import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
 import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
-import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
 import lombok.RequiredArgsConstructor;
@@ -97,7 +96,7 @@ public class AdventureService {
     public List<ResponseFindAdventure> findAdventureByUserEmail(String userEmail) {
         User user = userFindDao.findByEmail(userEmail);
 
-        return adventureRepository.findAllByUser(user)
+        return adventureRepository.findDistinctLandmarkIdByUser(user)
                 .stream().map(ResponseFindAdventure::of)
                 .collect(Collectors.toList());
 

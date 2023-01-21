@@ -208,6 +208,37 @@ class AdventureApiTest {
     }
 
     @Test
+    @DisplayName("로그인 회원의 탐험 기록 조회 - 중복 랜드마크 존재 시, 1번만 등장해야 함")
+    void findAdventureWhenDuplicationLandmark() throws Exception {
+        // given
+        String userEmail = "test@email.com";
+        userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
+        String accessToken = userLoginService.login(userEmail).getAccessToken();
+
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(1L, 37.539927, 127.073006));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(2L, 37.540158, 127.073463));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(3L, 37.539314, 127.074319));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(3L, 37.539314, 127.074319));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(4L, 37.540099, 127.073976));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(4L, 37.540099, 127.073976));
+        adventureService.saveAdventure(userEmail, new AdventureSaveDto.Request(4L, 37.540099, 127.073976));
+
+        // expected
+        mockMvc.perform(get("/api/adventures")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.length()").value(4))
+                .andExpect(jsonPath("$.response.[?(@.landmarkId == '%s')]", 1).exists())
+                .andExpect(jsonPath("$.response.[?(@.landmarkId == '%s')]", 2).exists())
+                .andExpect(jsonPath("$.response.[?(@.landmarkId == '%s')]", 3).exists())
+                .andExpect(jsonPath("$.response.[?(@.landmarkId == '%s')]", 4).exists())
+                .andDo(print())
+                .andReturn();
+    }
+
+    @Test
     @DisplayName("특정 랜드마크에 가장 많이 방문한 회원 조회(2명)")
     void findMemberMostAdventureWhenTwoPeople() throws Exception {
         // given

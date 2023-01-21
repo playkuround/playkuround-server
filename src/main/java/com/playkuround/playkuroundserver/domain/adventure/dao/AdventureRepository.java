@@ -11,7 +11,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface AdventureRepository extends JpaRepository<Adventure, Long> {
-    List<Adventure> findAllByUser(User user);
+
+    @Query(value = "SELECT DISTINCT a.landmark.id FROM Adventure a WHERE a.user.id=:#{#user.id}")
+    List<Long> findAllByUser(@Param(value = "user") User user);
 
     @Query(value =
             "SELECT " +
@@ -24,7 +26,7 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
                     "limit 5",
             nativeQuery = true
     )
-    List<VisitedUserDto> customQuery(@Param(value = "landmark") Long landmarkId);
+    List<VisitedUserDto> findTop5VisitedUser(@Param(value = "landmark") Long landmarkId);
 
 
     @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id>=22 and a.landmark.id<=26")

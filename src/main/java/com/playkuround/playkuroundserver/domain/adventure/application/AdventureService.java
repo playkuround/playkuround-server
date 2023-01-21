@@ -3,9 +3,9 @@ package com.playkuround.playkuroundserver.domain.adventure.application;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
-import com.playkuround.playkuroundserver.domain.adventure.dto.VisitedUserDto;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostVisitedUser;
+import com.playkuround.playkuroundserver.domain.adventure.dto.VisitedUserDto;
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
@@ -34,7 +34,6 @@ public class AdventureService {
 
     private final AdventureRepository adventureRepository;
     private final LandmarkRepository landmarkRepository;
-    private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;
     private final UserFindDao userFindDao;
 
@@ -98,9 +97,10 @@ public class AdventureService {
     public List<ResponseFindAdventure> findAdventureByUserEmail(String userEmail) {
         User user = userFindDao.findByEmail(userEmail);
 
-        return adventureRepository.findAllByUser(user).stream()
-                .map(ResponseFindAdventure::of)
+        return adventureRepository.findAllByUser(user)
+                .stream().map(ResponseFindAdventure::of)
                 .collect(Collectors.toList());
+
     }
 
     @Transactional(readOnly = true)
@@ -113,7 +113,7 @@ public class AdventureService {
                 .orElseThrow(() -> new LandmarkNotFoundException(landmarkId));
         User user = userFindDao.findByEmail(userEmail);
 
-        List<VisitedUserDto> visitedInfoes = adventureRepository.customQuery(landmarkId);
+        List<VisitedUserDto> visitedInfoes = adventureRepository.findTop5VisitedUser(landmarkId);
         Integer myVisitedCount = adventureRepository.countAdventureByUserAndLandmark(user, landmark);
         return ResponseMostVisitedUser.of(visitedInfoes, myVisitedCount);
     }

@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.attendance.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.playkuround.playkuroundserver.domain.attendance.application.AttendanceRegisterService;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.attendance.dto.AttendanceRegisterDto;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
@@ -41,6 +42,9 @@ class AttendanceApiTest {
     private AttendanceRepository attendanceRepository;
 
     @Autowired
+    private AttendanceRegisterService attendanceRegisterService;
+
+    @Autowired
     private BadgeRepository badgeRepository;
 
     @Autowired
@@ -75,6 +79,33 @@ class AttendanceApiTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", "ATTENDANCE_1").exists())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("중복 출석 요청 - 에러발생")
+    void duplicateAttendance() throws Exception {
+        // given
+        String userEmail = "test@email.com";
+        userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
+        String accessToken = userLoginService.login(userEmail).getAccessToken();
+
+        // 오늘 출석 완료
+        AttendanceRegisterDto.Request request = new AttendanceRegisterDto.Request(37.539927, 127.073006);
+        attendanceRegisterService.registerAttendance(userEmail, request);
+
+        String content = objectMapper.writeValueAsString(request);
+        // expected - 한번 더 출석
+        mockMvc.perform(post("/api/attendances")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.isSuccess").value(false))
+                .andExpect(jsonPath("$.errorResponse.status").value(400))
+                .andExpect(jsonPath("$.errorResponse.code").value("AT01"))
+                .andExpect(jsonPath("$.errorResponse.message").value("이미 오늘 출석한 회원입니다."))
                 .andDo(print());
     }
 }

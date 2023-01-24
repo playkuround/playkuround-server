@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -30,8 +29,8 @@ public class AdventureApi {
     }
 
     @GetMapping
-    public ApiResponse<List<ResponseFindAdventure>> findAdventureByUserEmail(@UserEmail String userEmail) {
-        List<ResponseFindAdventure> adventureByUserEmail = adventureService.findAdventureByUserEmail(userEmail);
+    public ApiResponse<ResponseFindAdventure> findAdventureByUserEmail(@UserEmail String userEmail) {
+        ResponseFindAdventure adventureByUserEmail = adventureService.findAdventureByUserEmail(userEmail);
         return ApiUtils.success(adventureByUserEmail);
 
     }

@@ -3,6 +3,7 @@ package com.playkuround.playkuroundserver.domain.attendance.application;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
 import com.playkuround.playkuroundserver.domain.attendance.dto.AttendanceRegisterDto;
+import com.playkuround.playkuroundserver.domain.attendance.exception.DuplicateAttendanceException;
 import com.playkuround.playkuroundserver.domain.attendance.exception.InvalidAttendanceLocationException;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
@@ -39,6 +40,9 @@ public class AttendanceRegisterService {
         }
 
         User user = userFindDao.findByEmail(userEmail);
+        if (attendanceRepository.existsByUserAndCreatedAtAfter(user, LocalDate.now().atStartOfDay())) {
+            throw new DuplicateAttendanceException();
+        }
         Attendance attendance = Attendance.createAttendance(latitude, longitude, user);
         attendanceRepository.save(attendance);
         return findNewBadges(user);

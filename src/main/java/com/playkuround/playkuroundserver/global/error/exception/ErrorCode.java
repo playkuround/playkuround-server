@@ -40,7 +40,10 @@ public enum ErrorCode {
     SENDING_LIMIT_EXCEEDED(429, "E004", "인증 메일 전송 횟수를 초과하였습니다."),
 
     // Badge
-    INVALID_Badge_TYPE(500, "B001", "올바르지 않은 BadgeType입니다."),
+    INVALID_Badge_TYPE(400, "B001", "올바르지 않은 BadgeType입니다."),
+
+    // Attendance
+    DUPLICATE_ATTENDANCE(400, "AT01", "이미 오늘 출석한 회원입니다."),
 
     ;
 

@@ -18,7 +18,6 @@ import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,13 +103,10 @@ public class AdventureService {
          * 해당 랜드마크에 가장 많이 방문한 회원
          * 횟수가 같다면 방문한지 오래된 회원 -> 정책 논의 필요
          */
-        Landmark landmark = landmarkRepository.findById(landmarkId)
-                .orElseThrow(() -> new LandmarkNotFoundException(landmarkId));
         User user = userFindDao.findByEmail(userEmail);
 
-        List<VisitedUserDto> visitedInfoes = adventureRepository.findTop5VisitedUser(landmarkId, PageRequest.of(0, 5));
-        Integer myVisitedCount = adventureRepository.countAdventureByUserAndLandmark(user, landmark);
-        return ResponseMostVisitedUser.of(visitedInfoes, myVisitedCount);
+        List<VisitedUserDto> visitedInfoList = adventureRepository.findVisitedUsersRank(landmarkId);
+        return ResponseMostVisitedUser.of(visitedInfoList, user.getId());
     }
 
 }

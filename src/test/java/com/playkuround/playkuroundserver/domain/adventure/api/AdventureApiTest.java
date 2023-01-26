@@ -255,7 +255,6 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.myVisitedCount").value(0))
                 .andDo(print());
 
         // 2. 한 번이라도 더 방문한 회원 응답
@@ -272,7 +271,8 @@ class AdventureApiTest {
                 .andExpect(jsonPath("$.response.top5Users[0].[?(@.count == '%s')]", "2").exists())
                 .andExpect(jsonPath("$.response.top5Users[1].[?(@.nickname == '%s')]", "tester2").exists())
                 .andExpect(jsonPath("$.response.top5Users[1].[?(@.count == '%s')]", "1").exists())
-                .andExpect(jsonPath("$.response.myVisitedCount").value(2))
+                .andExpect(jsonPath("$.response.me.count").value(2))
+                .andExpect(jsonPath("$.response.me.ranking").value(1))
                 .andDo(print());
 
         // 3. 방문 횟수가 같다면, 방문한지 오래된 회원 응답
@@ -287,7 +287,8 @@ class AdventureApiTest {
                 .andExpect(jsonPath("$.response.top5Users[0].[?(@.count == '%s')]", "2").exists())
                 .andExpect(jsonPath("$.response.top5Users[1].[?(@.nickname == '%s')]", "tester2").exists())
                 .andExpect(jsonPath("$.response.top5Users[1].[?(@.count == '%s')]", "2").exists())
-                .andExpect(jsonPath("$.response.myVisitedCount").value(2))
+                .andExpect(jsonPath("$.response.me.count").value(2))
+                .andExpect(jsonPath("$.response.me.ranking").value(1))
                 .andDo(print());
 
         // 4. 한 번이라도 더 방문한 회원 응답
@@ -302,7 +303,8 @@ class AdventureApiTest {
                 .andExpect(jsonPath("$.response.top5Users[0].[?(@.count == '%s')]", "3").exists())
                 .andExpect(jsonPath("$.response.top5Users[1].[?(@.nickname == '%s')]", "tester1").exists())
                 .andExpect(jsonPath("$.response.top5Users[1].[?(@.count == '%s')]", "2").exists())
-                .andExpect(jsonPath("$.response.myVisitedCount").value(2))
+                .andExpect(jsonPath("$.response.me.count").value(2))
+                .andExpect(jsonPath("$.response.me.ranking").value(2))
                 .andDo(print());
     }
 
@@ -341,7 +343,6 @@ class AdventureApiTest {
                 .andExpect(jsonPath("$.response.top5Users[1].[?(@.count == '%s')]", "1").exists())
                 .andExpect(jsonPath("$.response.top5Users[2].[?(@.nickname == '%s')]", "tester4").exists())
                 .andExpect(jsonPath("$.response.top5Users[2].[?(@.count == '%s')]", "1").exists())
-                .andExpect(jsonPath("$.response.myVisitedCount").value(0))
                 .andDo(print());
 
         // 2. 6명이 한번씩 방문
@@ -364,7 +365,8 @@ class AdventureApiTest {
                 .andExpect(jsonPath("$.response.top5Users[3].[?(@.count == '%s')]", "1").exists())
                 .andExpect(jsonPath("$.response.top5Users[4].[?(@.nickname == '%s')]", "tester5").exists())
                 .andExpect(jsonPath("$.response.top5Users[4].[?(@.count == '%s')]", "1").exists())
-                .andExpect(jsonPath("$.response.myVisitedCount").value(1))
+                .andExpect(jsonPath("$.response.me.count").value(1))
+                .andExpect(jsonPath("$.response.me.ranking").value(4))
                 .andDo(print());
 
         // 3. 2명이 한번씩 더 방문
@@ -386,7 +388,8 @@ class AdventureApiTest {
                 .andExpect(jsonPath("$.response.top5Users[3].[?(@.count == '%s')]", "1").exists())
                 .andExpect(jsonPath("$.response.top5Users[4].[?(@.nickname == '%s')]", "tester4").exists())
                 .andExpect(jsonPath("$.response.top5Users[4].[?(@.count == '%s')]", "1").exists())
-                .andExpect(jsonPath("$.response.myVisitedCount").value(1))
+                .andExpect(jsonPath("$.response.me.count").value(1))
+                .andExpect(jsonPath("$.response.me.ranking").value(6))
                 .andDo(print());
     }
 }

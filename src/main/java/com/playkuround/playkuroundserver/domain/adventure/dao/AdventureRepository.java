@@ -2,17 +2,22 @@ package com.playkuround.playkuroundserver.domain.adventure.dao;
 
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.VisitedUserDto;
+import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AdventureRepository extends JpaRepository<Adventure, Long> {
 
     @Query(value = "SELECT DISTINCT a.landmark.id FROM Adventure a WHERE a.user.id=:#{#user.id}")
     List<Long> findDistinctLandmarkIdByUser(@Param(value = "user") User user);
+
+    @Query(value = "SELECT COUNT(DISTINCT a.landmark.id) FROM Adventure a WHERE a.user.id=:#{#user.id}")
+    Long countDistinctLandmarkByUser(@Param(value = "user") User user);
 
     @Query(value =
             "SELECT " +
@@ -42,4 +47,5 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
 
     Long countByUser(User user);
 
+    boolean existsByUserAndLandmarkAndCreatedAtAfter(User user, Landmark landmark, LocalDateTime localDateTime);
 }

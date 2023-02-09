@@ -45,7 +45,5 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
     @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id>=39 and a.landmark.id<=44")
     Long countAdventureForNEIL_ARMSTRONG();
 
-    Long countByUser(User user);
-
     boolean existsByUserAndLandmarkAndCreatedAtAfter(User user, Landmark landmark, LocalDateTime localDateTime);
 }

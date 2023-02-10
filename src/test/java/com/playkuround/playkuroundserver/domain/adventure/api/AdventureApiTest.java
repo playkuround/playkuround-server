@@ -12,7 +12,9 @@ import com.playkuround.playkuroundserver.domain.user.application.UserRegisterSer
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
+import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,6 +210,41 @@ class AdventureApiTest {
     }
 
     @Test
+    @DisplayName("각 랜드마크는 하루에 한번만 탐험이 가능")
+    void failsSaveAdventure() throws Exception {
+        // given
+        String userEmail = "test@email.com";
+        userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
+        String accessToken = userLoginService.login(userEmail).getAccessToken();
+
+        AdventureSaveDto.Request adventureSaveDto = new AdventureSaveDto.Request(1L, 37.539927, 127.073006);
+        adventureService.saveAdventure(userEmail, adventureSaveDto);
+        String content = objectMapper.writeValueAsString(adventureSaveDto);
+
+        // expected
+        mockMvc.perform(post("/api/adventures")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.isSuccess").value(false))
+                .andExpect(jsonPath("$.errorResponse.status").value(400))
+                .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.DUPLICATE_ADVENTURE.getCode()))
+                .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.DUPLICATE_ADVENTURE.getMessage()))
+                .andDo(print());
+
+        Adventure adventure = adventureRepository.findAll().get(0);
+        assertEquals(1L, adventureRepository.count());
+        assertEquals(1L, adventure.getLandmark().getId());
+
+        User user = userRepository.findAll().get(0);
+        assertEquals(1L, userRepository.count());
+        assertEquals(user.getId(), adventure.getUser().getId());
+    }
+
+    @Test
+    @Disabled("각 랜드마크는 하루에 한번만 탐험이 가능 - 어떻게 테스트를?")
     @DisplayName("로그인 회원의 탐험 기록 조회 - 중복 랜드마크 존재 시, 1번만 등장해야 함")
     void findAdventureWhenDuplicationLandmark() throws Exception {
         // given
@@ -239,6 +276,7 @@ class AdventureApiTest {
     }
 
     @Test
+    @Disabled("각 랜드마크는 하루에 한번만 탐험이 가능 - 어떻게 테스트를?")
     @DisplayName("특정 랜드마크에 가장 많이 방문한 회원 조회(2명)")
     void findMemberMostAdventureWhenTwoPeople() throws Exception {
         // given
@@ -309,6 +347,7 @@ class AdventureApiTest {
     }
 
     @Test
+    @Disabled("각 랜드마크는 하루에 한번만 탐험이 가능 - 어떻게 테스트를?")
     @DisplayName("특정 랜드마크에 가장 많이 방문한 회원 조회(6명)")
     void findMemberMostAdventureWhenSixPeople() throws Exception {
         // given

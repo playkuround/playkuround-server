@@ -45,6 +45,9 @@ public enum ErrorCode {
     // Attendance
     DUPLICATE_ATTENDANCE(400, "AT01", "이미 오늘 출석한 회원입니다."),
 
+    // Adventure
+    DUPLICATE_ADVENTURE(400, "AD01", "이미 오늘 탐험한 랜드마크입니다."),
+
     ;
 
     private final int status;

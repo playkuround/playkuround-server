@@ -3,6 +3,7 @@ package com.playkuround.playkuroundserver.domain.auth.email.api;
 import com.playkuround.playkuroundserver.domain.auth.email.application.AuthEmailSendService;
 import com.playkuround.playkuroundserver.domain.auth.email.application.AuthEmailVerifyService;
 import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthEmailSendDto;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthVerifyEmailDto;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.NotKUEmailException;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -29,8 +30,8 @@ public class AuthEmailApi {
     }
 
     @GetMapping
-    public ApiResponse<Boolean> authEmailVerify(@RequestParam("code") String code, @RequestParam("email") String email) {
-        boolean result = authEmailVerifyService.verifyAuthEmail(code, email);
+    public ApiResponse<AuthVerifyEmailDto.Response> authEmailVerify(@RequestParam("code") String code, @RequestParam("email") String email) {
+        AuthVerifyEmailDto.Response result = authEmailVerifyService.verifyAuthEmail(code, email);
         return ApiUtils.success(result);
     }
 

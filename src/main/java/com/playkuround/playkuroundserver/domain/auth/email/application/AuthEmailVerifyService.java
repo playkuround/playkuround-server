@@ -37,6 +37,7 @@ public class AuthEmailVerifyService {
             throw new NotMatchAuthCodeException();
         }
 
+        authEmailRepository.delete(authEmail);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();

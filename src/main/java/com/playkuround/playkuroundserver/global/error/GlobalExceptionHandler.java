@@ -22,9 +22,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("MethodArgumentNotValidException", e);
-        final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_VALUE, e.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
-        return ApiUtils.error(errorResponse);
+        return handleException(e, ErrorCode.INVALID_VALUE, e.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
     }
 
     /**
@@ -33,9 +31,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        log.error("MethodArgumentTypeMismatchException", e);
-        final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_VALUE, e.getMessage());
-        return ApiUtils.error(errorResponse);
+        return handleException(e, ErrorCode.INVALID_VALUE, e.getMessage());
     }
 
     /**
@@ -43,9 +39,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     protected ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        log.error("HttpRequestMethodNotSupportedException", e);
-        final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.METHOD_NOT_ALLOWED);
-        return ApiUtils.error(errorResponse);
+        return handleException(e, ErrorCode.METHOD_NOT_ALLOWED, ErrorCode.METHOD_NOT_ALLOWED.getMessage());
     }
 
     /**
@@ -53,24 +47,22 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
-        log.error("AccessDeniedException", e);
-        final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.ACCESS_DENIED);
-        return ApiUtils.error(errorResponse);
+        return handleException(e, ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
     }
 
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<?> handleBusinessException(final BusinessException e) {
-        log.error("BusinessException", e);
-        final ErrorCode errorCode = e.getErrorCode();
-        final ErrorResponse errorResponse = ErrorResponse.of(errorCode);
-        return ApiUtils.error(errorResponse);
+        return handleException(e, e.getErrorCode(), e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<?> handleException(Exception e) {
-        log.error("Exception", e);
-        final ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
-        return ApiUtils.error(errorResponse);
+        return handleException(e, ErrorCode.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR.getMessage());
+    }
+
+    private ResponseEntity<?> handleException(Exception e, ErrorCode errorCode, String message) {
+        log.error(message, e);
+        return ApiUtils.error(ErrorResponse.of(errorCode, message));
     }
 
 }

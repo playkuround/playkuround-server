@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.auth.token.api;
 
 import com.playkuround.playkuroundserver.domain.auth.token.application.RefreshTokenValidator;
-import com.playkuround.playkuroundserver.domain.auth.token.application.TokenIssueService;
+     import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -19,15 +19,15 @@ import javax.servlet.http.HttpServletRequest;
 public class TokenApi {
 
     private final RefreshTokenValidator refreshTokenValidator;
-    private final TokenIssueService tokenIssueService;
+    private final TokenService tokenIssueService;
 
     @PostMapping
     public ApiResponse<TokenDto.AccessTokenDto> accessTokenReissue(HttpServletRequest request) {
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         refreshTokenValidator.validateRefreshToken(authorizationHeader);
 
-        String refreshToken = authorizationHeader.split(" ")[1];
-        TokenDto.AccessTokenDto accessTokenDto = tokenIssueService.reissueAccessToken(refreshToken);
+        String refreshTokenDto = authorizationHeader.split(" ")[1];
+        TokenDto.AccessTokenDto accessTokenDto = tokenIssueService.reissueAccessToken(refreshTokenDto);
 
         return ApiUtils.success(accessTokenDto);
     }

@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.auth.token.exception;
 
 import com.playkuround.playkuroundserver.global.error.exception.AuthenticationException;
-import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
+import com.playkuround.playkuroundserver.global.error.ErrorCode;
 
 public class InvalidTokenException extends AuthenticationException {
 

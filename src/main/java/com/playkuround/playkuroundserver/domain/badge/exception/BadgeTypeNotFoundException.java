@@ -1,6 +1,6 @@
 package com.playkuround.playkuroundserver.domain.badge.exception;
 
-import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
+import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import com.playkuround.playkuroundserver.global.error.exception.InvalidValueException;
 
 

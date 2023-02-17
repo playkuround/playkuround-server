@@ -1,7 +1,6 @@
 package com.playkuround.playkuroundserver.global.error;
 
 import com.playkuround.playkuroundserver.global.error.exception.BusinessException;
-import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

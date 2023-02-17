@@ -1,6 +1,5 @@
 package com.playkuround.playkuroundserver.global.error;
 
-import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 

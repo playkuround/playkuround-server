@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.global.error.exception;
+package com.playkuround.playkuroundserver.global.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

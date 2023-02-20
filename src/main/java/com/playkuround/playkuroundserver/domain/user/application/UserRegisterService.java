@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
+import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -19,6 +20,7 @@ public class UserRegisterService {
     private final UserRepository userRepository;
     private final UserValidator userValidator;
     private final TokenManager tokenManager;
+    private final TokenService tokenService;
 
     public UserRegisterDto.Response registerUser(UserRegisterDto.Request registerRequest) {
         // 중복 검사
@@ -29,9 +31,9 @@ public class UserRegisterService {
         User user = userRepository.save(registerRequest.toEntity());
 
         // 응답으로 반환할 토큰 생성
-        // 유저 리프레시 토큰 갱신
+        // 리프레시 토큰 레디스에 저장
         TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
-        user.updateRefreshToken(tokenDto);
+        tokenService.registerRefreshToken(user.getEmail(), tokenDto.getRefreshToken());
 
         return UserRegisterDto.Response.of(tokenDto);
     }

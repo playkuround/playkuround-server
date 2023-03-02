@@ -1,9 +1,9 @@
 package com.playkuround.playkuroundserver.domain.auth.token.application;
 
-import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.GrantType;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
 import com.playkuround.playkuroundserver.global.error.exception.AuthenticationException;
 import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import io.jsonwebtoken.*;
@@ -51,7 +51,7 @@ public class TokenManager {
     public Date createRefreshTokenExpirationTime() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        cal.add(Calendar.MONTH, Integer.parseInt(refreshTokenExpiration));
+        cal.add(Calendar.DATE, Integer.parseInt(refreshTokenExpiration));
         return cal.getTime();
     }
 

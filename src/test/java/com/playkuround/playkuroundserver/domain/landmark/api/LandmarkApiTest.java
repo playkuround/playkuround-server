@@ -2,10 +2,11 @@ package com.playkuround.playkuroundserver.domain.landmark.api;
 
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
+import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ class LandmarkApiTest {
     private UserRepository userRepository;
 
     @Autowired
+    private UserFindDao userFindDao;
+
+    @Autowired
     private UserLoginService userLoginService;
 
     @Autowired
@@ -48,7 +52,8 @@ class LandmarkApiTest {
         // given
         String userEmail = "test@email.com";
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
-        String accessToken = userLoginService.login(userEmail).getAccessToken();
+        User user = userFindDao.findByEmail(userEmail);
+        String accessToken = userLoginService.login(user).getAccessToken();
 
         // expected
         mockMvc.perform(get("/api/landmarks")
@@ -71,7 +76,8 @@ class LandmarkApiTest {
         // given
         String userEmail = "test@email.com";
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
-        String accessToken = userLoginService.login(userEmail).getAccessToken();
+        User user = userFindDao.findByEmail(userEmail);
+        String accessToken = userLoginService.login(user).getAccessToken();
 
         // expected
         mockMvc.perform(get("/api/landmarks")
@@ -94,7 +100,8 @@ class LandmarkApiTest {
         // given
         String userEmail = "test@email.com";
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
-        String accessToken = userLoginService.login(userEmail).getAccessToken();
+        User user = userFindDao.findByEmail(userEmail);
+        String accessToken = userLoginService.login(user).getAccessToken();
 
         // expected
         mockMvc.perform(get("/api/landmarks")

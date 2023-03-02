@@ -1,7 +1,9 @@
 package com.playkuround.playkuroundserver.domain.attendance.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.validation.Latitude;
 import com.playkuround.playkuroundserver.global.validation.Longitude;
 import lombok.AllArgsConstructor;
@@ -24,6 +26,14 @@ public class AttendanceRegisterDto {
 
         @Longitude
         private Double longitude;
+
+        public Attendance toEntity(User user) {
+            return Attendance.builder()
+                    .latitude(latitude)
+                    .longitude(longitude)
+                    .user(user)
+                    .build();
+        }
     }
 
     @Getter

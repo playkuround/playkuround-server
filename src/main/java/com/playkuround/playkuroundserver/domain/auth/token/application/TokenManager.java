@@ -1,19 +1,17 @@
 package com.playkuround.playkuroundserver.domain.auth.token.application;
 
-import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.GrantType;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
 import com.playkuround.playkuroundserver.global.error.exception.AuthenticationException;
-import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
-import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
+import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.time.*;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -53,7 +51,7 @@ public class TokenManager {
     public Date createRefreshTokenExpirationTime() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        cal.add(Calendar.MONTH, Integer.parseInt(refreshTokenExpiration));
+        cal.add(Calendar.DATE, Integer.parseInt(refreshTokenExpiration));
         return cal.getTime();
     }
 

@@ -3,7 +3,6 @@ package com.playkuround.playkuroundserver.domain.user.application;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicationException;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDuplicationException;
-import com.playkuround.playkuroundserver.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,12 +23,6 @@ public class UserValidator {
     public void validateDuplicateNickName(String nickname) {
         if (userRepository.existsByNickname(nickname)) {
             throw new UserNicknameDuplicationException();
-        }
-    }
-
-    public void validateRegisteredUser(String email) {
-        if (!userRepository.existsByEmail(email)) {
-            throw new UserNotFoundException(email);
         }
     }
 

@@ -1,11 +1,15 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
-import com.playkuround.playkuroundserver.domain.user.application.*;
+import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
+import com.playkuround.playkuroundserver.domain.user.application.UserLogoutService;
+import com.playkuround.playkuroundserver.domain.user.application.UserProfileService;
+import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserLoginDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserProfileDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
-import com.playkuround.playkuroundserver.global.resolver.UserEmail;
+import com.playkuround.playkuroundserver.global.resolver.UserEntity;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
@@ -30,20 +34,20 @@ public class UserApi {
     }
 
     @PostMapping("/login")
-    public ApiResponse<UserLoginDto.Response> userLogin(@UserEmail String userEmail) {
-        UserLoginDto.Response loginResponse = userLoginService.login(userEmail);
+    public ApiResponse<UserLoginDto.Response> userLogin(@UserEntity User user) {
+        UserLoginDto.Response loginResponse = userLoginService.login(user);
         return ApiUtils.success(loginResponse);
     }
 
     @GetMapping
-    public ApiResponse<UserProfileDto.Response> userProfile(@UserEmail String userEmail) {
-        UserProfileDto.Response profileResponse = userProfileService.getUserProfile(userEmail);
+    public ApiResponse<UserProfileDto.Response> userProfile(@UserEntity User user) {
+        UserProfileDto.Response profileResponse = userProfileService.getUserProfile(user);
         return ApiUtils.success(profileResponse);
     }
 
     @PostMapping("/logout")
-    public ApiResponse<Void> userLogout(@UserEmail String userEmail) {
-        userLogoutService.logout(userEmail);
+    public ApiResponse<Void> userLogout(@UserEntity User user) {
+        userLogoutService.logout(user);
         return ApiUtils.success(null);
     }
 
@@ -54,8 +58,8 @@ public class UserApi {
     }
 
     @DeleteMapping
-    public ApiResponse<Void> userDelete(@UserEmail String userEmail) {
-        userRegisterService.deleteUser(userEmail);
+    public ApiResponse<Void> userDelete(@UserEntity User user) {
+        userRegisterService.deleteUser(user);
         return ApiUtils.success(null);
     }
 

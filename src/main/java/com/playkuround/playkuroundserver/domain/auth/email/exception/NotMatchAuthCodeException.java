@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.auth.email.exception;
 
 import com.playkuround.playkuroundserver.global.error.exception.BusinessException;
-import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
+import com.playkuround.playkuroundserver.global.error.ErrorCode;
 
 public class NotMatchAuthCodeException extends BusinessException {
 

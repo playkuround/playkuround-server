@@ -7,6 +7,7 @@ import com.playkuround.playkuroundserver.domain.auth.email.exception.AuthCodeExp
 import com.playkuround.playkuroundserver.domain.auth.email.exception.AuthEmailNotFoundException;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.NotMatchAuthCodeException;
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
+import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -25,6 +26,7 @@ public class AuthEmailVerifyService {
     private final AuthEmailRepository authEmailRepository;
     private final UserRepository userRepository;
     private final TokenManager tokenManager;
+    private final TokenService tokenService;
 
     public AuthVerifyEmailDto.Response verifyAuthEmail(String code, String email) {
         AuthEmail authEmail = authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(email)
@@ -42,7 +44,7 @@ public class AuthEmailVerifyService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
-            user.updateRefreshToken(tokenDto);
+            tokenService.updateRefreshToken(user);
             return AuthVerifyEmailDto.Response.of(tokenDto);
         }
         else return new AuthVerifyEmailDto.Response();

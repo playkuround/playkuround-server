@@ -1,8 +1,9 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
+import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
-import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
+import com.playkuround.playkuroundserver.domain.score.application.ScoreService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
@@ -15,10 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserRegisterService {
 
-    private final UserFindDao userFindDao;
     private final UserRepository userRepository;
     private final UserValidator userValidator;
     private final TokenManager tokenManager;
+    private final TokenService tokenService;
+    private final ScoreService scoreService;
 
     public UserRegisterDto.Response registerUser(UserRegisterDto.Request registerRequest) {
         // 중복 검사
@@ -29,15 +31,16 @@ public class UserRegisterService {
         User user = userRepository.save(registerRequest.toEntity());
 
         // 응답으로 반환할 토큰 생성
-        // 유저 리프레시 토큰 갱신
+        // 리프레시 토큰 레디스에 저장
         TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
-        user.updateRefreshToken(tokenDto);
+        tokenService.registerRefreshToken(user, tokenDto.getRefreshToken());
+
+        scoreService.initScore(user);
 
         return UserRegisterDto.Response.of(tokenDto);
     }
 
-    public void deleteUser(String userEmail) {
-        User user = userFindDao.findByEmail(userEmail);
+    public void deleteUser(User user) {
         userRepository.delete(user);
     }
 

@@ -7,7 +7,9 @@ import com.playkuround.playkuroundserver.domain.attendance.dto.AttendanceRegiste
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
+import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +41,9 @@ class AttendanceApiTest {
     private UserRepository userRepository;
 
     @Autowired
+    private UserFindDao userFindDao;
+
+    @Autowired
     private AttendanceRepository attendanceRepository;
 
     @Autowired
@@ -66,7 +71,8 @@ class AttendanceApiTest {
         // given
         String userEmail = "test@email.com";
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
-        String accessToken = userLoginService.login(userEmail).getAccessToken();
+        User user = userFindDao.findByEmail(userEmail);
+        String accessToken = userLoginService.login(user).getAccessToken();
 
         AttendanceRegisterDto.Request request = new AttendanceRegisterDto.Request(37.539927, 127.073006);
         String content = objectMapper.writeValueAsString(request);
@@ -88,11 +94,12 @@ class AttendanceApiTest {
         // given
         String userEmail = "test@email.com";
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
-        String accessToken = userLoginService.login(userEmail).getAccessToken();
+        User user = userFindDao.findByEmail(userEmail);
+        String accessToken = userLoginService.login(user).getAccessToken();
 
         // 오늘 출석 완료
         AttendanceRegisterDto.Request request = new AttendanceRegisterDto.Request(37.539927, 127.073006);
-        attendanceRegisterService.registerAttendance(userEmail, request);
+        attendanceRegisterService.registerAttendance(user, request);
 
         String content = objectMapper.writeValueAsString(request);
         // expected - 한번 더 출석

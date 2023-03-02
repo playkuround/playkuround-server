@@ -5,7 +5,7 @@ import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
 import com.playkuround.playkuroundserver.global.error.exception.AuthenticationException;
-import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
+import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

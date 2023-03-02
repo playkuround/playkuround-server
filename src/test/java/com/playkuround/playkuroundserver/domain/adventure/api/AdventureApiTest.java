@@ -12,7 +12,7 @@ import com.playkuround.playkuroundserver.domain.user.application.UserRegisterSer
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
-import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
+import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;

@@ -3,7 +3,7 @@ package com.playkuround.playkuroundserver.domain.auth.token.application;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.GrantType;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
 import com.playkuround.playkuroundserver.global.error.exception.AuthenticationException;
-import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
+import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;

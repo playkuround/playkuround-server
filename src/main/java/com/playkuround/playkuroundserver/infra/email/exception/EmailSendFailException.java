@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.infra.email.exception;
 
 import com.playkuround.playkuroundserver.global.error.exception.BusinessException;
-import com.playkuround.playkuroundserver.global.error.exception.ErrorCode;
+import com.playkuround.playkuroundserver.global.error.ErrorCode;
 
 public class EmailSendFailException extends BusinessException {
 

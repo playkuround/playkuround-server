@@ -1,7 +1,10 @@
 package com.playkuround.playkuroundserver.domain.score.domain;
 
 public enum ScoreType {
-    ATTENDANCE(1), ADVENTURE(5), EXTRA_ADVENTURE(1);
+    INIT(0),
+    ATTENDANCE(1),
+    ADVENTURE(5),
+    EXTRA_ADVENTURE(1);
 
     private final int point;
 

@@ -89,8 +89,8 @@ class ScoreApiTest {
                 .andExpect(status().isCreated())
                 .andDo(print());
 
-        assertEquals(1L, scoreRepository.count());
-        Score score = scoreRepository.findAll().get(0);
+        assertEquals(2L, scoreRepository.count()); // INIT 스코어까지 포함
+        Score score = scoreRepository.findAll().get(1);
         assertEquals(ScoreType.ATTENDANCE, score.getScoreType());
         assertEquals(ScoreType.ATTENDANCE.getPoint(), scoreFindDao.findTotalScorePointByUserEmail(userEmail));
     }
@@ -110,8 +110,8 @@ class ScoreApiTest {
                 .andExpect(status().isCreated())
                 .andDo(print());
 
-        assertEquals(1L, scoreRepository.count());
-        Score score = scoreRepository.findAll().get(0);
+        assertEquals(2L, scoreRepository.count()); // INIT 스코어까지 포함
+        Score score = scoreRepository.findAll().get(1);
         assertEquals(ScoreType.ADVENTURE, score.getScoreType());
         assertEquals(ScoreType.ADVENTURE.getPoint(), scoreFindDao.findTotalScorePointByUserEmail(userEmail));
     }
@@ -131,8 +131,8 @@ class ScoreApiTest {
                 .andExpect(status().isCreated())
                 .andDo(print());
 
-        assertEquals(1L, scoreRepository.count());
-        Score score = scoreRepository.findAll().get(0);
+        assertEquals(2L, scoreRepository.count()); // INIT 스코어까지 포함
+        Score score = scoreRepository.findAll().get(1);
         assertEquals(ScoreType.EXTRA_ADVENTURE, score.getScoreType());
         assertEquals(ScoreType.EXTRA_ADVENTURE.getPoint(), scoreFindDao.findTotalScorePointByUserEmail(userEmail));
     }

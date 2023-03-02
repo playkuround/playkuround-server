@@ -1,16 +1,17 @@
 package com.playkuround.playkuroundserver.domain.auth.token.application;
 
+import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenFindDao;
 import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenRepository;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.RefreshToken;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class TokenService {
 
     private final TokenManager tokenManager;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenFindDao refreshTokenFindDao;
 
     public TokenDto.AccessTokenDto reissueAccessToken(String refreshTokenDto) {
         RefreshToken refreshToken = refreshTokenRepository.findById(refreshTokenDto)
@@ -35,9 +37,9 @@ public class TokenService {
     }
 
     @Transactional
-    public void registerRefreshToken(String userEmail, String refreshTokenDto) {
+    public void registerRefreshToken(User user, String refreshTokenDto) {
         RefreshToken refreshToken = RefreshToken.of(
-                userEmail,
+                user.getEmail(),
                 refreshTokenDto,
                 Integer.parseInt(refreshTokenTimeToLive)
         );
@@ -45,9 +47,15 @@ public class TokenService {
     }
 
     @Transactional
-    public void deleteRefreshTokenByUserEmail(String userEmail) {
-        List<RefreshToken> refreshTokens = refreshTokenRepository.findAllByUserEmail(userEmail);
-        refreshTokens.forEach(refreshToken -> refreshTokenRepository.deleteById(refreshToken.getRefreshToken()));
+    public void updateRefreshToken(User user) {
+        RefreshToken refreshToken = refreshTokenFindDao.findByUser(user);
+        refreshToken.updateTimeToLive(Integer.parseInt(refreshTokenTimeToLive));
+    }
+
+    @Transactional
+    public void deleteRefreshTokenByUser(User user) {
+        RefreshToken refreshToken = refreshTokenFindDao.findByUser(user);
+        refreshTokenRepository.delete(refreshToken);
     }
 
 }

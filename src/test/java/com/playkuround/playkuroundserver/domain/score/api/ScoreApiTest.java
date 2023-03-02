@@ -1,7 +1,6 @@
 package com.playkuround.playkuroundserver.domain.score.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.playkuround.playkuroundserver.domain.score.application.ScoreService;
 import com.playkuround.playkuroundserver.domain.score.dao.ScoreFindDao;
 import com.playkuround.playkuroundserver.domain.score.dao.ScoreRepository;
 import com.playkuround.playkuroundserver.domain.score.domain.Score;
@@ -9,7 +8,9 @@ import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
 import com.playkuround.playkuroundserver.domain.score.dto.ScoreRegisterDto;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
+import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +49,9 @@ class ScoreApiTest {
     private UserRepository userRepository;
 
     @Autowired
+    private UserFindDao userFindDao;
+
+    @Autowired
     private ScoreFindDao scoreFindDao;
 
     @Autowired
@@ -66,7 +70,8 @@ class ScoreApiTest {
     @BeforeEach
     void registerUser() {
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
-        accessToken = userLoginService.login(userEmail).getAccessToken();
+        User user = userFindDao.findByEmail(userEmail);
+        accessToken = userLoginService.login(user).getAccessToken();
     }
 
     @Test

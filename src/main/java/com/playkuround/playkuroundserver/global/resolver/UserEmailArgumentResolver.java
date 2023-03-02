@@ -1,6 +1,8 @@
 package com.playkuround.playkuroundserver.global.resolver;
 
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
+import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -11,19 +13,24 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
 public class UserEmailArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final TokenManager tokenManager;
+    private final UserFindDao userFindDao;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        boolean hasEmailAnnotation = parameter.hasParameterAnnotation(UserEmail.class);
-        boolean hasString = String.class.isAssignableFrom(parameter.getParameterType());
+        boolean hasAnnotation = parameter.hasParameterAnnotation(UserEntity.class);
+        boolean isUserClass = Objects.equals(
+                User.class,
+                parameter.getParameterType()
+                );
 
-        return hasEmailAnnotation && hasString;
+        return hasAnnotation && isUserClass;
     }
 
     @Override
@@ -32,7 +39,7 @@ public class UserEmailArgumentResolver implements HandlerMethodArgumentResolver 
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         token = token.split(" ")[1];
         String userEmail = tokenManager.getUserEmail(token);
-        return userEmail;
+        return userFindDao.findByEmail(userEmail);
     }
 
 }

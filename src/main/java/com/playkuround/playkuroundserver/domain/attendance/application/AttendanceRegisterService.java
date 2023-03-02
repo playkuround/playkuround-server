@@ -8,7 +8,6 @@ import com.playkuround.playkuroundserver.domain.attendance.exception.InvalidAtte
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.LocationUtils;
 import lombok.RequiredArgsConstructor;
@@ -25,25 +24,14 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class AttendanceRegisterService {
 
-    private final UserFindDao userFindDao;
     private final AttendanceRepository attendanceRepository;
     private final BadgeRepository badgeRepository;
 
     @Transactional
-    public AttendanceRegisterDto.Response registerAttendance(String userEmail, AttendanceRegisterDto.Request registerRequest) {
-        double latitude = registerRequest.getLatitude();
-        double longitude = registerRequest.getLongitude();
+    public AttendanceRegisterDto.Response registerAttendance(User user, AttendanceRegisterDto.Request registerRequest) {
+        validateAttendance(user, registerRequest);
+        Attendance attendance = registerRequest.toEntity(user);
 
-        boolean locatedInKU = LocationUtils.isLocatedInKU(latitude, longitude);
-        if (!locatedInKU) {
-            throw new InvalidAttendanceLocationException();
-        }
-
-        User user = userFindDao.findByEmail(userEmail);
-        if (attendanceRepository.existsByUserAndCreatedAtAfter(user, LocalDate.now().atStartOfDay())) {
-            throw new DuplicateAttendanceException();
-        }
-        Attendance attendance = Attendance.createAttendance(latitude, longitude, user);
         attendanceRepository.save(attendance);
         return findNewBadges(user);
     }
@@ -98,6 +86,30 @@ public class AttendanceRegisterService {
 
     private boolean isTodayFoundationDay() {
         return LocalDate.now().getMonth().getValue() == 5 && LocalDate.now().getDayOfMonth() == 15;
+    }
+
+    private void validateAttendance(User user, AttendanceRegisterDto.Request registerRequest) {
+        // 건대에 있는지 검증
+        double latitude = registerRequest.getLatitude();
+        double longitude = registerRequest.getLongitude();
+        validateLocation(latitude, longitude);
+
+        // 이미 출석했는지 검증
+        validateDuplicateAttendance(user);
+    }
+
+    private void validateDuplicateAttendance(User user) {
+        if (attendanceRepository.existsByUserAndCreatedAtAfter(user, LocalDate.now().atStartOfDay())) {
+            throw new DuplicateAttendanceException();
+        }
+    }
+
+    private void validateLocation(double latitude, double longitude) {
+        boolean isLocatedInKU = LocationUtils.isLocatedInKU(latitude, longitude);
+
+        if (!isLocatedInKU) {
+            throw new InvalidAttendanceLocationException();
+        }
     }
 
 }

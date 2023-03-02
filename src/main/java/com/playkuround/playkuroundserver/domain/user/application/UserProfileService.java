@@ -1,6 +1,5 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
-import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserProfileDto;
@@ -13,11 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserProfileService {
 
-    private final UserFindDao userFindDao;
     private final UserRepository userRepository;
 
-    public UserProfileDto.Response getUserProfile(String email) {
-        User user = userFindDao.findByEmail(email);
+    public UserProfileDto.Response getUserProfile(User user) {
         return UserProfileDto.Response.of(user);
     }
 

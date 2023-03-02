@@ -8,6 +8,7 @@ import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.BadgeSaveDto;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
+import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
@@ -51,6 +52,9 @@ class BadgeApiTest {
     private UserRepository userRepository;
 
     @Autowired
+    private UserFindDao userFindDao;
+
+    @Autowired
     private BadgeRepository badgeRepository;
 
     @Autowired
@@ -67,7 +71,8 @@ class BadgeApiTest {
     void findBadgeZero() throws Exception {
         String userEmail = "test@email.com";
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
-        String accessToken = userLoginService.login(userEmail).getAccessToken();
+        User user = userFindDao.findByEmail(userEmail);
+        String accessToken = userLoginService.login(user).getAccessToken();
 
         mockMvc.perform(get("/api/badges")
                         .header("Authorization", "Bearer " + accessToken)
@@ -83,11 +88,12 @@ class BadgeApiTest {
     void findBadgeThree() throws Exception {
         String userEmail = "test@email.com";
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
-        String accessToken = userLoginService.login(userEmail).getAccessToken();
+        User user = userFindDao.findByEmail(userEmail);
+        String accessToken = userLoginService.login(user).getAccessToken();
 
-        badgeService.registerBadge(userEmail, BadgeType.ADVENTURE_5.name());
-        badgeService.registerBadge(userEmail, BadgeType.ENGINEER.name());
-        badgeService.registerBadge(userEmail, BadgeType.ATTENDANCE_3.name());
+        badgeService.registerBadge(user, BadgeType.ADVENTURE_5.name());
+        badgeService.registerBadge(user, BadgeType.ENGINEER.name());
+        badgeService.registerBadge(user, BadgeType.ATTENDANCE_3.name());
 
         mockMvc.perform(get("/api/badges")
                         .header("Authorization", "Bearer " + accessToken)
@@ -107,7 +113,8 @@ class BadgeApiTest {
         // given
         String userEmail = "test@email.com";
         userRegisterService.registerUser(new UserRegisterDto.Request(userEmail, "nickname", "컴퓨터공학부"));
-        String accessToken = userLoginService.login(userEmail).getAccessToken();
+        User savedUser = userFindDao.findByEmail(userEmail);
+        String accessToken = userLoginService.login(savedUser).getAccessToken();
 
         BadgeSaveDto badgeSaveDto = new BadgeSaveDto("ATTENDANCE_3");
         String content = objectMapper.writeValueAsString(badgeSaveDto);

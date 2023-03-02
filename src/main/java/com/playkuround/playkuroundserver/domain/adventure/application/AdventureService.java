@@ -14,7 +14,6 @@ import com.playkuround.playkuroundserver.domain.badge.exception.BadgeTypeNotFoun
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
-import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
 import lombok.RequiredArgsConstructor;
@@ -35,11 +34,9 @@ public class AdventureService {
     private final AdventureRepository adventureRepository;
     private final LandmarkRepository landmarkRepository;
     private final BadgeRepository badgeRepository;
-    private final UserFindDao userFindDao;
 
 
-    public AdventureSaveDto.Response saveAdventure(String userEmail, AdventureSaveDto.Request dto) {
-        User user = userFindDao.findByEmail(userEmail);
+    public AdventureSaveDto.Response saveAdventure(User user, AdventureSaveDto.Request dto) {
         Landmark landmark = landmarkRepository.findById(dto.getLandmarkId())
                 .orElseThrow(() -> new LandmarkNotFoundException(dto.getLandmarkId()));
         validateLocation(landmark, dto.getLatitude(), dto.getLongitude());
@@ -98,19 +95,16 @@ public class AdventureService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseFindAdventure findAdventureByUserEmail(String userEmail) {
-        User user = userFindDao.findByEmail(userEmail);
+    public ResponseFindAdventure findAdventureByUserEmail(User user) {
         return ResponseFindAdventure.of(adventureRepository.findDistinctLandmarkIdByUser(user));
     }
 
     @Transactional(readOnly = true)
-    public ResponseMostVisitedUser findMemberMostLandmark(String userEmail, Long landmarkId) {
+    public ResponseMostVisitedUser findMemberMostLandmark(User user, Long landmarkId) {
         /*
          * 해당 랜드마크에 가장 많이 방문한 회원
          * 횟수가 같다면 방문한지 오래된 회원 -> 정책 논의 필요
          */
-        User user = userFindDao.findByEmail(userEmail);
-
         List<VisitedUserDto> visitedInfoList = adventureRepository.findVisitedUsersRank(landmarkId);
         return ResponseMostVisitedUser.of(visitedInfoList, user.getId());
     }

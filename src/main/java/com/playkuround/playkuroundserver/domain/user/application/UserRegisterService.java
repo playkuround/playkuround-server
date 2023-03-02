@@ -31,7 +31,7 @@ public class UserRegisterService {
         // 응답으로 반환할 토큰 생성
         // 리프레시 토큰 레디스에 저장
         TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
-        tokenService.registerRefreshToken(user.getEmail(), tokenDto.getRefreshToken());
+        tokenService.registerRefreshToken(user, tokenDto.getRefreshToken());
 
         return UserRegisterDto.Response.of(tokenDto);
     }

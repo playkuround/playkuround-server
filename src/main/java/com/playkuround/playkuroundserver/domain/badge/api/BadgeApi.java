@@ -3,8 +3,9 @@ package com.playkuround.playkuroundserver.domain.badge.api;
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.dto.BadgeFindDto;
 import com.playkuround.playkuroundserver.domain.badge.dto.BadgeSaveDto;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
-import com.playkuround.playkuroundserver.global.resolver.UserEmail;
+import com.playkuround.playkuroundserver.global.resolver.UserEntity;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,16 +22,16 @@ public class BadgeApi {
     private final BadgeService badgeService;
 
     @GetMapping
-    public ApiResponse<?> findBadge(@UserEmail String userEmail) {
-        List<BadgeFindDto> badges = badgeService.findBadgeByEmail(userEmail);
+    public ApiResponse<?> findBadge(@UserEntity User user) {
+        List<BadgeFindDto> badges = badgeService.findBadgeByEmail(user);
         return ApiUtils.success(badges);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<?> saveBadge(@UserEmail String userEmail,
+    public ApiResponse<?> saveBadge(@UserEntity User user,
                                     @RequestBody @Valid BadgeSaveDto badgeSaveDto) {
-        badgeService.registerBadge(userEmail, badgeSaveDto.getBadgeType());
+        badgeService.registerBadge(user, badgeSaveDto.getBadgeType());
         return ApiUtils.success(null);
     }
 }

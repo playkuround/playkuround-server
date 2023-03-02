@@ -42,12 +42,4 @@ public class Attendance extends BaseTimeEntity {
         this.user = user;
     }
 
-    public static Attendance createAttendance(Double latitude, Double longitude, User user) {
-        return Attendance.builder()
-                .latitude(latitude)
-                .longitude(longitude)
-                .user(user)
-                .build();
-    }
-
 }

@@ -21,12 +21,16 @@ public class RefreshToken {
     private final String userEmail;
 
     @TimeToLive(unit = TimeUnit.DAYS)
-    private final Integer timeToLive;
+    private Integer timeToLive;
 
     @Builder
     public RefreshToken(String userEmail, String refreshToken, Integer timeToLive) {
         this.userEmail = userEmail;
         this.refreshToken = refreshToken;
+        this.timeToLive = timeToLive;
+    }
+
+    public void updateTimeToLive(Integer timeToLive) {
         this.timeToLive = timeToLive;
     }
 

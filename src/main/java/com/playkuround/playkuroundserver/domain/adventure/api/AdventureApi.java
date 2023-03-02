@@ -4,8 +4,9 @@ import com.playkuround.playkuroundserver.domain.adventure.application.AdventureS
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostVisitedUser;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
-import com.playkuround.playkuroundserver.global.resolver.UserEmail;
+import com.playkuround.playkuroundserver.global.resolver.UserEntity;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,22 +24,22 @@ public class AdventureApi {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<AdventureSaveDto.Response> saveAdventure(@UserEmail String userEmail, @RequestBody @Valid AdventureSaveDto.Request dto) {
-        AdventureSaveDto.Response response = adventureService.saveAdventure(userEmail, dto);
+    public ApiResponse<AdventureSaveDto.Response> saveAdventure(@UserEntity User user, @RequestBody @Valid AdventureSaveDto.Request dto) {
+        AdventureSaveDto.Response response = adventureService.saveAdventure(user, dto);
         return ApiUtils.success(response);
     }
 
     @GetMapping
-    public ApiResponse<ResponseFindAdventure> findAdventureByUserEmail(@UserEmail String userEmail) {
-        ResponseFindAdventure adventureByUserEmail = adventureService.findAdventureByUserEmail(userEmail);
+    public ApiResponse<ResponseFindAdventure> findAdventureByUserEmail(@UserEntity User user) {
+        ResponseFindAdventure adventureByUserEmail = adventureService.findAdventureByUserEmail(user);
         return ApiUtils.success(adventureByUserEmail);
 
     }
 
     @GetMapping("/{landmarkId}/most")
-    public ApiResponse<ResponseMostVisitedUser> findMemberMostAdventure(@UserEmail String userEmail,
+    public ApiResponse<ResponseMostVisitedUser> findMemberMostAdventure(@UserEntity User user,
                                                                         @PathVariable Long landmarkId) {
-        ResponseMostVisitedUser memberMostLandmark = adventureService.findMemberMostLandmark(userEmail, landmarkId);
+        ResponseMostVisitedUser memberMostLandmark = adventureService.findMemberMostLandmark(user, landmarkId);
         return ApiUtils.success(memberMostLandmark);
     }
 }

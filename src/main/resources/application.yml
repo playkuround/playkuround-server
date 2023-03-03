@@ -5,7 +5,7 @@ server:
 
 spring:
   redis:
-    host: localhost
+    host: ENC(CkPYHIjy8GUXXM6JEPCP+4LqS0wyH89q)
     port: 6379
   mail:
     host: smtp.gmail.com

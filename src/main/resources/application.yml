@@ -7,6 +7,7 @@ spring:
   redis:
     host: ENC(CkPYHIjy8GUXXM6JEPCP+4LqS0wyH89q)
     port: 6379
+    password: ENC(dNFnmh84R4MuceydmrqY1WbNoW268W5R4utgOsDIjRs=)
   mail:
     host: smtp.gmail.com
     port: 587

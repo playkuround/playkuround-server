@@ -50,8 +50,8 @@ public class AdventureService {
 
     private void validateLocation(Landmark landmark, double latitude, double longitude) {
         double distance = LocationDistanceUtils.distance(landmark.getLatitude(), landmark.getLongitude(), latitude, longitude);
-        // 10미터 초과이면 에러
-        if (distance > 10) throw new InvalidLandmarkLocationException();
+        // 지정된 반경보다 멀리 있으면 오류
+        if (distance > landmark.getRecognitionRadius()) throw new InvalidLandmarkLocationException();
     }
 
     private AdventureSaveDto.Response findNewBadges(User user, Landmark requestSaveLandmark) {

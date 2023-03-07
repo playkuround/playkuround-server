@@ -19,10 +19,9 @@ public enum BadgeType {
     ADVENTURE_10("탐험한 랜드마크 종류가 10개"),
     ADVENTURE_30("탐험한 랜드마크 종류가 30개"),
     CONQUEROR("정복자"), // 모든 랜드마크 종류를 다 탐험
-
     ENGINEER("공대생"), // 공대 건물(A, B, C, 신공, 이과대) 모두 탐험
     ARTIST("예술가"), // 예디대, 공예관 탐험
-    CEO("CEO"), // 경영관 경제학관 탐험
+    CEO("CEO"), // 경영관, 상허연구관, 문과대 탐험
     NATIONAL_PLAYER("국가대표"), // 체육시설, 운동장, 실내 체육관
     NEIL_ARMSTRONG("닐 암스트롱") // 문 모두 탐험
     ;
@@ -36,7 +35,7 @@ public enum BadgeType {
     public static BadgeType findBadgeTypeByLandmarkId(Long landmarkId) {
         if (22 <= landmarkId && landmarkId <= 26) return ENGINEER;
         if (landmarkId == 8 || landmarkId == 28) return ARTIST;
-        if (landmarkId == 15) return CEO; // 경제학관이 어디인가?
+        if (landmarkId == 14 || landmarkId == 15 || landmarkId == 19) return CEO;
         if (landmarkId == 37 || landmarkId == 38) return NATIONAL_PLAYER;
         if (39 <= landmarkId && landmarkId <= 44) return NEIL_ARMSTRONG;
         throw new BadgeTypeNotFoundException(ErrorCode.INVALID_Badge_TYPE);
@@ -45,7 +44,7 @@ public enum BadgeType {
     public static Long requiredAdventureCountForBadge(BadgeType badgeType) {
         if (badgeType == ENGINEER) return 5L;
         if (badgeType == ARTIST) return 2L;
-        if (badgeType == CEO) return 1L;
+        if (badgeType == CEO) return 3L;
         if (badgeType == NATIONAL_PLAYER) return 2L;
         if (badgeType == NEIL_ARMSTRONG) return 6L;
         throw new BadgeTypeNotFoundException(ErrorCode.INVALID_Badge_TYPE);

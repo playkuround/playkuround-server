@@ -21,7 +21,7 @@ public class LandmarkFindNearService {
         List<Landmark> landmarks = landmarkRepository.findAll();
         for (Landmark landmark : landmarks) {
             double distance = LocationDistanceUtils.distance(landmark.getLatitude(), landmark.getLongitude(), latitude, longitude);
-            if (distance <= 10) return FindNearLandmark.Response.of(landmark, distance);
+            if (distance <= landmark.getRecognitionRadius()) return FindNearLandmark.Response.of(landmark, distance);
         }
 
         return FindNearLandmark.Response.of();

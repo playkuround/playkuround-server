@@ -36,7 +36,7 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
     @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id=8 or a.landmark.id=28")
     Long countAdventureForARTIST();
 
-    @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id=15")
+    @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id=14 or a.landmark.id=15 or a.landmark.id=19")
     Long countAdventureForCEO();
 
     @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id=37 or a.landmark.id=38")

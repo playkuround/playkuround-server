@@ -20,12 +20,14 @@ public class FindNearLandmark {
         private String name;
         private Double distance;
         private String gameType;
+        private Integer radius;
 
         public static FindNearLandmark.Response of(Landmark landmark, double distance) {
             return Response.builder()
                     .id(landmark.getId())
                     .name(landmark.getName())
                     .distance(distance)
+                    .radius(landmark.getRecognitionRadius())
                     .gameType(landmark.getGameType().name())
                     .build();
 

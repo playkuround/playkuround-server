@@ -19,11 +19,18 @@ public class LandmarkFindNearService {
     @Transactional(readOnly = true)
     public FindNearLandmark.Response findNearLandmark(double latitude, double longitude) {
         List<Landmark> landmarks = landmarkRepository.findAll();
+
+        FindNearLandmark.Response ret = new FindNearLandmark.Response();
+        double nearDistance = -1;
         for (Landmark landmark : landmarks) {
             double distance = LocationDistanceUtils.distance(landmark.getLatitude(), landmark.getLongitude(), latitude, longitude);
-            if (distance <= landmark.getRecognitionRadius()) return FindNearLandmark.Response.of(landmark, distance);
+            if (distance <= landmark.getRecognitionRadius()) {
+                if (nearDistance == -1 || nearDistance > distance) {
+                    ret = FindNearLandmark.Response.of(landmark, distance);
+                    nearDistance = distance;
+                }
+            }
         }
-
-        return FindNearLandmark.Response.of();
+        return ret;
     }
 }

@@ -58,8 +58,8 @@ class LandmarkApiTest {
         // expected
         mockMvc.perform(get("/api/landmarks")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("latitude", "37.5424445")
-                        .param("longitude", "127.0779958")
+                        .param("latitude", "37.542602")
+                        .param("longitude", "127.078250")
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
@@ -82,14 +82,14 @@ class LandmarkApiTest {
         // expected
         mockMvc.perform(get("/api/landmarks")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("latitude", "37.5424444")
-                        .param("longitude", "127.077995")
+                        .param("latitude", "37.542600")
+                        .param("longitude", "127.078200")
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response.id").value(19))
                 .andExpect(jsonPath("$.response.name").value("인문학관(인문대)"))
-                .andExpect(jsonPath("$.response.distance").value(0))
+                .andExpect(jsonPath("$.response.distance").value(4))
                 .andExpect(jsonPath("$.response.gameType").value("QUIZ"))
                 .andDo(print());
     }

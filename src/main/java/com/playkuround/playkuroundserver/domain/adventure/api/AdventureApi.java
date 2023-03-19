@@ -24,9 +24,9 @@ public class AdventureApi {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<AdventureSaveDto.Response> saveAdventure(@UserEntity User user, @RequestBody @Valid AdventureSaveDto.Request dto) {
-        AdventureSaveDto.Response response = adventureService.saveAdventure(user, dto);
-        return ApiUtils.success(response);
+    public ApiResponse<?> saveAdventure(@UserEntity User user, @RequestBody @Valid AdventureSaveDto.Request request) {
+        adventureService.saveAdventure(user, request);
+        return ApiUtils.success(null);
     }
 
     @GetMapping

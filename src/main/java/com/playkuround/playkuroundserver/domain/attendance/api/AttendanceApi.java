@@ -24,7 +24,7 @@ public class AttendanceApi {
     private final AttendanceRegisterService attendanceRegisterService;
 
     @PostMapping
-    public ApiResponse<?> attendanceRegister(@UserEntity User user, @Valid @RequestBody AttendanceRegisterDto.Request registerRequest) {
+    public ApiResponse<Void> attendanceRegister(@UserEntity User user, @Valid @RequestBody AttendanceRegisterDto.Request registerRequest) {
         attendanceRegisterService.registerAttendance(user, registerRequest);
         return ApiUtils.success(null);
     }

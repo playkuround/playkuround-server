@@ -6,6 +6,7 @@ import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepositor
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
+import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
@@ -25,6 +26,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -90,8 +94,7 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.ADVENTURE_1.name()).exists())
-                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.ADVENTURE_1.getDescription()).exists())
+                .andExpect(jsonPath("$.isSuccess").value(true))
                 .andDo(print());
 
         Adventure adventure = adventureRepository.findAll().get(0);
@@ -101,6 +104,10 @@ class AdventureApiTest {
         User user = userRepository.findAll().get(0);
         assertEquals(1L, userRepository.count());
         assertEquals(user.getId(), adventure.getUser().getId());
+
+        List<Badge> badges = badgeRepository.findByUser(user);
+        assertThat(badges.size()).isEqualTo(1);
+        assertThat(badges.get(0).getBadgeType()).isEqualTo(BadgeType.ADVENTURE_1);
     }
 
     @Test
@@ -127,9 +134,13 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.ADVENTURE_5.name()).exists())
-                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.ADVENTURE_5.getDescription()).exists())
+                .andExpect(jsonPath("$.isSuccess").value(true))
                 .andDo(print());
+
+        List<Badge> badges = badgeRepository.findByUser(user);
+        assertThat(badges.size()).isEqualTo(2);
+        assertThat(badges).extracting("badgeType", BadgeType.class)
+                .contains(BadgeType.ADVENTURE_1, BadgeType.ADVENTURE_5);
     }
 
     @Test
@@ -156,11 +167,13 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.ADVENTURE_5.name()).exists())
-                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.ADVENTURE_5.getDescription()).exists())
-                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.ENGINEER.name()).exists())
-                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.ENGINEER.getDescription()).exists())
+                .andExpect(jsonPath("$.isSuccess").value(true))
                 .andDo(print());
+
+        List<Badge> badges = badgeRepository.findByUser(user);
+        assertThat(badges.size()).isEqualTo(3);
+        assertThat(badges).extracting("badgeType", BadgeType.class)
+                .contains(BadgeType.ADVENTURE_1, BadgeType.ADVENTURE_5, BadgeType.ENGINEER);
     }
 
     @Test
@@ -185,10 +198,13 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.response.newBadges.size()").value(1))
-                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.CEO.name()).exists())
-                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.CEO.getDescription()).exists())
+                .andExpect(jsonPath("$.isSuccess").value(true))
                 .andDo(print());
+
+        List<Badge> badges = badgeRepository.findByUser(user);
+        assertThat(badges.size()).isEqualTo(2);
+        assertThat(badges).extracting("badgeType", BadgeType.class)
+                .contains(BadgeType.ADVENTURE_1, BadgeType.CEO);
     }
 
     @Test
@@ -212,9 +228,13 @@ class AdventureApiTest {
                         .header("Authorization", "Bearer " + accessToken)
                 )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.ARTIST.name()).exists())
-                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.ARTIST.getDescription()).exists())
+                .andExpect(jsonPath("$.isSuccess").value(true))
                 .andDo(print());
+
+        List<Badge> badges = badgeRepository.findByUser(user);
+        assertThat(badges.size()).isEqualTo(2);
+        assertThat(badges).extracting("badgeType", BadgeType.class)
+                .contains(BadgeType.ADVENTURE_1, BadgeType.ARTIST);
     }
 
     @Test

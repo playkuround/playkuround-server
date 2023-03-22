@@ -28,15 +28,15 @@ public class AttendanceRegisterService {
     private final BadgeRepository badgeRepository;
 
     @Transactional
-    public AttendanceRegisterDto.Response registerAttendance(User user, AttendanceRegisterDto.Request registerRequest) {
+    public void registerAttendance(User user, AttendanceRegisterDto.Request registerRequest) {
         validateAttendance(user, registerRequest);
         Attendance attendance = registerRequest.toEntity(user);
 
         attendanceRepository.save(attendance);
-        return findNewBadges(user);
+        updateNewBadges(user);
     }
 
-    private AttendanceRegisterDto.Response findNewBadges(User user) {
+    private void updateNewBadges(User user) {
         boolean hasAttendance_1 = false, hasAttendance_3 = false, hasAttendance_7 = false;
         boolean hasAttendance_30 = false, hasAttendance_100 = false, hasAttendance_Foundation_Day = false;
 
@@ -51,37 +51,36 @@ public class AttendanceRegisterService {
             else if (badgeType.name().equals("ATTENDANCE_FOUNDATION_DAY")) hasAttendance_Foundation_Day = true;
         }
 
-        AttendanceRegisterDto.Response ret = new AttendanceRegisterDto.Response();
-        if (!hasAttendance_1) ret.addBadge(BadgeType.ATTENDANCE_1);
+        if (!hasAttendance_1) badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_1));
         else if (!hasAttendance_3) {
-            LocalDateTime afterDate =
-                    LocalDateTime.of(LocalDate.now().minusDays(3), LocalTime.of(0, 0, 0));
-            if (attendanceRepository.countByUserAndCreatedAtAfter(user, afterDate) == 3L)
-                ret.addBadge(BadgeType.ATTENDANCE_3);
+            if (isEligibleForAttendanceBadge(user, 3L)) {
+                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_3));
+            }
         }
         else if (!hasAttendance_7) {
-            LocalDateTime afterDate =
-                    LocalDateTime.of(LocalDate.now().minusDays(7), LocalTime.of(0, 0, 0));
-            if (attendanceRepository.countByUserAndCreatedAtAfter(user, afterDate) == 7L)
-                ret.addBadge(BadgeType.ATTENDANCE_7);
+            if (isEligibleForAttendanceBadge(user, 7L)) {
+                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_7));
+            }
         }
         else if (!hasAttendance_30) {
-            LocalDateTime afterDate =
-                    LocalDateTime.of(LocalDate.now().minusDays(30), LocalTime.of(0, 0, 0));
-            if (attendanceRepository.countByUserAndCreatedAtAfter(user, afterDate) == 30L)
-                ret.addBadge(BadgeType.ATTENDANCE_30);
+            if (isEligibleForAttendanceBadge(user, 30L)) {
+                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_30));
+            }
         }
         else if (!hasAttendance_100) {
-            LocalDateTime afterDate =
-                    LocalDateTime.of(LocalDate.now().minusDays(100), LocalTime.of(0, 0, 0));
-            if (attendanceRepository.countByUserAndCreatedAtAfter(user, afterDate) == 100L)
-                ret.addBadge(BadgeType.ATTENDANCE_100);
+            if (isEligibleForAttendanceBadge(user, 100L)) {
+                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_100));
+            }
         }
-
         if (isTodayFoundationDay() && !hasAttendance_Foundation_Day) {
-            ret.addBadge(BadgeType.ATTENDANCE_FOUNDATION_DAY);
+            badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_FOUNDATION_DAY));
         }
-        return ret;
+    }
+
+    private boolean isEligibleForAttendanceBadge(User user, Long consecutiveDays) {
+        LocalDateTime afterDate =
+                LocalDateTime.of(LocalDate.now().minusDays(consecutiveDays), LocalTime.of(0, 0, 0));
+        return attendanceRepository.countByUserAndCreatedAtAfter(user, afterDate).equals(consecutiveDays);
     }
 
     private boolean isTodayFoundationDay() {

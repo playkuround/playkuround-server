@@ -9,6 +9,7 @@ import com.playkuround.playkuroundserver.domain.adventure.dto.VisitedUserDto;
 import com.playkuround.playkuroundserver.domain.adventure.exception.DuplicateAdventureException;
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
+import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.exception.BadgeTypeNotFoundException;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
@@ -36,16 +37,17 @@ public class AdventureService {
     private final BadgeRepository badgeRepository;
 
 
-    public AdventureSaveDto.Response saveAdventure(User user, AdventureSaveDto.Request dto) {
-        Landmark landmark = landmarkRepository.findById(dto.getLandmarkId())
-                .orElseThrow(() -> new LandmarkNotFoundException(dto.getLandmarkId()));
-        validateLocation(landmark, dto.getLatitude(), dto.getLongitude());
+    public void saveAdventure(User user, AdventureSaveDto.Request request) {
+        Landmark landmark = landmarkRepository.findById(request.getLandmarkId())
+                .orElseThrow(() -> new LandmarkNotFoundException(request.getLandmarkId()));
+        validateLocation(landmark, request.getLatitude(), request.getLongitude());
+
         if (adventureRepository.existsByUserAndLandmarkAndCreatedAtAfter(user, landmark, LocalDate.now().atStartOfDay())) {
             throw new DuplicateAdventureException();
         }
-        adventureRepository.save(new Adventure(user, landmark));
 
-        return findNewBadges(user, landmark);
+        adventureRepository.save(new Adventure(user, landmark));
+        updateNewBadges(user, landmark);
     }
 
     private void validateLocation(Landmark landmark, double latitude, double longitude) {
@@ -54,18 +56,15 @@ public class AdventureService {
         if (distance > landmark.getRecognitionRadius()) throw new InvalidLandmarkLocationException();
     }
 
-    private AdventureSaveDto.Response findNewBadges(User user, Landmark requestSaveLandmark) {
-        AdventureSaveDto.Response ret = new AdventureSaveDto.Response();
-
+    private void updateNewBadges(User user, Landmark requestSaveLandmark) {
         // 이미 모든 랜드마크 종류를 다 탐험했다면, 탐험 관련 뱃지는 이미 가지고 있음
-        if (badgeRepository.existsByUserAndBadgeType(user, BadgeType.CONQUEROR)) {
-            return ret;
-        }
+        if (badgeRepository.existsByUserAndBadgeType(user, BadgeType.CONQUEROR)) return;
 
         // 1. (탐험한 랜드마크의 종류 개수)에 따른 뱃지
         Long numberOfLandmarkType = adventureRepository.countDistinctLandmarkByUser(user);
         try {
-            ret.addBadge(BadgeType.findBadgeTypeByLandmarkTypeCount(numberOfLandmarkType));
+            BadgeType badgeType = BadgeType.findBadgeTypeByLandmarkTypeCount(numberOfLandmarkType);
+            badgeRepository.save(Badge.createBadge(user, badgeType));
         } catch (BadgeTypeNotFoundException ignored) {
         }
 
@@ -86,12 +85,10 @@ public class AdventureService {
                 adventureCountForBadge = adventureRepository.countAdventureForNEIL_ARMSTRONG();
 
             if (Objects.equals(adventureCountForBadge, BadgeType.requiredAdventureCountForBadge(badgeType))) {
-                ret.addBadge(badgeType);
+                badgeRepository.save(Badge.createBadge(user, badgeType));
             }
         } catch (BadgeTypeNotFoundException ignored) {
         }
-
-        return ret;
     }
 
     @Transactional(readOnly = true)

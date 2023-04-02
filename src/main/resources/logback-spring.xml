@@ -5,18 +5,6 @@
     <property name="LOG_PATTERN"
               value="[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%yellow(%L)]) - %msg%n"/>
 
-    <springProfile name="!dev">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>${LOG_PATTERN}</pattern>
-            </encoder>
-        </appender>
-
-        <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </springProfile>
-
     <springProfile name="dev">
         <appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>/home/ubuntu/log/info/info-${BY_DATE}.log</file>

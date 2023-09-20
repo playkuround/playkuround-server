@@ -1,5 +1,4 @@
 spring:
-
   datasource:
     url: jdbc:h2:mem:test
     username: sa
@@ -19,3 +18,7 @@ spring:
     init:
       platform: h2
       mode: always
+  data:
+    redis:
+      host: localhost
+      port: 6379

@@ -3,7 +3,7 @@ package com.playkuround.playkuroundserver.global.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.awt.geom.Path2D;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

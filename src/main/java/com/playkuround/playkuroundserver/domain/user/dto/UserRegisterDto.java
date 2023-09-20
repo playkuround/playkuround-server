@@ -8,7 +8,7 @@ import com.playkuround.playkuroundserver.global.validation.ValidEnum;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 import java.util.Date;
 
 public class UserRegisterDto {

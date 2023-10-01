@@ -4,15 +4,11 @@ server:
     context-path: /
 
 spring:
-  redis:
-    host: ENC(CkPYHIjy8GUXXM6JEPCP+4LqS0wyH89q)
-    port: 6379
-    password: ENC(dNFnmh84R4MuceydmrqY1WbNoW268W5R4utgOsDIjRs=)
   mail:
     host: smtp.gmail.com
     port: 587
     username: playkuround@gmail.com
-    password: ENC(z97xSTT9W4NatrH8We/YEeuFO1VMNfndYRLFunh95eA=)
+    password:
     properties:
       mail:
         smtp:
@@ -38,6 +34,11 @@ spring:
 
     show-sql: true
     open-in-view: false
+  data:
+    redis:
+      host: ENC(CkPYHIjy8GUXXM6JEPCP+4LqS0wyH89q)
+      port: 6379
+      password: ENC(dNFnmh84R4MuceydmrqY1WbNoW268W5R4utgOsDIjRs=)
 
 logging:
   level:

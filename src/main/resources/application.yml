@@ -8,7 +8,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: playkuround@gmail.com
-    password: ENC(z97xSTT9W4NatrH8We/YEeuFO1VMNfndYRLFunh95eA=)
+    password:
     properties:
       mail:
         smtp:

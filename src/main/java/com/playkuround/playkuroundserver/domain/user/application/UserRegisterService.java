@@ -7,6 +7,8 @@ import com.playkuround.playkuroundserver.domain.score.application.ScoreService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
+import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicationException;
+import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDuplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,27 +19,34 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserRegisterService {
 
     private final UserRepository userRepository;
-    private final UserValidator userValidator;
     private final TokenManager tokenManager;
     private final TokenService tokenService;
     private final ScoreService scoreService;
 
     public UserRegisterDto.Response registerUser(UserRegisterDto.Request registerRequest) {
-        // 중복 검사
-        userValidator.validateDuplicateEmail(registerRequest.getEmail());
-        userValidator.validateDuplicateNickName(registerRequest.getNickname());
+        validateDuplicateEmail(registerRequest.getEmail());
+        validateDuplicateNickName(registerRequest.getNickname());
 
-        // DTO를 엔티티로 변환 후 DB에 저장
         User user = userRepository.save(registerRequest.toEntity());
 
-        // 응답으로 반환할 토큰 생성
-        // 리프레시 토큰 레디스에 저장
         TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
         tokenService.registerRefreshToken(user, tokenDto.getRefreshToken());
 
-        scoreService.initScore(user);
+        //scoreService.initScore(user);
 
         return UserRegisterDto.Response.of(tokenDto);
+    }
+
+    private void validateDuplicateEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new UserEmailDuplicationException();
+        }
+    }
+
+    private void validateDuplicateNickName(String nickname) {
+        if (userRepository.existsByNickname(nickname)) {
+            throw new UserNicknameDuplicationException();
+        }
     }
 
     public void deleteUser(User user) {

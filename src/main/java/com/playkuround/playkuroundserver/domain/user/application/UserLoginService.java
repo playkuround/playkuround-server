@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserLoginService {
 
-    private final UserValidator userValidator;
     private final TokenManager tokenManager;
     private final TokenService tokenService;
 

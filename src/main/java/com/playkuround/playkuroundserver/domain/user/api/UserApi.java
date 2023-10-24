@@ -11,11 +11,15 @@ import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.resolver.UserEntity;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
-import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users")
@@ -28,7 +32,8 @@ public class UserApi {
     private final UserProfileService userProfileService;
 
     @PostMapping("/register")
-    public ApiResponse<UserRegisterDto.Response> userRegister(@RequestBody @Valid UserRegisterDto.Request registerRequest) {
+    public ApiResponse<UserRegisterDto.Response> userRegister(
+            @RequestBody @Valid UserRegisterDto.Request registerRequest) {
         UserRegisterDto.Response registerResponse = userRegisterService.registerUser(registerRequest);
         return ApiUtils.success(registerResponse);
     }

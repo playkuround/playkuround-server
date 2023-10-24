@@ -15,7 +15,7 @@ public class UserProfileService {
     private final UserRepository userRepository;
 
     public UserProfileDto.Response getUserProfile(User user) {
-        return UserProfileDto.Response.of(user);
+        return UserProfileDto.Response.from(user);
     }
 
     public boolean checkDuplicateNickname(String nickname) {

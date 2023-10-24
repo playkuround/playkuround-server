@@ -51,7 +51,7 @@ public class UserRegisterDto {
         private String accessToken;
         private String refreshToken;
 
-        public static UserRegisterDto.Response of(TokenDto tokenDto) {
+        public static UserRegisterDto.Response from(TokenDto tokenDto) {
             return Response.builder()
                     .grantType(tokenDto.getGrantType())
                     .accessToken(tokenDto.getAccessToken())

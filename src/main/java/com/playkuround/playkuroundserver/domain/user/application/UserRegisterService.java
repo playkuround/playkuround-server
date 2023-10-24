@@ -3,7 +3,6 @@ package com.playkuround.playkuroundserver.domain.user.application;
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
-import com.playkuround.playkuroundserver.domain.score.application.ScoreService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
@@ -31,7 +30,7 @@ public class UserRegisterService {
         TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
         tokenService.registerRefreshToken(user, tokenDto.getRefreshToken());
 
-        return UserRegisterDto.Response.of(tokenDto);
+        return UserRegisterDto.Response.from(tokenDto);
     }
 
     private void validateDuplicateEmail(String email) {

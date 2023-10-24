@@ -16,7 +16,7 @@ public class UserLoginDto {
         private String accessToken;
         private String refreshToken;
 
-        public static UserLoginDto.Response of(TokenDto tokenDto) {
+        public static UserLoginDto.Response from(TokenDto tokenDto) {
             return UserLoginDto.Response.builder()
                     .grantType(tokenDto.getGrantType())
                     .accessToken(tokenDto.getAccessToken())

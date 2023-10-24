@@ -21,7 +21,7 @@ public class UserLoginService {
         TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
         tokenService.registerRefreshToken(user, tokenDto.getRefreshToken());
 
-        return UserLoginDto.Response.of(tokenDto);
+        return UserLoginDto.Response.from(tokenDto);
     }
 
 }

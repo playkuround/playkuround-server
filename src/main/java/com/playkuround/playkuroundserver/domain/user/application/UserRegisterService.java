@@ -21,7 +21,6 @@ public class UserRegisterService {
     private final UserRepository userRepository;
     private final TokenManager tokenManager;
     private final TokenService tokenService;
-    private final ScoreService scoreService;
 
     public UserRegisterDto.Response registerUser(UserRegisterDto.Request registerRequest) {
         validateDuplicateEmail(registerRequest.getEmail());
@@ -31,8 +30,6 @@ public class UserRegisterService {
 
         TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
         tokenService.registerRefreshToken(user, tokenDto.getRefreshToken());
-
-        //scoreService.initScore(user);
 
         return UserRegisterDto.Response.of(tokenDto);
     }

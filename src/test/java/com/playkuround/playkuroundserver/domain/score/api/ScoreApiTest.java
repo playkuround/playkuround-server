@@ -1,5 +1,10 @@
 package com.playkuround.playkuroundserver.domain.score.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playkuround.playkuroundserver.domain.score.dao.ScoreFindDao;
 import com.playkuround.playkuroundserver.domain.score.dao.ScoreRepository;
@@ -22,11 +27,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc //MockMvc 사용
 @SpringBootTest
@@ -89,8 +89,8 @@ class ScoreApiTest {
                 .andExpect(status().isCreated())
                 .andDo(print());
 
-        assertEquals(2L, scoreRepository.count()); // INIT 스코어까지 포함
-        Score score = scoreRepository.findAll().get(1);
+        assertEquals(1L, scoreRepository.count());
+        Score score = scoreRepository.findAll().get(0);
         assertEquals(ScoreType.ATTENDANCE, score.getScoreType());
         assertEquals(ScoreType.ATTENDANCE.getPoint(), scoreFindDao.findTotalScorePointByUserEmail(userEmail));
     }
@@ -110,8 +110,8 @@ class ScoreApiTest {
                 .andExpect(status().isCreated())
                 .andDo(print());
 
-        assertEquals(2L, scoreRepository.count()); // INIT 스코어까지 포함
-        Score score = scoreRepository.findAll().get(1);
+        assertEquals(1L, scoreRepository.count());
+        Score score = scoreRepository.findAll().get(0);
         assertEquals(ScoreType.ADVENTURE, score.getScoreType());
         assertEquals(ScoreType.ADVENTURE.getPoint(), scoreFindDao.findTotalScorePointByUserEmail(userEmail));
     }
@@ -131,8 +131,8 @@ class ScoreApiTest {
                 .andExpect(status().isCreated())
                 .andDo(print());
 
-        assertEquals(2L, scoreRepository.count()); // INIT 스코어까지 포함
-        Score score = scoreRepository.findAll().get(1);
+        assertEquals(1L, scoreRepository.count());
+        Score score = scoreRepository.findAll().get(0);
         assertEquals(ScoreType.EXTRA_ADVENTURE, score.getScoreType());
         assertEquals(ScoreType.EXTRA_ADVENTURE.getPoint(), scoreFindDao.findTotalScorePointByUserEmail(userEmail));
     }

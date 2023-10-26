@@ -1,21 +1,22 @@
 package com.playkuround.playkuroundserver.domain.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.validation.ValidEnum;
-import lombok.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-
-import jakarta.validation.constraints.*;
-import java.util.Date;
 
 public class UserRegisterDto {
 
     @Getter
-    @Setter
-    @NoArgsConstructor
+    @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
     @AllArgsConstructor
     public static class Request {
 
@@ -42,31 +43,19 @@ public class UserRegisterDto {
     }
 
     @Getter
-    @Setter
     @Builder
-    @NoArgsConstructor
     @AllArgsConstructor
     public static class Response {
 
         private String grantType;
-
         private String accessToken;
-
-        @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-        private Date accessTokenExpiredAt;
-
         private String refreshToken;
 
-        @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-        private Date refreshTokenExpiredAt;
-
-        public static UserRegisterDto.Response of(TokenDto tokenDto) {
+        public static UserRegisterDto.Response from(TokenDto tokenDto) {
             return Response.builder()
                     .grantType(tokenDto.getGrantType())
                     .accessToken(tokenDto.getAccessToken())
-                    .accessTokenExpiredAt(tokenDto.getAccessTokenExpiredAt())
                     .refreshToken(tokenDto.getRefreshToken())
-                    .refreshTokenExpiredAt(tokenDto.getRefreshTokenExpiredAt())
                     .build();
         }
 

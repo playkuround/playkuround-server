@@ -14,17 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserLoginService {
 
-    private final UserValidator userValidator;
     private final TokenManager tokenManager;
     private final TokenService tokenService;
 
     public UserLoginDto.Response login(User user) {
-        // 응답으로 반환할 토큰 생성
-        // 리프레시 토큰 레디스에 저장
         TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
         tokenService.registerRefreshToken(user, tokenDto.getRefreshToken());
 
-        return UserLoginDto.Response.of(tokenDto);
+        return UserLoginDto.Response.from(tokenDto);
     }
 
 }

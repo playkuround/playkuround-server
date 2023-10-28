@@ -4,11 +4,15 @@ import com.playkuround.playkuroundserver.domain.auth.token.application.TokenMana
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicationException;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDuplicationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,14 +24,19 @@ public class UserRegisterService {
     private final UserRepository userRepository;
     private final TokenManager tokenManager;
     private final TokenService tokenService;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     public UserRegisterDto.Response registerUser(UserRegisterDto.Request registerRequest) {
         validateDuplicateEmail(registerRequest.getEmail());
         validateDuplicateNickName(registerRequest.getNickname());
 
-        User user = userRepository.save(registerRequest.toEntity());
+        User user = userRepository.save(registerRequest.toEntity(Role.ROLE_USER));
 
-        TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
+        UsernamePasswordAuthenticationToken authenticationToken
+                = new UsernamePasswordAuthenticationToken(registerRequest.getEmail(), null);
+        Authentication authentication = authenticationManagerBuilder.getObject()
+                .authenticate(authenticationToken);
+        TokenDto tokenDto = tokenManager.createTokenDto(authentication);
         tokenService.registerRefreshToken(user, tokenDto.getRefreshToken());
 
         return UserRegisterDto.Response.from(tokenDto);

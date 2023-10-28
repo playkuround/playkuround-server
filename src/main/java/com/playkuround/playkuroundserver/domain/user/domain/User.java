@@ -37,13 +37,18 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime lastAttendanceDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
     @Builder
-    public User(@NonNull String email, @NonNull String nickname, @NonNull Major major) {
+    public User(@NonNull String email, @NonNull String nickname, @NonNull Major major, @NonNull Role role) {
         this.email = email;
         this.nickname = nickname;
         this.major = major;
         this.ConsecutiveAttendanceDays = 0;
         this.lastAttendanceDate = LocalDateTime.now().minusDays(1);
+        this.role = role;
     }
 
 }

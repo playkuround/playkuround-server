@@ -17,6 +17,7 @@ public enum ErrorCode {
     // User
     EMAIL_DUPLICATION(400, "U001", "이미 존재하는 이메일입니다."),
     NICKNAME_DUPLICATION(400, "U002", "이미 존재하는 닉네임입니다."),
+    USER_NOT_FOUND(400, "U003", "존재하지 않는 유저입니다."),
 
     // Authentication
     EMPTY_AUTHORIZATION(401, "A001", "Authorization Header가 빈 값입니다."),

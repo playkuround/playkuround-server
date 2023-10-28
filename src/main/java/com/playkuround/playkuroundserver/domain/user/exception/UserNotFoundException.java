@@ -8,4 +8,7 @@ public class UserNotFoundException extends EntityNotFoundException {
         super(targetEmail + " 의 유저 엔티티 조회에 실패하였습니다.");
     }
 
+    public UserNotFoundException() {
+        super("유저 엔티티 조회에 실패하였습니다.");
+    }
 }

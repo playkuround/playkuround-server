@@ -8,7 +8,6 @@ import lombok.Getter;
 public enum GrantType {
 
     BEARER("Bearer");
-
     private final String type;
 
 }

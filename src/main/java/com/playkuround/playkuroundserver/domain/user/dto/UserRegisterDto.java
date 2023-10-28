@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.domain.user.dto;
 
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
+import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.validation.ValidEnum;
 import jakarta.validation.constraints.Email;
@@ -32,14 +33,14 @@ public class UserRegisterDto {
         @ValidEnum(enumClass = Major.class, message = "잘못된 학과명입니다.")
         private String major;
 
-        public User toEntity() {
+        public User toEntity(Role role) {
             return User.builder()
                     .email(email)
                     .nickname(nickname)
                     .major(Major.valueOf(major))
+                    .role(role)
                     .build();
         }
-
     }
 
     @Getter

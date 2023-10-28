@@ -6,12 +6,14 @@ import com.playkuround.playkuroundserver.domain.attendance.dto.AttendanceRegiste
 import com.playkuround.playkuroundserver.domain.attendance.dto.AttendanceSearchDto;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
-import com.playkuround.playkuroundserver.global.resolver.UserEntity;
+import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,14 +26,15 @@ public class AttendanceApi {
     private final AttendanceRegisterService attendanceRegisterService;
 
     @PostMapping
-    public ApiResponse<Void> attendanceRegister(@UserEntity User user, @Valid @RequestBody AttendanceRegisterDto.Request registerRequest) {
-        attendanceRegisterService.registerAttendance(user, registerRequest);
+    public ApiResponse<Void> attendanceRegister(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                @Valid @RequestBody AttendanceRegisterDto.Request registerRequest) {
+        attendanceRegisterService.registerAttendance(userDetails.getUser(), registerRequest);
         return ApiUtils.success(null);
     }
 
     @GetMapping
-    public ApiResponse<AttendanceSearchDto.Response> attendanceSearch(@UserEntity User user) {
-        List<LocalDateTime> attendances = attendanceSearchService.findByUserMonthLong(user);
+    public ApiResponse<AttendanceSearchDto.Response> attendanceSearch(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<LocalDateTime> attendances = attendanceSearchService.findByUserMonthLong(userDetails.getUser());
         return ApiUtils.success(AttendanceSearchDto.Response.of(attendances));
     }
 

@@ -1,15 +1,13 @@
 package com.playkuround.playkuroundserver.domain.user.domain;
 
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import lombok.*;
+import org.hibernate.validator.constraints.Length;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -33,12 +31,24 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Major major;
 
+    @Column(nullable = false)
+    private Integer ConsecutiveAttendanceDays;
+
+    @Column(nullable = false)
+    private LocalDateTime lastAttendanceDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
     @Builder
-    public User(String email, String nickname, Major major) {
+    public User(@NonNull String email, @NonNull String nickname, @NonNull Major major, @NonNull Role role) {
         this.email = email;
         this.nickname = nickname;
         this.major = major;
+        this.ConsecutiveAttendanceDays = 0;
+        this.lastAttendanceDate = LocalDateTime.now().minusDays(1);
+        this.role = role;
     }
 
 }

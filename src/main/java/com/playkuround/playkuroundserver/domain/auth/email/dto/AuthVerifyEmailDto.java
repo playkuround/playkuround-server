@@ -8,27 +8,32 @@ import lombok.*;
 import java.util.Date;
 
 public class AuthVerifyEmailDto {
+
     @Getter
-    @Setter
     @Builder
-    @NoArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor
     @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
     public static class Response {
 
         private String grantType;
-
         private String accessToken;
+        private String refreshToken;
+        private String authVerifyToken;
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private Date accessTokenExpiredAt;
 
-        private String refreshToken;
-
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private Date refreshTokenExpiredAt;
 
-        public static AuthVerifyEmailDto.Response of(TokenDto tokenDto) {
+        public static AuthVerifyEmailDto.Response createByAuthVerifyToken(String authVerifyToken) {
+            return AuthVerifyEmailDto.Response.builder()
+                    .authVerifyToken(authVerifyToken)
+                    .build();
+        }
+
+        public static AuthVerifyEmailDto.Response fromTokenDto(TokenDto tokenDto) {
             return AuthVerifyEmailDto.Response.builder()
                     .grantType(tokenDto.getGrantType())
                     .accessToken(tokenDto.getAccessToken())

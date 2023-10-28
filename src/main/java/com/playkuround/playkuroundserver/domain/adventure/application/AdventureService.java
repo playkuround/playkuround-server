@@ -36,7 +36,6 @@ public class AdventureService {
     private final LandmarkRepository landmarkRepository;
     private final BadgeRepository badgeRepository;
 
-
     public void saveAdventure(User user, AdventureSaveDto.Request request) {
         Landmark landmark = landmarkRepository.findById(request.getLandmarkId())
                 .orElseThrow(() -> new LandmarkNotFoundException(request.getLandmarkId()));

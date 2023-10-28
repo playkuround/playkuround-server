@@ -22,9 +22,6 @@ public class AuthEmailApi {
 
     @PostMapping
     public ApiResponse<AuthEmailSendDto.Response> authEmailSend(@RequestBody @Valid AuthEmailSendDto.Request requestDto) {
-        if (!requestDto.getTarget().split("@")[1].equals("konkuk.ac.kr")) {
-            throw new NotKUEmailException();
-        }
         AuthEmailSendDto.Response responseDto = authEmailSendService.sendAuthEmail(requestDto);
         return ApiUtils.success(responseDto);
     }

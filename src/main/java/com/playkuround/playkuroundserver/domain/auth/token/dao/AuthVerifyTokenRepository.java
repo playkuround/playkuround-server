@@ -8,5 +8,4 @@ import java.util.Optional;
 public interface AuthVerifyTokenRepository extends CrudRepository<AuthVerifyToken, String> {
 
     Optional<AuthVerifyToken> findByAuthVerifyToken(String authVerifyToken);
-
 }

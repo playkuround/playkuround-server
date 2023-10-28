@@ -33,6 +33,9 @@ public class UserRegisterDto {
         @ValidEnum(enumClass = Major.class, message = "잘못된 학과명입니다.")
         private String major;
 
+        @NotBlank(message = "인증 토큰은 필수값입니다.")
+        private String authVerifyToken;
+
         public User toEntity(Role role) {
             return User.builder()
                     .email(email)

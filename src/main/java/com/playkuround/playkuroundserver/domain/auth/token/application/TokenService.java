@@ -6,6 +6,7 @@ import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenRepos
 import com.playkuround.playkuroundserver.domain.auth.token.domain.AuthVerifyToken;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.RefreshToken;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.auth.token.exception.AuthVerifyTokenNotFoundException;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -68,5 +69,15 @@ public class TokenService {
     public AuthVerifyToken registerAuthVerifyToken() {
         AuthVerifyToken authVerifyToken = tokenManager.createAuthVerifyToken();
         return authVerifyTokenRepository.save(authVerifyToken);
+    }
+
+    public void validateAuthVerifyToken(String authVerifyToken) {
+        if (!authVerifyTokenRepository.existsById(authVerifyToken)) {
+            throw new AuthVerifyTokenNotFoundException();
+        }
+    }
+
+    public void deleteAuthVerifyToken(String authVerifyToken) {
+        authVerifyTokenRepository.deleteById(authVerifyToken);
     }
 }

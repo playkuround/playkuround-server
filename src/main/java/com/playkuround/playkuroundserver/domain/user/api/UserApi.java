@@ -1,5 +1,6 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
+import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserLogoutService;
 import com.playkuround.playkuroundserver.domain.user.application.UserProfileService;
@@ -14,12 +15,7 @@ import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -30,11 +26,13 @@ public class UserApi {
     private final UserLoginService userLoginService;
     private final UserLogoutService userLogoutService;
     private final UserProfileService userProfileService;
+    private final TokenService tokenService;
 
     @PostMapping("/register")
-    public ApiResponse<UserRegisterDto.Response> userRegister(
-            @RequestBody @Valid UserRegisterDto.Request registerRequest) {
+    public ApiResponse<UserRegisterDto.Response> registerUser(@RequestBody @Valid UserRegisterDto.Request registerRequest) {
+        tokenService.validateAuthVerifyToken(registerRequest.getAuthVerifyToken());
         UserRegisterDto.Response registerResponse = userRegisterService.registerUser(registerRequest);
+        tokenService.deleteAuthVerifyToken(registerRequest.getAuthVerifyToken());
         return ApiUtils.success(registerResponse);
     }
 

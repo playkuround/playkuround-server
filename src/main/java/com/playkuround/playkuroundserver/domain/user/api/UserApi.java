@@ -13,6 +13,8 @@ import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,8 +36,8 @@ public class UserApi {
     }
 
     @GetMapping
-    public ApiResponse<UserProfileDto.Response> userProfile(@UserEntity User user) {
-        UserProfileDto.Response profileResponse = userProfileService.getUserProfile(user);
+    public ApiResponse<UserProfileDto.Response> userProfile(@AuthenticationPrincipal UserDetails userDetails) {
+        UserProfileDto.Response profileResponse = userProfileService.getUserProfile(userDetails);
         return ApiUtils.success(profileResponse);
     }
 

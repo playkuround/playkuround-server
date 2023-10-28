@@ -42,8 +42,8 @@ public class UserApi {
     }
 
     @PostMapping("/logout")
-    public ApiResponse<Void> userLogout(@UserEntity User user) {
-        userLogoutService.logout(user);
+    public ApiResponse<Void> userLogout(@AuthenticationPrincipal UserDetails userDetails) {
+        userLogoutService.logout(userDetails);
         return ApiUtils.success(null);
     }
 

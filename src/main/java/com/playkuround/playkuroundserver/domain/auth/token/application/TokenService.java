@@ -55,15 +55,9 @@ public class TokenService {
     }
 
     @Transactional
-    public void updateRefreshToken(User user) {
-        RefreshToken refreshToken = refreshTokenFindDao.findByUser(user);
-        refreshToken.updateTimeToLive(Integer.parseInt(refreshTokenTimeToLive));
-    }
-
-    @Transactional
     public void deleteRefreshTokenByUser(User user) {
-        RefreshToken refreshToken = refreshTokenFindDao.findByUser(user);
-        refreshTokenRepository.delete(refreshToken);
+        refreshTokenRepository.findByUserEmail(user.getEmail())
+                .ifPresent(refreshTokenRepository::delete);
     }
 
     public AuthVerifyToken registerAuthVerifyToken() {
@@ -78,6 +72,7 @@ public class TokenService {
     }
 
     public void deleteAuthVerifyToken(String authVerifyToken) {
-        authVerifyTokenRepository.deleteById(authVerifyToken);
+        authVerifyTokenRepository.findById(authVerifyToken)
+                .ifPresent(authVerifyTokenRepository::delete);
     }
 }

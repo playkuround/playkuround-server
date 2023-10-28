@@ -1,8 +1,10 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
+import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,8 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserLogoutService {
 
     private final TokenService tokenService;
+    private final UserFindDao userFindDao;
 
-    public void logout(User user) {
+    public void logout(UserDetails userDetails) {
+        User user = userFindDao.findByUserDetails(userDetails);
         tokenService.deleteRefreshTokenByUser(user);
     }
 

@@ -15,8 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -36,13 +36,14 @@ public class TokenManager {
     private final Long accessTokenValidityInMilliseconds;
     private final Long refreshTokenValidityInMilliseconds;
     private final Integer authVerifyTokenValidityInSeconds;
+    private final UserDetailsService userDetailsService;
 
-
-    public TokenManager(@Value("${jwt.secret}") String secretKey,
-                        @Value("${jwt.issuer}") String issuer,
-                        @Value("${jwt.access-token-expiration-seconds}") Long accessTokenExpirationSeconds,
-                        @Value("${jwt.refresh-token-expiration-seconds}") Long refreshTokenExpirationSeconds,
-                        @Value("${token.authverify-token-expiration-seconds}") Integer authVerifyTokenExpirationSeconds) {
+    public TokenManager(@Value("${token.secret}") String secretKey,
+                        @Value("${token.issuer}") String issuer,
+                        @Value("${token.access-token-expiration-seconds}") Long accessTokenExpirationSeconds,
+                        @Value("${token.refresh-token-expiration-seconds}") Long refreshTokenExpirationSeconds,
+                        @Value("${token.authverify-token-expiration-seconds}") Integer authVerifyTokenExpirationSeconds,
+                        UserDetailsService userDetailsService) {
         this.accessTokenValidityInMilliseconds = accessTokenExpirationSeconds * 1000;
         this.refreshTokenValidityInMilliseconds = refreshTokenExpirationSeconds * 1000;
         this.authVerifyTokenValidityInSeconds = authVerifyTokenExpirationSeconds;
@@ -50,6 +51,7 @@ public class TokenManager {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.tokenTypeHeaderKey = "tokentype";
+        this.userDetailsService = userDetailsService;
     }
 
     public TokenDto createTokenDto(Authentication authentication) {
@@ -115,8 +117,8 @@ public class TokenManager {
                         .map(SimpleGrantedAuthority::new)
                         .toList();
 
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
+        return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
     }
 
     private Claims parseClaims(String accessToken) {

@@ -25,7 +25,7 @@ public class AuthEmailSendService {
     @Value("${authentication.email.domain}")
     private String emailDomain;
 
-    @Value("${authentication.email.max-sending-count}")
+    @Value("${authentication.email.max-send-count}")
     private Long maxSendingCount;
 
     @Value("${authentication.email.code-length}")

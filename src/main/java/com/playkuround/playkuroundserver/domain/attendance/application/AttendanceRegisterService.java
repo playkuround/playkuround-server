@@ -8,11 +8,9 @@ import com.playkuround.playkuroundserver.domain.attendance.exception.InvalidAtte
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.LocationUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,11 +26,9 @@ public class AttendanceRegisterService {
 
     private final AttendanceRepository attendanceRepository;
     private final BadgeRepository badgeRepository;
-    private final UserFindDao userFindDao;
 
     @Transactional
-    public void registerAttendance(UserDetails userDetails, AttendanceRegisterDto.Request registerRequest) {
-        User user = userFindDao.findByUserDetails(userDetails);
+    public void registerAttendance(User user, AttendanceRegisterDto.Request registerRequest) {
         validateAttendance(user, registerRequest);
         Attendance attendance = registerRequest.toEntity(user);
 

@@ -9,7 +9,6 @@ import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicat
 import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDuplicationException;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +41,7 @@ public class UserRegisterService {
         }
     }
 
-    public void deleteUser(UserDetails userDetails) {
-        User user = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(UserNotFoundException::new);
+    public void deleteUser(User user) {
         userRepository.delete(user);
     }
 

@@ -7,6 +7,7 @@ import com.playkuround.playkuroundserver.domain.user.application.UserRegisterSer
 import com.playkuround.playkuroundserver.domain.user.dto.UserProfileDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
+import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,14 +35,14 @@ public class UserApi {
     }
 
     @GetMapping
-    public ApiResponse<UserProfileDto.Response> userProfile(@AuthenticationPrincipal UserDetails userDetails) {
-        UserProfileDto.Response profileResponse = userProfileService.getUserProfile(userDetails);
+    public ApiResponse<UserProfileDto.Response> userProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserProfileDto.Response profileResponse = userProfileService.getUserProfile(userDetails.getUser());
         return ApiUtils.success(profileResponse);
     }
 
     @PostMapping("/logout")
-    public ApiResponse<Void> userLogout(@AuthenticationPrincipal UserDetails userDetails) {
-        userLogoutService.logout(userDetails);
+    public ApiResponse<Void> userLogout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userLogoutService.logout(userDetails.getUser());
         return ApiUtils.success(null);
     }
 
@@ -52,8 +53,8 @@ public class UserApi {
     }
 
     @DeleteMapping
-    public ApiResponse<Void> userDelete(@AuthenticationPrincipal UserDetails userDetails) {
-        userRegisterService.deleteUser(userDetails);
+    public ApiResponse<Void> userDelete(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userRegisterService.deleteUser(userDetails.getUser());
         return ApiUtils.success(null);
     }
 

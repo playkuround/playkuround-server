@@ -22,13 +22,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(UserNotFoundException::new);
 
-        Account account = Account.builder()
-                .userEmail(user.getEmail())
-                .build();
-
         String roleName = user.getRole().toString();
         List<String> role = Arrays.stream(roleName.split(",")).toList();
-
-        return new UserDetailsImpl(account, role);
+        return new UserDetailsImpl(user, role);
     }
 }

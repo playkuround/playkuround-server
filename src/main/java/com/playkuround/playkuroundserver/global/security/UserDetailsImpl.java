@@ -1,5 +1,7 @@
 package com.playkuround.playkuroundserver.global.security;
 
+import com.playkuround.playkuroundserver.domain.user.domain.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,11 +11,12 @@ import java.util.List;
 
 public class UserDetailsImpl implements UserDetails {
 
-    private final Account account;
+    @Getter
+    private final User user;
     private final List<String> roles;
 
-    public UserDetailsImpl(Account account, List<String> roles) {
-        this.account = account;
+    public UserDetailsImpl(User user, List<String> roles) {
+        this.user = user;
         this.roles = roles;
     }
 
@@ -31,7 +34,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return account.getUserEmail();
+        return user.getEmail();
     }
 
     @Override

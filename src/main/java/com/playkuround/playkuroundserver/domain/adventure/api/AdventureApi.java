@@ -5,13 +5,13 @@ import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostVisitedUser;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
+import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,23 +23,23 @@ public class AdventureApi {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<?> saveAdventure(@AuthenticationPrincipal UserDetails userDetails,
+    public ApiResponse<?> saveAdventure(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                         @RequestBody @Valid AdventureSaveDto.Request request) {
-        adventureService.saveAdventure(userDetails, request);
+        adventureService.saveAdventure(userDetails.getUser(), request);
         return ApiUtils.success(null);
     }
 
     @GetMapping
-    public ApiResponse<ResponseFindAdventure> findAdventureByUserEmail(@AuthenticationPrincipal UserDetails userDetails) {
-        ResponseFindAdventure adventureByUserEmail = adventureService.findAdventureByUserEmail(userDetails);
+    public ApiResponse<ResponseFindAdventure> findAdventureByUserEmail(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ResponseFindAdventure adventureByUserEmail = adventureService.findAdventureByUserEmail(userDetails.getUser());
         return ApiUtils.success(adventureByUserEmail);
 
     }
 
     @GetMapping("/{landmarkId}/most")
-    public ApiResponse<ResponseMostVisitedUser> findMemberMostAdventure(@AuthenticationPrincipal UserDetails userDetails,
+    public ApiResponse<ResponseMostVisitedUser> findMemberMostAdventure(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                         @PathVariable Long landmarkId) {
-        ResponseMostVisitedUser memberMostLandmark = adventureService.findMemberMostLandmark(userDetails, landmarkId);
+        ResponseMostVisitedUser memberMostLandmark = adventureService.findMemberMostLandmark(userDetails.getUser(), landmarkId);
         return ApiUtils.success(memberMostLandmark);
     }
 }

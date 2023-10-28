@@ -6,9 +6,11 @@ import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
 import com.playkuround.playkuroundserver.domain.score.dto.ScoreRankingDto;
 import com.playkuround.playkuroundserver.domain.score.dto.ScoreRegisterDto;
 import com.playkuround.playkuroundserver.domain.score.exception.ScoreNotFoundException;
+import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +23,11 @@ import java.util.List;
 public class ScoreService {
 
     private final ScoreRepository scoreRepository;
+    private final UserFindDao userFindDao;
 
     @Transactional
-    public void saveScore(User user, ScoreRegisterDto saveScore) {
+    public void saveScore(UserDetails userDetails, ScoreRegisterDto saveScore) {
+        User user = userFindDao.findByUserDetails(userDetails);
         // TODO 검증의 범위는 어디까지? 예를 들면, 진짜로 유저가 탐험을 했는지 안했는지 확인까지 해야하는가?
         scoreRepository.save(saveScore.toEntity(user));
     }
@@ -40,7 +44,8 @@ public class ScoreService {
         return scoreRepository.findTop100();
     }
 
-    public ScoreRankingDto getRanking(User user) {
+    public ScoreRankingDto getRanking(UserDetails userDetails) {
+        User user = userFindDao.findByUserDetails(userDetails);
         return scoreRepository.findRankingByUser(user.getId())
                 .orElseThrow(() -> new ScoreNotFoundException(user.getEmail()));
     }

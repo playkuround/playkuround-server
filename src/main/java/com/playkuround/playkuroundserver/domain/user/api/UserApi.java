@@ -4,11 +4,9 @@ import com.playkuround.playkuroundserver.domain.auth.token.application.TokenServ
 import com.playkuround.playkuroundserver.domain.user.application.UserLogoutService;
 import com.playkuround.playkuroundserver.domain.user.application.UserProfileService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
-import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserProfileDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
-import com.playkuround.playkuroundserver.global.resolver.UserEntity;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -54,8 +52,8 @@ public class UserApi {
     }
 
     @DeleteMapping
-    public ApiResponse<Void> userDelete(@UserEntity User user) {
-        userRegisterService.deleteUser(user);
+    public ApiResponse<Void> userDelete(@AuthenticationPrincipal UserDetails userDetails) {
+        userRegisterService.deleteUser(userDetails);
         return ApiUtils.success(null);
     }
 

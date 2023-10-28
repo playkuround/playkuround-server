@@ -4,8 +4,10 @@ import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.BadgeFindDto;
+import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +20,16 @@ import java.util.stream.Collectors;
 public class BadgeService {
 
     private final BadgeRepository badgeRepository;
+    private final UserFindDao userFindDao;
 
-    public void registerBadge(User user, String badgeType) {
+    public void registerBadge(UserDetails userDetails, String badgeType) {
+        User user = userFindDao.findByUserDetails(userDetails);
         Badge badge = Badge.createBadge(user, BadgeType.valueOf(badgeType));
         badgeRepository.save(badge);
     }
 
-    public List<BadgeFindDto> findBadgeByEmail(User user) {
+    public List<BadgeFindDto> findBadgeByEmail(UserDetails userDetails) {
+        User user = userFindDao.findByUserDetails(userDetails);
         return badgeRepository.findByUser(user).stream()
                 .map(BadgeFindDto::of)
                 .collect(Collectors.toList());

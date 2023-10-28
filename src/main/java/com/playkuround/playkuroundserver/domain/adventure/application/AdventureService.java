@@ -15,10 +15,12 @@ import com.playkuround.playkuroundserver.domain.badge.exception.BadgeTypeNotFoun
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
+import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +37,10 @@ public class AdventureService {
     private final AdventureRepository adventureRepository;
     private final LandmarkRepository landmarkRepository;
     private final BadgeRepository badgeRepository;
+    private final UserFindDao userFindDao;
 
-
-    public void saveAdventure(User user, AdventureSaveDto.Request request) {
+    public void saveAdventure(UserDetails userDetails, AdventureSaveDto.Request request) {
+        User user = userFindDao.findByUserDetails(userDetails);
         Landmark landmark = landmarkRepository.findById(request.getLandmarkId())
                 .orElseThrow(() -> new LandmarkNotFoundException(request.getLandmarkId()));
         validateLocation(landmark, request.getLatitude(), request.getLongitude());
@@ -92,16 +95,18 @@ public class AdventureService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseFindAdventure findAdventureByUserEmail(User user) {
+    public ResponseFindAdventure findAdventureByUserEmail(UserDetails userDetails) {
+        User user = userFindDao.findByUserDetails(userDetails);
         return ResponseFindAdventure.of(adventureRepository.findDistinctLandmarkIdByUser(user));
     }
 
     @Transactional(readOnly = true)
-    public ResponseMostVisitedUser findMemberMostLandmark(User user, Long landmarkId) {
+    public ResponseMostVisitedUser findMemberMostLandmark(UserDetails userDetails, Long landmarkId) {
         /*
          * 해당 랜드마크에 가장 많이 방문한 회원
          * 횟수가 같다면 방문한지 오래된 회원 -> 정책 논의 필요
          */
+        User user = userFindDao.findByUserDetails(userDetails);
         List<VisitedUserDto> visitedInfoList = adventureRepository.findVisitedUsersRank(landmarkId);
         return ResponseMostVisitedUser.of(visitedInfoList, user.getId());
     }

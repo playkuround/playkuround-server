@@ -1,12 +1,10 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
-import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.application.UserLogoutService;
 import com.playkuround.playkuroundserver.domain.user.application.UserProfileService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.UserLoginDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserProfileDto;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserApi {
 
     private final UserRegisterService userRegisterService;
-    private final UserLoginService userLoginService;
     private final UserLogoutService userLogoutService;
     private final UserProfileService userProfileService;
     private final TokenService tokenService;
@@ -34,12 +31,6 @@ public class UserApi {
         UserRegisterDto.Response registerResponse = userRegisterService.registerUser(registerRequest);
         tokenService.deleteAuthVerifyToken(registerRequest.getAuthVerifyToken());
         return ApiUtils.success(registerResponse);
-    }
-
-    @PostMapping("/login")
-    public ApiResponse<UserLoginDto.Response> userLogin(@UserEntity User user) {
-        UserLoginDto.Response loginResponse = userLoginService.login(user);
-        return ApiUtils.success(loginResponse);
     }
 
     @GetMapping

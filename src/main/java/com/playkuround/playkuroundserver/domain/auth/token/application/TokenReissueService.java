@@ -30,7 +30,7 @@ public class TokenReissueService {
     }
 
     private void validateRefreshToken(String sRefreshToken, Authentication authentication) {
-        if (!tokenManager.validateToken(sRefreshToken)) {
+        if (!tokenManager.isValidateToken(sRefreshToken)) {
             throw new InvalidRefreshTokenException();
         }
         if (!refreshTokenRepository.existsByUserEmail(authentication.getName())) {

@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.domain.auth.token.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.domain.AuthVerifyToken;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.GrantType;
+import com.playkuround.playkuroundserver.domain.auth.token.domain.RefreshToken;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
@@ -35,6 +36,7 @@ public class TokenManager {
     private final Long accessTokenValidityInMilliseconds;
     private final Long refreshTokenValidityInMilliseconds;
     private final Integer authVerifyTokenValidityInSeconds;
+
 
     public TokenManager(@Value("${jwt.secret}") String secretKey,
                         @Value("${jwt.issuer}") String issuer,
@@ -75,7 +77,7 @@ public class TokenManager {
         return new Date(now + refreshTokenValidityInMilliseconds);
     }
 
-    public String createAccessToken(Authentication authentication, Date expireDate) {
+    private String createAccessToken(Authentication authentication, Date expireDate) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -91,7 +93,7 @@ public class TokenManager {
                 .compact();
     }
 
-    public String createRefreshToken(Date expireDate) {
+    private String createRefreshToken(Date expireDate) {
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(issuer)
@@ -129,7 +131,7 @@ public class TokenManager {
         }
     }
 
-    public boolean validateToken(String token) {
+    public boolean isValidateToken(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
@@ -165,5 +167,13 @@ public class TokenManager {
     public AuthVerifyToken createAuthVerifyToken() {
         String key = UUID.randomUUID().toString();
         return new AuthVerifyToken(key, authVerifyTokenValidityInSeconds);
+    }
+
+    public RefreshToken createRefreshToken(Authentication authentication, String refreshToken) {
+        return RefreshToken.builder()
+                .userEmail(authentication.getName())
+                .refreshToken(refreshToken)
+                .timeToLive(refreshTokenValidityInMilliseconds)
+                .build();
     }
 }

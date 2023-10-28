@@ -1,5 +1,6 @@
 package com.playkuround.playkuroundserver.domain.auth.token.domain;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
@@ -17,22 +18,14 @@ public class RefreshToken {
 
     private final String refreshToken;
 
-    @TimeToLive(unit = TimeUnit.DAYS)
-    private final Integer timeToLive;
+    @TimeToLive(unit = TimeUnit.MILLISECONDS)
+    private final Long timeToLive;
 
     @Builder
-    public RefreshToken(String userEmail, String refreshToken, Integer timeToLive) {
+    public RefreshToken(@NotNull String userEmail, @NotNull String refreshToken, @NotNull Long timeToLive) {
         this.userEmail = userEmail;
         this.refreshToken = refreshToken;
         this.timeToLive = timeToLive;
-    }
-
-    public static RefreshToken of(String userEmail, String refreshToken, Integer timeToLive) {
-        return RefreshToken.builder()
-                .refreshToken(refreshToken)
-                .userEmail(userEmail)
-                .timeToLive(timeToLive)
-                .build();
     }
 
 }

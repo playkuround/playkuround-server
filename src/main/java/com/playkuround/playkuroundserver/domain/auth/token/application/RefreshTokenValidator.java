@@ -28,7 +28,7 @@ public class RefreshTokenValidator {
 
         // 토큰 유효성 검증
         String refreshToken = authorizations[1];
-        if (!tokenManager.validateToken(refreshToken)) {
+        if (!tokenManager.isValidateToken(refreshToken)) {
             throw new AuthenticationException(ErrorCode.INVALID_TOKEN);
         }
 

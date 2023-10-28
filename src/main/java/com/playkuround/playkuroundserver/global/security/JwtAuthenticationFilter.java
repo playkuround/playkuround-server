@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void validateAccessToken(String accessToken) {
-        if (!tokenManager.validateToken(accessToken)) {
+        if (!tokenManager.isValidateToken(accessToken)) {
             throw new AuthenticationException(ErrorCode.INVALID_TOKEN);
         }
 

@@ -39,7 +39,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         // 토큰 유효성 검증
         String accessToken = authorizations[1];
-        if (!tokenManager.validateToken(accessToken)) {
+        if (!tokenManager.isValidateToken(accessToken)) {
             throw new AuthenticationException(ErrorCode.INVALID_TOKEN);
         }
 

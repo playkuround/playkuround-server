@@ -4,8 +4,17 @@ import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class UserLoginDto {
+
+    @Getter
+    @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+    @AllArgsConstructor
+    public static class Request {
+        private String username;
+        private String password;
+    }
 
     @Getter
     @Builder

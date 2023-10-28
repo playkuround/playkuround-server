@@ -1,7 +1,5 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
-import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
-import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -21,7 +19,6 @@ import java.util.Date;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,10 +30,7 @@ class UserRegisterServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private TokenManager tokenManager;
-
-    @Mock
-    private TokenService tokenService;
+    private UserLoginService userLoginService;
 
     private final String email = "tester@konkuk.ac.kr";
     private final String nickname = "tester";
@@ -53,22 +47,19 @@ class UserRegisterServiceTest {
     @DisplayName("회원가입 성공")
     void signupSuccess() {
         // given
-        when(userRepository.existsByEmail(email))
-                .thenReturn(false);
-        when(userRepository.existsByNickname(nickname))
-                .thenReturn(false);
+        when(userRepository.existsByEmail(email)).thenReturn(false);
+        when(userRepository.existsByNickname(nickname)).thenReturn(false);
         when(userRepository.save(any(User.class)))
                 .then(invocation -> {
                     User savedUser = invocation.getArgument(0);
                     ReflectionTestUtils.setField(savedUser, "id", 1L);
                     return savedUser;
                 });
-        when(tokenManager.createTokenDto(email))
-                .thenReturn(tokenDto);
-        doNothing().when(tokenService).registerRefreshToken(any(User.class), any(String.class));
+        when(userLoginService.login(email)).thenReturn(tokenDto);
 
         // when
-        UserRegisterDto.Request registerRequest = new UserRegisterDto.Request(email, nickname, major);
+        UserRegisterDto.Request registerRequest
+                = new UserRegisterDto.Request(email, nickname, major, "");
         UserRegisterDto.Response result = userRegisterService.registerUser(registerRequest);
 
         // then
@@ -81,11 +72,10 @@ class UserRegisterServiceTest {
     @DisplayName("회원가입 실패 - 이미 존재하는 이메일")
     void signupFailByExistsEmail() {
         // given
-        when(userRepository.existsByEmail(email))
-                .thenReturn(true);
+        when(userRepository.existsByEmail(email)).thenReturn(true);
 
         // when
-        UserRegisterDto.Request registerRequest = new UserRegisterDto.Request(email, nickname, major);
+        UserRegisterDto.Request registerRequest = new UserRegisterDto.Request(email, nickname, major, "");
         assertThrows(UserEmailDuplicationException.class,
                 () -> userRegisterService.registerUser(registerRequest));
     }
@@ -94,13 +84,11 @@ class UserRegisterServiceTest {
     @DisplayName("회원가입 실패 - 이미 존재하는 닉네임")
     void signupFailByExistsNickname() {
         // given
-        when(userRepository.existsByEmail(email))
-                .thenReturn(false);
-        when(userRepository.existsByNickname(nickname))
-                .thenReturn(true);
+        when(userRepository.existsByEmail(email)).thenReturn(false);
+        when(userRepository.existsByNickname(nickname)).thenReturn(true);
 
         // when
-        UserRegisterDto.Request registerRequest = new UserRegisterDto.Request(email, nickname, major);
+        UserRegisterDto.Request registerRequest = new UserRegisterDto.Request(email, nickname, major, "");
         assertThrows(UserNicknameDuplicationException.class,
                 () -> userRegisterService.registerUser(registerRequest));
     }

@@ -1,35 +1,28 @@
 package com.playkuround.playkuroundserver.domain.auth.token.api;
 
-import com.playkuround.playkuroundserver.domain.auth.token.application.RefreshTokenValidator;
-     import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
-import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.auth.token.application.TokenReissueService;
+import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenReissueRequest;
+import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenReissueResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @RestController
-@RequestMapping("/api/auth/tokens")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class TokenApi {
 
-    private final RefreshTokenValidator refreshTokenValidator;
-    private final TokenService tokenIssueService;
+    private final TokenReissueService tokenReissueService;
 
-    @PostMapping
-    public ApiResponse<TokenDto.AccessTokenDto> accessTokenReissue(HttpServletRequest request) {
-        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        refreshTokenValidator.validateRefreshToken(authorizationHeader);
-
-        String refreshTokenDto = authorizationHeader.split(" ")[1];
-        TokenDto.AccessTokenDto accessTokenDto = tokenIssueService.reissueAccessToken(refreshTokenDto);
-
-        return ApiUtils.success(accessTokenDto);
+    @PostMapping("reissue")
+    public ApiResponse<TokenReissueResponse> accessTokenReissue(@RequestBody @Valid TokenReissueRequest request) {
+        TokenReissueResponse response = tokenReissueService.reissue(request);
+        return ApiUtils.success(response);
     }
 
 }

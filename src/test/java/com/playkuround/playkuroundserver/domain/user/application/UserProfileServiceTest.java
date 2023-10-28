@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
+import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserProfileDto;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +33,7 @@ class UserProfileServiceTest {
         String email = "tester@konkuk.ac.kr";
         String nickname = "tester";
         Major major = Major.컴퓨터공학부;
-        User user = new User(email, nickname, major);
+        User user = new User(email, nickname, major, Role.ROLE_USER);
         UserProfileDto.Response userProfile = userProfileService.getUserProfile(user);
 
         // then

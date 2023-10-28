@@ -1,13 +1,9 @@
-package com.playkuround.playkuroundserver.domain.auth.email.domain;
+package com.playkuround.playkuroundserver.domain.auth.token.domain;
 
-import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
-
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Getter
 @RedisHash(value = "authVerifyToken")
@@ -16,12 +12,11 @@ public class AuthVerifyToken {
     @Id
     private String authVerifyToken;
 
-    @TimeToLive(unit = TimeUnit.SECONDS)
+    @TimeToLive
     private final Integer timeToLive;
 
-    @Builder
-    public AuthVerifyToken(Integer timeToLive) {
-        this.authVerifyToken = UUID.randomUUID().toString();
+    public AuthVerifyToken(String authVerifyToken, Integer timeToLive) {
+        this.authVerifyToken = authVerifyToken;
         this.timeToLive = timeToLive;
     }
 }

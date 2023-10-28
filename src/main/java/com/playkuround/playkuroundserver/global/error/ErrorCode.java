@@ -42,6 +42,7 @@ public enum ErrorCode {
     EXPIRED_AUTH_CODE(HttpStatus.BAD_REQUEST, "E003", "만료된 코드입니다."),
     SENDING_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "E004", "인증 메일 전송 횟수를 초과하였습니다."),
     NOT_MATCH_AUTH_CODE(HttpStatus.BAD_REQUEST, "E005", "코드가 일치하지 않습니다."),
+    EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "E006", "인증 대기 중인 이메일이 아닙니다."),
 
     // Badge
     INVALID_Badge_TYPE(HttpStatus.BAD_REQUEST, "B001", "올바르지 않은 BadgeType입니다."),

@@ -19,4 +19,9 @@ public class RefreshTokenFindDao {
                 .orElseThrow(() -> new RefreshTokenNotFoundException(user.getEmail()));
     }
 
+    public RefreshToken findByEmail(String email) {
+        return refreshTokenRepository.findByUserEmail(email)
+                .orElseThrow(() -> new RefreshTokenNotFoundException(email));
+    }
+
 }

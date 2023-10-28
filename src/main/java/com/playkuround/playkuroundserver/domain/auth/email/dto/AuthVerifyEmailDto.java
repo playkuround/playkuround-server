@@ -33,7 +33,7 @@ public class AuthVerifyEmailDto {
                     .build();
         }
 
-        public static AuthVerifyEmailDto.Response from(TokenDto tokenDto) {
+        public static AuthVerifyEmailDto.Response fromTokenDto(TokenDto tokenDto) {
             return AuthVerifyEmailDto.Response.builder()
                     .grantType(tokenDto.getGrantType())
                     .accessToken(tokenDto.getAccessToken())

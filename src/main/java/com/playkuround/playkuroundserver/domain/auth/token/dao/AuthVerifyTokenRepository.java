@@ -1,6 +1,6 @@
-package com.playkuround.playkuroundserver.domain.auth.email.dao;
+package com.playkuround.playkuroundserver.domain.auth.token.dao;
 
-import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthVerifyToken;
+import com.playkuround.playkuroundserver.domain.auth.token.domain.AuthVerifyToken;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

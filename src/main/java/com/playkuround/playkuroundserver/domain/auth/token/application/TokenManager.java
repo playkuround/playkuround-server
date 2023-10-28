@@ -1,5 +1,6 @@
 package com.playkuround.playkuroundserver.domain.auth.token.application;
 
+import com.playkuround.playkuroundserver.domain.auth.token.domain.AuthVerifyToken;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.GrantType;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
@@ -21,6 +22,7 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,16 +31,19 @@ public class TokenManager {
 
     private final Key key;
     private final String issuer;
+    private final String tokenTypeHeaderKey;
     private final Long accessTokenValidityInMilliseconds;
     private final Long refreshTokenValidityInMilliseconds;
-    private final String tokenTypeHeaderKey;
+    private final Integer authVerifyTokenValidityInSeconds;
 
     public TokenManager(@Value("${jwt.secret}") String secretKey,
                         @Value("${jwt.issuer}") String issuer,
                         @Value("${jwt.access-token-expiration-seconds}") Long accessTokenExpirationSeconds,
-                        @Value("${jwt.refresh-token-expiration-seconds}") Long refreshTokenExpirationSeconds) {
+                        @Value("${jwt.refresh-token-expiration-seconds}") Long refreshTokenExpirationSeconds,
+                        @Value("${token.authverify-token-expiration-seconds}") Integer authVerifyTokenExpirationSeconds) {
         this.accessTokenValidityInMilliseconds = accessTokenExpirationSeconds * 1000;
         this.refreshTokenValidityInMilliseconds = refreshTokenExpirationSeconds * 1000;
+        this.authVerifyTokenValidityInSeconds = authVerifyTokenExpirationSeconds;
         this.issuer = issuer;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
@@ -157,5 +162,10 @@ public class TokenManager {
         }
 
         return tokenType;
+    }
+
+    public AuthVerifyToken createAuthVerifyToken() {
+        String key = UUID.randomUUID().toString();
+        return new AuthVerifyToken(key, authVerifyTokenValidityInSeconds);
     }
 }

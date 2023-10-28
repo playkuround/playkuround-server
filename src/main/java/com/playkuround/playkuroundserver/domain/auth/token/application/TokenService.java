@@ -1,13 +1,16 @@
 package com.playkuround.playkuroundserver.domain.auth.token.application;
 
+import com.playkuround.playkuroundserver.domain.auth.token.dao.AuthVerifyTokenRepository;
 import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenFindDao;
 import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenRepository;
+import com.playkuround.playkuroundserver.domain.auth.token.domain.AuthVerifyToken;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.RefreshToken;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,7 @@ public class TokenService {
 
     private final TokenManager tokenManager;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final AuthVerifyTokenRepository authVerifyTokenRepository;
     private final RefreshTokenFindDao refreshTokenFindDao;
 
     public TokenDto.AccessTokenDto reissueAccessToken(String refreshTokenDto) {
@@ -37,9 +41,12 @@ public class TokenService {
     }
 
     @Transactional
-    public void registerRefreshToken(User user, String refreshTokenDto) {
+    public void registerRefreshToken(Authentication authentication, String refreshTokenDto) {
+        refreshTokenRepository.findByUserEmail(authentication.getName())
+                .ifPresent(refreshTokenRepository::delete);
+
         RefreshToken refreshToken = RefreshToken.of(
-                user.getEmail(),
+                authentication.getName(),
                 refreshTokenDto,
                 Integer.parseInt(refreshTokenTimeToLive)
         );
@@ -58,4 +65,8 @@ public class TokenService {
         refreshTokenRepository.delete(refreshToken);
     }
 
+    public AuthVerifyToken registerAuthVerifyToken() {
+        AuthVerifyToken authVerifyToken = tokenManager.createAuthVerifyToken();
+        return authVerifyTokenRepository.save(authVerifyToken);
+    }
 }

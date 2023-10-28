@@ -9,4 +9,5 @@ public interface RefreshTokenRepository extends CrudRepository<RefreshToken, Str
 
     Optional<RefreshToken> findByUserEmail(String userEmail);
 
+    boolean existsByUserEmail(String userEmail);
 }

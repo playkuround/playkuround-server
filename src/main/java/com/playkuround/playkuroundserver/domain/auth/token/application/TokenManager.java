@@ -56,7 +56,7 @@ public class TokenManager {
         Date refreshTokenExpiredAt = createRefreshTokenExpirationTime(now);
 
         String accessToken = createAccessToken(authentication, accessTokenExpiredAt);
-        String refreshToken = createRefreshToken(authentication, refreshTokenExpiredAt);
+        String refreshToken = createRefreshToken(refreshTokenExpiredAt);
 
         return TokenDto.builder()
                 .grantType(GrantType.BEARER.getType())
@@ -91,12 +91,11 @@ public class TokenManager {
                 .compact();
     }
 
-    public String createRefreshToken(Authentication authentication, Date expireDate) {
+    public String createRefreshToken(Date expireDate) {
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(issuer)
                 .setExpiration(expireDate)
-                .setSubject(authentication.getName())
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setHeaderParam(tokenTypeHeaderKey, TokenType.REFRESH.name())
                 .compact();
@@ -150,18 +149,17 @@ public class TokenManager {
     }
 
     public String getTokenType(String token) {
-        String tokenType;
         try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(tokenSecret)
-                    .parseClaimsJws(token).getBody();
-            tokenType = claims.getSubject();
+            return (String) Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getHeader()
+                    .get(tokenTypeHeaderKey);
         } catch (Exception e) {
             e.printStackTrace();
             throw new InvalidTokenException();
         }
-
-        return tokenType;
     }
 
     public AuthVerifyToken createAuthVerifyToken() {

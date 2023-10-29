@@ -74,7 +74,7 @@ class UserRegisterServiceTest {
         // given
         when(userRepository.existsByEmail(email)).thenReturn(true);
 
-        // when
+        // expect
         UserRegisterDto.Request registerRequest = new UserRegisterDto.Request(email, nickname, major, "");
         assertThrows(UserEmailDuplicationException.class,
                 () -> userRegisterService.registerUser(registerRequest));
@@ -87,7 +87,7 @@ class UserRegisterServiceTest {
         when(userRepository.existsByEmail(email)).thenReturn(false);
         when(userRepository.existsByNickname(nickname)).thenReturn(true);
 
-        // when
+        // expect
         UserRegisterDto.Request registerRequest = new UserRegisterDto.Request(email, nickname, major, "");
         assertThrows(UserNicknameDuplicationException.class,
                 () -> userRegisterService.registerUser(registerRequest));

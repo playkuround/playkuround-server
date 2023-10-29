@@ -2,6 +2,8 @@ package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.Major;
+import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicationException;
@@ -9,6 +11,7 @@ import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDupli
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,7 +22,7 @@ import java.util.Date;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserRegisterServiceTest {
@@ -91,5 +94,21 @@ class UserRegisterServiceTest {
         UserRegisterDto.Request registerRequest = new UserRegisterDto.Request(email, nickname, major, "");
         assertThrows(UserNicknameDuplicationException.class,
                 () -> userRegisterService.registerUser(registerRequest));
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴")
+    void deleteUser() {
+        // given
+        User user = new User(email, nickname, Major.컴퓨터공학부, Role.ROLE_USER);
+        doNothing().when(userRepository).delete(user);
+
+        // when
+        userRegisterService.deleteUser(user);
+
+        // then
+        ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
+        verify(userRepository, times(1)).delete(argument.capture());
+        assertThat(argument.getValue()).isEqualTo(user);
     }
 }

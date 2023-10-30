@@ -21,7 +21,7 @@ public class UserLoginService {
 
     public TokenDto login(String userEmail) {
         UsernamePasswordAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(userEmail, null);
+                = new UsernamePasswordAuthenticationToken(userEmail, "");
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(authenticationToken);
 

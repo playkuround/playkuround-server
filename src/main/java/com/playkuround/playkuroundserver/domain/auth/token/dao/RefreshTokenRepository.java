@@ -11,5 +11,4 @@ public interface RefreshTokenRepository extends CrudRepository<RefreshToken, Str
 
     boolean existsByUserEmail(String userEmail);
 
-    void deleteAllByUserEmail(String userEmail);
 }

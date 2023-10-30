@@ -3,19 +3,24 @@ package com.playkuround.playkuroundserver.global.security;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final String ENCODED_PASSWORD;
+
+    public UserDetailsServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.ENCODED_PASSWORD = passwordEncoder.encode("");
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) {
@@ -24,6 +29,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         String roleName = user.getRole().toString();
         List<String> role = Arrays.stream(roleName.split(",")).toList();
-        return new UserDetailsImpl(user, role);
+        return new UserDetailsImpl(user, role, ENCODED_PASSWORD);
     }
 }

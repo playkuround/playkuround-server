@@ -35,8 +35,8 @@ jobs:
         SECRET_YML: ${{ secrets.YML }}
         SECRET_TEST_YML: ${{ secrets.TEST_YML }}
       run: |
-        echo $SECRET_YML > src/main/resources/application.yml
-        echo $SECRET_TEST_YML > src/main/resources/application-test.yml
+        echo "$SECRET_YML" > src/main/resources/application.yml
+        echo "$SECRET_TEST_YML" > src/main/resources/application-test.yml
       shell: bash
 
     - name: Grant execute permission for gradlew

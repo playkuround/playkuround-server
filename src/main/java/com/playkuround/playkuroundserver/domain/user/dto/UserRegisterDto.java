@@ -17,8 +17,8 @@ import org.hibernate.validator.constraints.Length;
 public class UserRegisterDto {
 
     @Getter
-    @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
     @AllArgsConstructor
+    @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
     public static class Request {
 
         @Email(message = "올바른 이메일 형식이 아닙니다.")
@@ -49,6 +49,7 @@ public class UserRegisterDto {
     @Getter
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
     public static class Response {
 
         private String grantType;

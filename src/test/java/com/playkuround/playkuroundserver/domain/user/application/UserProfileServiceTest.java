@@ -47,18 +47,28 @@ class UserProfileServiceTest {
     @Test
     @DisplayName("닉네임 중복 테스트 - 중복된 경우 True 리턴")
     void duplicateNickname() {
+        // given
         String nickname = "tester";
         when(userRepository.existsByNickname(nickname)).thenReturn(true);
+
+        // when
         boolean result = userProfileService.checkDuplicateNickname(nickname);
+
+        // then
         assertThat(result).isTrue();
     }
 
     @Test
-    @DisplayName("닉네임 중복 테스트 - 중복된 경우 False 리턴")
+    @DisplayName("닉네임 중복 테스트 - 중복되지 않는 경우 False 리턴")
     void notDuplicateNickname() {
+        // given
         String nickname = "tester";
         when(userRepository.existsByNickname(nickname)).thenReturn(false);
+
+        // when
         boolean result = userProfileService.checkDuplicateNickname(nickname);
+
+        // then
         assertThat(result).isFalse();
     }
 

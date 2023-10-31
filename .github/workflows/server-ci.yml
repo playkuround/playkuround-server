@@ -49,16 +49,11 @@ jobs:
           echo "$SECRET_TEST_YML" > src/main/resources/application-test.yml
         shell: bash
   
-      - name: Start Redis
-        uses: supercharge/redis-github-action@1.1.0
-        with:
-          redis-version: 6
-  
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
-        env:
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
         
       - name: Build with Gradle
         run: ./gradlew clean build
+        env:
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379

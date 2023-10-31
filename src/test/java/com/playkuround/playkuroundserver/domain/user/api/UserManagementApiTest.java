@@ -14,6 +14,7 @@ import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.global.error.ErrorCode;
+import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -38,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class UserApiTest {
+class UserManagementApiTest {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -186,5 +189,25 @@ class UserApiTest {
                 .andDo(print());
         List<User> users = userRepository.findAll();
         assertThat(users).hasSize(1);
+    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("로그아웃 - 리프레시 토큰 삭제")
+    void logout() throws Exception {
+        // given
+        Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, null);
+        RefreshToken refreshToken = tokenManager.createRefreshToken(authentication, "refreshToken");
+        refreshTokenRepository.save(refreshToken);
+
+        // when
+        mockMvc.perform(post("/api/users/logout"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andDo(print());
+
+        // then
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findById(email);
+        assertThat(optionalRefreshToken.isPresent()).isEqualTo(false);
     }
 }

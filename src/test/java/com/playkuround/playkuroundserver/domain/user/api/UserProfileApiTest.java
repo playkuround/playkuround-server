@@ -54,10 +54,11 @@ class UserProfileApiTest {
     @Test
     @DisplayName("닉네임 중복 조회 - 중복일 때")
     void checkDuplicateWhenDuplication() throws Exception {
-        // expected
+        // given
         User user = new User("tester@konkuk.ac.kr", "tester", Major.컴퓨터공학부, Role.ROLE_USER);
         userRepository.save(user);
 
+        // expected
         mockMvc.perform(get("/api/users/duplication")
                         .param("nickname", "tester"))
                 .andExpect(status().isOk())
@@ -69,10 +70,11 @@ class UserProfileApiTest {
     @Test
     @DisplayName("닉네임 중복 조회 - 중복이 아닐 때")
     void checkDuplicateWhenNotDuplication() throws Exception {
-        // expected
+        // given
         User user = new User("tester@konkuk.ac.kr", "tester", Major.컴퓨터공학부, Role.ROLE_USER);
         userRepository.save(user);
 
+        // expected
         mockMvc.perform(get("/api/users/duplication")
                         .param("nickname", "tester12"))
                 .andExpect(status().isOk())

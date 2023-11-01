@@ -51,7 +51,7 @@ public class AuthEmailSendService {
 
     private void validateEmailDomain(String target) {
         String[] requestSplit = target.split("@");
-        if (requestSplit.length != 2 || requestSplit[1].equals(emailDomain)) {
+        if (requestSplit.length != 2 || !requestSplit[1].equals(emailDomain)) {
             throw new NotKUEmailException();
         }
     }

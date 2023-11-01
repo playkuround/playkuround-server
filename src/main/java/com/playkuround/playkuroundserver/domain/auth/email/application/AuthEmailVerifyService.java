@@ -34,8 +34,7 @@ public class AuthEmailVerifyService {
                 .orElseThrow(AuthEmailNotFoundException::new);
 
         validateEmailAndCode(authEmail, code);
-
-        authEmailRepository.delete(authEmail);
+        authEmail.makeInvalidate();
 
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isPresent()) {
@@ -49,6 +48,9 @@ public class AuthEmailVerifyService {
     }
 
     private void validateEmailAndCode(AuthEmail authEmail, String code) {
+        if (!authEmail.getValidate()) {
+            throw new AuthEmailNotFoundException();
+        }
         if (authEmail.getExpiredAt().isBefore(LocalDateTime.now())) {
             throw new AuthCodeExpiredException();
         }

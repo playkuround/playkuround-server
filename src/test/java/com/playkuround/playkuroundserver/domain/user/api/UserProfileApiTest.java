@@ -63,7 +63,7 @@ class UserProfileApiTest {
                         .param("nickname", "tester"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.response").value(true))
+                .andExpect(jsonPath("$.response").value(false))
                 .andDo(print());
     }
 
@@ -79,7 +79,7 @@ class UserProfileApiTest {
                         .param("nickname", "tester12"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.response").value(false))
+                .andExpect(jsonPath("$.response").value(true))
                 .andDo(print());
     }
 }

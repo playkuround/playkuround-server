@@ -1,10 +1,6 @@
-name: Java CI with Gradle
+name: Spring Code deploy
 
 on:
-  push:
-    branches: [ "main", "develop" ]
-  pull_request:
-    branches: [ "main", "develop" ]
   workflow_dispatch:
 
 jobs:
@@ -36,7 +32,6 @@ jobs:
           redis-port: 6379
           auto-start: true
         
-
       - name: injection application.yml
         run: |
           touch src/main/resources/application.yml
@@ -50,3 +45,37 @@ jobs:
         
       - name: Build with Gradle
         run: ./gradlew clean build
+
+      - name: Deliver File
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "build/libs/*.jar"
+          target: "source"
+          rm: true
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            SOURCE_DIR=source/build/libs
+            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
+
+            if [ -z "$PID" ]; then
+                    echo "#### THERE IS NO PROCESS ####"
+            else
+                    echo "#### KILL $PID ####"
+                    sudo kill $PID
+            fi
+
+            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
+
+            sudo java -jar $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &

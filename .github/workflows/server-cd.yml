@@ -51,7 +51,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.SSH_PRVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "build/libs/*.jar"
           target: "source"
@@ -62,7 +62,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.SSH_PRVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
             SOURCE_DIR=source/build/libs

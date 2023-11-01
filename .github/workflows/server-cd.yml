@@ -47,6 +47,17 @@ jobs:
         run: ./gradlew clean build
 
       - name: Deliver File
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "build/libs/*.jar"
+          target: "source"
+          rm: true
+
+      - name: Deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -54,4 +65,17 @@ jobs:
           key: ${{ secrets.SSH_PRVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            whoami
+            SOURCE_DIR=source/build/libs
+            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
+
+            if [ -z "$PID" ]; then
+                    echo "#### THERE IS NO PROCESS ####"
+            else
+                    echo "#### KILL $PID ####"
+                    sudo kill $PID
+            fi
+
+            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
+
+            sudo java -jar $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &

@@ -59,7 +59,7 @@ class UserProfileApiTest {
         userRepository.save(user);
 
         // expected
-        mockMvc.perform(get("/api/users/duplication")
+        mockMvc.perform(get("/api/users/availability")
                         .param("nickname", "tester"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))
@@ -75,7 +75,7 @@ class UserProfileApiTest {
         userRepository.save(user);
 
         // expected
-        mockMvc.perform(get("/api/users/duplication")
+        mockMvc.perform(get("/api/users/availability")
                         .param("nickname", "tester12"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))

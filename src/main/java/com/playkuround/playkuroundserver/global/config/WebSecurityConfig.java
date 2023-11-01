@@ -45,7 +45,7 @@ public class WebSecurityConfig {
                                 AntPathRequestMatcher.antMatcher("/"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/users/register"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/users/login"),
-                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/users/duplication"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/users/availability"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/auth/tokens"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/auth/emails"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/auth/emails")

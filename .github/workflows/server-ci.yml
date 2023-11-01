@@ -36,6 +36,7 @@ jobs:
           redis-port: 6379
           auto-start: true
         
+
       - name: injection application.yml
         run: |
           touch src/main/resources/application.yml

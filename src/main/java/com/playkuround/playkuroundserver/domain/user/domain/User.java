@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity {
 
@@ -41,6 +42,8 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Role role;
 
+    private Long highestScore;
+
     @Builder
     public User(@NonNull String email, @NonNull String nickname, @NonNull Major major, @NonNull Role role) {
         this.email = email;
@@ -49,6 +52,7 @@ public class User extends BaseTimeEntity {
         this.ConsecutiveAttendanceDays = 0;
         this.lastAttendanceDate = LocalDateTime.now().minusDays(1);
         this.role = role;
+        this.highestScore = 0L;
     }
 
 }

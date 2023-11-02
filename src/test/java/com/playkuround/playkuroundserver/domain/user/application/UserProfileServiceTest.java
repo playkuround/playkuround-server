@@ -42,6 +42,7 @@ class UserProfileServiceTest {
         assertThat(userProfile.getMajor()).isEqualTo(major.name());
         assertThat(userProfile.getConsecutiveAttendanceDays()).isEqualTo(0);
         assertThat(userProfile.getLastAttendanceDate()).isBefore(LocalDateTime.now());
+        assertThat(userProfile.getHighestScore()).isEqualTo(0);
     }
 
     @Test

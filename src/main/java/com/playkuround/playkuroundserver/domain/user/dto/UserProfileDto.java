@@ -2,10 +2,11 @@ package com.playkuround.playkuroundserver.domain.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 public class UserProfileDto {
 
@@ -18,6 +19,7 @@ public class UserProfileDto {
         private String nickname;
         private String major;
         private Integer ConsecutiveAttendanceDays;
+        private Long highestScore;
 
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime lastAttendanceDate;
@@ -29,6 +31,7 @@ public class UserProfileDto {
                     .major(user.getMajor().name())
                     .ConsecutiveAttendanceDays(user.getConsecutiveAttendanceDays())
                     .lastAttendanceDate(user.getLastAttendanceDate())
+                    .highestScore(user.getHighestScore())
                     .build();
         }
 

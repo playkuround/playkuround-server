@@ -1,12 +1,12 @@
 package com.playkuround.playkuroundserver.domain.auth.email.domain;
 
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,11 +27,15 @@ public class AuthEmail extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime expiredAt;
 
+    @Column(nullable = false)
+    private Boolean validate;
+
     @Builder
     public AuthEmail(String target, String code, LocalDateTime expiredAt) {
         this.code = code;
         this.target = target;
         this.expiredAt = expiredAt;
+        this.validate = true;
     }
 
     public static AuthEmail createAuthEmail(String target, String code, LocalDateTime expireAt) {
@@ -40,6 +44,10 @@ public class AuthEmail extends BaseTimeEntity {
                 .code(code)
                 .expiredAt(expireAt)
                 .build();
+    }
+
+    public void makeInvalidate() {
+        this.validate = false;
     }
 
 }

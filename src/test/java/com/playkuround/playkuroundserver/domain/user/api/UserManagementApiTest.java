@@ -128,7 +128,7 @@ class UserManagementApiTest {
                         .content(request))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_TOKEN.getStatus().name()))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_TOKEN.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.INVALID_TOKEN.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.INVALID_TOKEN.getMessage()))
                 .andDo(print());
@@ -155,7 +155,7 @@ class UserManagementApiTest {
                         .content(request))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.EMAIL_DUPLICATION.getStatus().name()))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.EMAIL_DUPLICATION.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.EMAIL_DUPLICATION.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.EMAIL_DUPLICATION.getMessage()))
                 .andDo(print());
@@ -183,7 +183,7 @@ class UserManagementApiTest {
                         .content(request))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.NICKNAME_DUPLICATION.getStatus().name()))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.NICKNAME_DUPLICATION.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.NICKNAME_DUPLICATION.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.NICKNAME_DUPLICATION.getMessage()))
                 .andDo(print());

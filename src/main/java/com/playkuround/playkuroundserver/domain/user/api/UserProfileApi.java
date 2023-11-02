@@ -25,10 +25,10 @@ public class UserProfileApi {
         return ApiUtils.success(profileResponse);
     }
 
-    @GetMapping("/duplication")
+    @GetMapping("/availability")
     public ApiResponse<Boolean> nicknameDuplication(@Param("nickname") String nickname) {
         boolean isDuplicate = userProfileService.checkDuplicateNickname(nickname);
-        return ApiUtils.success(isDuplicate);
+        return ApiUtils.success(!isDuplicate);
     }
 
 }

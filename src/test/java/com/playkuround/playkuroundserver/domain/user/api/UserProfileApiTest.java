@@ -59,11 +59,11 @@ class UserProfileApiTest {
         userRepository.save(user);
 
         // expected
-        mockMvc.perform(get("/api/users/duplication")
+        mockMvc.perform(get("/api/users/availability")
                         .param("nickname", "tester"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.response").value(true))
+                .andExpect(jsonPath("$.response").value(false))
                 .andDo(print());
     }
 
@@ -75,11 +75,11 @@ class UserProfileApiTest {
         userRepository.save(user);
 
         // expected
-        mockMvc.perform(get("/api/users/duplication")
+        mockMvc.perform(get("/api/users/availability")
                         .param("nickname", "tester12"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.response").value(false))
+                .andExpect(jsonPath("$.response").value(true))
                 .andDo(print());
     }
 }

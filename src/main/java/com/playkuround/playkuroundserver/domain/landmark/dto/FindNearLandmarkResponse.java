@@ -25,7 +25,6 @@ public class FindNearLandmarkResponse {
 
     public void update(Landmark landmark, double distance) {
         if (landmarkId == null || this.distance > distance) {
-
             this.landmarkId = landmark.getId();
             this.name = landmark.getName();
             this.distance = distance;

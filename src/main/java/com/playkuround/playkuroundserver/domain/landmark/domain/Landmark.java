@@ -1,11 +1,11 @@
 package com.playkuround.playkuroundserver.domain.landmark.domain;
 
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import jakarta.persistence.*;
 
 @Entity
 @Getter
@@ -25,10 +25,19 @@ public class Landmark extends BaseTimeEntity {
     @Column(nullable = false)
     private double longitude;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
-    private GameType gameType;
-
     @Column(nullable = false)
     private int recognitionRadius;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User firstUser;
+
+    private Long highestScore;
+
+    public void updateFirstUser(User user, Long score) {
+        if (this.highestScore == null || this.highestScore < score) {
+            this.firstUser = user;
+            this.highestScore = score;
+        }
+    }
 }

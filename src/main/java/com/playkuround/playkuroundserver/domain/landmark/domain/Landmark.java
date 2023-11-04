@@ -1,6 +1,5 @@
 package com.playkuround.playkuroundserver.domain.landmark.domain;
 
-import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Landmark extends BaseTimeEntity {
+public class Landmark {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,10 +31,10 @@ public class Landmark extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User firstUser;
 
-    private Long highestScore;
+    private long highestScore;
 
-    public void updateFirstUser(User user, Long score) {
-        if (this.highestScore == null || this.highestScore < score) {
+    public void updateFirstUser(User user, long score) {
+        if (this.highestScore < score) {
             this.firstUser = user;
             this.highestScore = score;
         }

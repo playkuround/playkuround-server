@@ -28,7 +28,6 @@ public class FindNearLandmark {
                     .name(landmark.getName())
                     .distance(distance)
                     .radius(landmark.getRecognitionRadius())
-                    .gameType(landmark.getGameType().name())
                     .build();
 
         }

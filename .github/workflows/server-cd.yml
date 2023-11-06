@@ -78,4 +78,4 @@ jobs:
 
             echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
 
-            sudo nohup java -jar $SOURCE_DIR/$FILE_NAME 1>/stdout.out 2>stderr.out 2>&1 &
+            sudo nohup java -jar $SOURCE_DIR/$FILE_NAME 1>$SOURCE_DIR/stdout.out 2>$SOURCE_DIR/stderr.out 2>&1 &

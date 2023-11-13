@@ -2,33 +2,36 @@ package com.playkuround.playkuroundserver.domain.auth.email.api;
 
 import com.playkuround.playkuroundserver.domain.auth.email.application.AuthEmailSendService;
 import com.playkuround.playkuroundserver.domain.auth.email.application.AuthEmailVerifyService;
-import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthEmailSendDto;
-import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthVerifyEmailDto;
-import com.playkuround.playkuroundserver.domain.auth.email.exception.NotKUEmailException;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.request.AuthEmailSendRequest;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.response.AuthEmailSendResponse;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.response.AuthVerifyEmailResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/emails")
+@Tag(name = "Auth", description = "메일 인증 서비스")
 public class AuthEmailApi {
 
     private final AuthEmailSendService authEmailSendService;
     private final AuthEmailVerifyService authEmailVerifyService;
 
     @PostMapping
-    public ApiResponse<AuthEmailSendDto.Response> authEmailSend(@RequestBody @Valid AuthEmailSendDto.Request requestDto) {
-        AuthEmailSendDto.Response responseDto = authEmailSendService.sendAuthEmail(requestDto);
+    public ApiResponse<AuthEmailSendResponse> authEmailSend(
+            @RequestBody @Valid AuthEmailSendRequest requestDto) {
+        AuthEmailSendResponse responseDto = authEmailSendService.sendAuthEmail(requestDto);
         return ApiUtils.success(responseDto);
     }
 
     @GetMapping
-    public ApiResponse<AuthVerifyEmailDto.Response> authEmailVerify(@RequestParam("code") String code, @RequestParam("email") String email) {
-        AuthVerifyEmailDto.Response result = authEmailVerifyService.verifyAuthEmail(code, email);
+    public ApiResponse<AuthVerifyEmailResponse> authEmailVerify(@RequestParam("code") String code,
+                                                                @RequestParam("email") String email) {
+        AuthVerifyEmailResponse result = authEmailVerifyService.verifyAuthEmail(code, email);
         return ApiUtils.success(result);
     }
 

@@ -31,11 +31,10 @@ public class UserManagementApi {
     private final UserLogoutService userLogoutService;
     private final UserRegisterService userRegisterService;
 
-    @Operation(summary = "register User", description = "회원가입을 진행한다.")
     @PostMapping("/register")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public ApiResponse<UserRegisterResponse> registerUser(
-            @RequestBody @Valid UserRegisterRequest registerRequest) {
+    @Operation(summary = "회원가입", description = "회원가입을 진행한다.")
+    public ApiResponse<UserRegisterResponse> registerUser(@RequestBody @Valid UserRegisterRequest registerRequest) {
         tokenService.validateAuthVerifyToken(registerRequest.getAuthVerifyToken());
         UserRegisterResponse registerResponse = userRegisterService.registerUser(registerRequest);
         tokenService.deleteAuthVerifyToken(registerRequest.getAuthVerifyToken());
@@ -43,6 +42,7 @@ public class UserManagementApi {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "서버에서 refresh token을 삭제합니다. 앱 내에서 accessToken을 지워야합니다.")
     public ApiResponse<Void> userLogout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         userLogoutService.logout(userDetails.getUser());
         return ApiUtils.success(null);

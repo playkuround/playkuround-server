@@ -1,5 +1,11 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
@@ -12,9 +18,13 @@ import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
+import com.playkuround.playkuroundserver.domain.user.dto.request.UserRegisterRequest;
+import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,16 +37,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -78,8 +78,8 @@ class UserManagementApiTest {
         AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
 
         // when
-        UserRegisterDto.Request registerRequest
-                = new UserRegisterDto.Request(email, nickname, major.name(), authVerifyToken.getAuthVerifyToken());
+        UserRegisterRequest registerRequest
+                = new UserRegisterRequest(email, nickname, major.name(), authVerifyToken.getAuthVerifyToken());
         String request = objectMapper.writeValueAsString(registerRequest);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/users/register")
@@ -92,7 +92,8 @@ class UserManagementApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        UserRegisterDto.Response response = (UserRegisterDto.Response) TestUtil.convertjsonstringtoobject(json, UserRegisterDto.Response.class);
+        UserRegisterResponse response = (UserRegisterResponse) TestUtil.convertjsonstringtoobject(json,
+                UserRegisterResponse.class);
 
         // then
         assertThat(tokenManager.isValidateToken(response.getAccessToken())).isTrue();
@@ -118,8 +119,8 @@ class UserManagementApiTest {
     @DisplayName("회원 등록 실패 - 존재하지 않는 AuthVerifyToken")
     void userRegisterFailByNotExitsAuthVerifyToken() throws Exception {
         // when
-        UserRegisterDto.Request registerRequest
-                = new UserRegisterDto.Request(email, nickname, major.name(), "NotFoundToken");
+        UserRegisterRequest registerRequest
+                = new UserRegisterRequest(email, nickname, major.name(), "NotFoundToken");
         String request = objectMapper.writeValueAsString(registerRequest);
 
         // expect
@@ -145,8 +146,8 @@ class UserManagementApiTest {
         AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
 
         // when
-        UserRegisterDto.Request registerRequest
-                = new UserRegisterDto.Request(email, nickname + "0", major.name(), authVerifyToken.getAuthVerifyToken());
+        UserRegisterRequest registerRequest
+                = new UserRegisterRequest(email, nickname + "0", major.name(), authVerifyToken.getAuthVerifyToken());
         String request = objectMapper.writeValueAsString(registerRequest);
 
         // expect
@@ -173,8 +174,8 @@ class UserManagementApiTest {
         AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
 
         // when
-        UserRegisterDto.Request registerRequest
-                = new UserRegisterDto.Request("k" + email, nickname, major.name(), authVerifyToken.getAuthVerifyToken());
+        UserRegisterRequest registerRequest
+                = new UserRegisterRequest("k" + email, nickname, major.name(), authVerifyToken.getAuthVerifyToken());
         String request = objectMapper.writeValueAsString(registerRequest);
 
         // expect

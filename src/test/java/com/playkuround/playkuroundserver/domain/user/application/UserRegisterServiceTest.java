@@ -1,13 +1,23 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
+import com.playkuround.playkuroundserver.domain.user.dto.request.UserRegisterRequest;
+import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicationException;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDuplicationException;
+import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,13 +26,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Date;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserRegisterServiceTest {
@@ -61,9 +64,9 @@ class UserRegisterServiceTest {
         when(userLoginService.login(email)).thenReturn(tokenDto);
 
         // when
-        UserRegisterDto.Request registerRequest
-                = new UserRegisterDto.Request(email, nickname, major, "");
-        UserRegisterDto.Response result = userRegisterService.registerUser(registerRequest);
+        UserRegisterRequest registerRequest
+                = new UserRegisterRequest(email, nickname, major, "");
+        UserRegisterResponse result = userRegisterService.registerUser(registerRequest);
 
         // then
         assertThat(result.getAccessToken()).isEqualTo(tokenDto.getAccessToken());
@@ -78,7 +81,7 @@ class UserRegisterServiceTest {
         when(userRepository.existsByEmail(email)).thenReturn(true);
 
         // expect
-        UserRegisterDto.Request registerRequest = new UserRegisterDto.Request(email, nickname, major, "");
+        UserRegisterRequest registerRequest = new UserRegisterRequest(email, nickname, major, "");
         assertThrows(UserEmailDuplicationException.class,
                 () -> userRegisterService.registerUser(registerRequest));
     }
@@ -91,7 +94,7 @@ class UserRegisterServiceTest {
         when(userRepository.existsByNickname(nickname)).thenReturn(true);
 
         // expect
-        UserRegisterDto.Request registerRequest = new UserRegisterDto.Request(email, nickname, major, "");
+        UserRegisterRequest registerRequest = new UserRegisterRequest(email, nickname, major, "");
         assertThrows(UserNicknameDuplicationException.class,
                 () -> userRegisterService.registerUser(registerRequest));
     }

@@ -2,8 +2,8 @@ package com.playkuround.playkuroundserver.domain.auth.token.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenRepository;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
-import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenReissueRequest;
-import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenReissueResponse;
+import com.playkuround.playkuroundserver.domain.auth.token.dto.request.TokenReissueRequest;
+import com.playkuround.playkuroundserver.domain.auth.token.dto.response.TokenReissueResponse;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidRefreshTokenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

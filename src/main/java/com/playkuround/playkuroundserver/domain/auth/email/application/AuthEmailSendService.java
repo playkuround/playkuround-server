@@ -2,18 +2,18 @@ package com.playkuround.playkuroundserver.domain.auth.email.application;
 
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
-import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthEmailSendDto;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.request.AuthEmailSendRequest;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.response.AuthEmailSendResponse;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.NotKUEmailException;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.SendingLimitExceededException;
 import com.playkuround.playkuroundserver.infra.email.EmailService;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class AuthEmailSendService {
     private Long codeLength;
 
     @Transactional
-    public AuthEmailSendDto.Response sendAuthEmail(AuthEmailSendDto.Request requestDto) {
+    public AuthEmailSendResponse sendAuthEmail(AuthEmailSendRequest requestDto) {
         String target = requestDto.getTarget();
         validateEmailDomain(target);
         Long sendingCount = validateSendingCount(target);
@@ -46,7 +46,7 @@ public class AuthEmailSendService {
         AuthEmail authEmail = AuthEmail.createAuthEmail(target, code, expiredAt);
         authEmailRepository.save(authEmail);
 
-        return new AuthEmailSendDto.Response(expiredAt, sendingCount + 1);
+        return new AuthEmailSendResponse(expiredAt, sendingCount + 1);
     }
 
     private void validateEmailDomain(String target) {

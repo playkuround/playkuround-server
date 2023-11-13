@@ -1,21 +1,20 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.UserProfileDto;
+import com.playkuround.playkuroundserver.domain.user.dto.response.UserProfileResponse;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserProfileServiceTest {
@@ -34,7 +33,7 @@ class UserProfileServiceTest {
         String nickname = "tester";
         Major major = Major.컴퓨터공학부;
         User user = new User(email, nickname, major, Role.ROLE_USER);
-        UserProfileDto.Response userProfile = userProfileService.getUserProfile(user);
+        UserProfileResponse userProfile = userProfileService.getUserProfile(user);
 
         // then
         assertThat(userProfile.getEmail()).isEqualTo(email);

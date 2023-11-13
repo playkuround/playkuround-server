@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
 import com.playkuround.playkuroundserver.domain.user.application.UserProfileService;
-import com.playkuround.playkuroundserver.domain.user.dto.UserProfileDto;
+import com.playkuround.playkuroundserver.domain.user.dto.response.UserProfileResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -22,8 +22,8 @@ public class UserProfileApi {
     private final UserProfileService userProfileService;
 
     @GetMapping
-    public ApiResponse<UserProfileDto.Response> userProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        UserProfileDto.Response profileResponse = userProfileService.getUserProfile(userDetails.getUser());
+    public ApiResponse<UserProfileResponse> userProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserProfileResponse profileResponse = userProfileService.getUserProfile(userDetails.getUser());
         return ApiUtils.success(profileResponse);
     }
 

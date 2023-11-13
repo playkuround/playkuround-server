@@ -67,15 +67,15 @@ jobs:
           script: |
             SOURCE_DIR=source/build/libs
             FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
-            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
+            PID=`pgrep -f $FILE_NAME.jar | head -n 1`
 
             if [ -z "$PID" ]; then
                     echo "#### THERE IS NO PROCESS ####"
             else
                     echo "#### KILL $PID ####"
-                    sudo kill $PID
+                    sudo kill -9 $PID
             fi
 
             echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
 
-            sudo java -jar $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+            sudo nohup java -jar $SOURCE_DIR/$FILE_NAME 1>$SOURCE_DIR/stdout.out 2>$SOURCE_DIR/stderr.out 2>&1 &

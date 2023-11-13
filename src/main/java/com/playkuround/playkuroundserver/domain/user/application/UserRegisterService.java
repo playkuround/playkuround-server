@@ -4,10 +4,10 @@ import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
+import com.playkuround.playkuroundserver.domain.user.dto.request.UserRegisterRequest;
+import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicationException;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDuplicationException;
-import com.playkuround.playkuroundserver.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,13 +20,13 @@ public class UserRegisterService {
     private final UserRepository userRepository;
     private final UserLoginService userLoginService;
 
-    public UserRegisterDto.Response registerUser(UserRegisterDto.Request registerRequest) {
+    public UserRegisterResponse registerUser(UserRegisterRequest registerRequest) {
         validateDuplicateEmail(registerRequest.getEmail());
         validateDuplicateNickName(registerRequest.getNickname());
 
         User user = userRepository.save(registerRequest.toEntity(Role.ROLE_USER));
         TokenDto tokenDto = userLoginService.login(user.getEmail());
-        return UserRegisterDto.Response.from(tokenDto);
+        return UserRegisterResponse.from(tokenDto);
     }
 
     private void validateDuplicateEmail(String email) {

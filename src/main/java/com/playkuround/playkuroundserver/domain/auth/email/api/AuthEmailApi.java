@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/emails")
-@Tag(name = "Auth", description = "메일 인증 서비스")
+@Tag(name = "Auth", description = "인증, 토큰 서비스")
 public class AuthEmailApi {
 
     private final AuthEmailSendService authEmailSendService;

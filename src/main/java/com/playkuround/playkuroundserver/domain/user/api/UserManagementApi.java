@@ -14,12 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -33,7 +28,7 @@ public class UserManagementApi {
 
     @PostMapping("/register")
     @ResponseStatus(value = HttpStatus.CREATED)
-    @Operation(summary = "회원가입", description = "회원가입을 진행한다.")
+    @Operation(summary = "회원가입", description = "신규 회원가입 합니다.")
     public ApiResponse<UserRegisterResponse> registerUser(@RequestBody @Valid UserRegisterRequest registerRequest) {
         tokenService.validateAuthVerifyToken(registerRequest.getAuthVerifyToken());
         UserRegisterResponse registerResponse = userRegisterService.registerUser(registerRequest);

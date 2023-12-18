@@ -2,9 +2,9 @@ package com.playkuround.playkuroundserver.domain.attendance.api;
 
 import com.playkuround.playkuroundserver.domain.attendance.application.AttendanceRegisterService;
 import com.playkuround.playkuroundserver.domain.attendance.application.AttendanceSearchService;
-import com.playkuround.playkuroundserver.domain.attendance.dto.AttendanceSearchDto;
 import com.playkuround.playkuroundserver.domain.attendance.dto.request.AttendanceRegisterRequest;
 import com.playkuround.playkuroundserver.domain.attendance.dto.response.AttendanceRegisterResponse;
+import com.playkuround.playkuroundserver.domain.attendance.dto.response.AttendanceSearchResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -32,9 +32,9 @@ public class AttendanceApi {
     }
 
     @GetMapping
-    public ApiResponse<AttendanceSearchDto.Response> attendanceSearch(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ApiResponse<AttendanceSearchResponse> attendanceSearch(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<LocalDateTime> attendances = attendanceSearchService.findByUserMonthLong(userDetails.getUser());
-        return ApiUtils.success(AttendanceSearchDto.Response.of(attendances));
+        return ApiUtils.success(AttendanceSearchResponse.from(attendances));
     }
 
 }

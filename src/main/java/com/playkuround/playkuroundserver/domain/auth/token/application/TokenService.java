@@ -22,14 +22,14 @@ public class TokenService {
     private final AuthVerifyTokenRepository authVerifyTokenRepository;
 
     public void registerRefreshToken(Authentication authentication, String sRefreshToken) {
-        refreshTokenRepository.deleteById(authentication.getName());
+        refreshTokenRepository.deleteByUserEmail(authentication.getName());
 
         RefreshToken refreshToken = tokenManager.createRefreshToken(authentication, sRefreshToken);
         refreshTokenRepository.save(refreshToken);
     }
 
     public void deleteRefreshTokenByUser(User user) {
-        refreshTokenRepository.deleteById(user.getEmail());
+        refreshTokenRepository.deleteByUserEmail(user.getEmail());
     }
 
     public AuthVerifyToken registerAuthVerifyToken() {

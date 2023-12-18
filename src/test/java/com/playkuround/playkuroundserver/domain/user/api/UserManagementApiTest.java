@@ -1,11 +1,5 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
@@ -22,9 +16,6 @@ import com.playkuround.playkuroundserver.domain.user.dto.request.UserRegisterReq
 import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +28,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -98,7 +99,7 @@ class UserManagementApiTest {
         // then
         assertThat(tokenManager.isValidateToken(response.getAccessToken())).isTrue();
 
-        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findById(email);
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByUserEmail(email);
         assertThat(optionalRefreshToken).isPresent();
         RefreshToken refreshToken = optionalRefreshToken.get();
         assertThat(response.getRefreshToken()).isEqualTo(refreshToken.getRefreshToken());
@@ -208,7 +209,7 @@ class UserManagementApiTest {
                 .andDo(print());
 
         // then
-        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findById(email);
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByUserEmail(email);
         assertThat(optionalRefreshToken.isPresent()).isEqualTo(false);
     }
 }

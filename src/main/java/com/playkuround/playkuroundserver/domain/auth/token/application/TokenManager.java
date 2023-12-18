@@ -174,10 +174,11 @@ public class TokenManager {
     }
 
     public RefreshToken createRefreshToken(Authentication authentication, String refreshToken) {
+        LocalDateTime now = LocalDateTime.now();
         return RefreshToken.builder()
                 .userEmail(authentication.getName())
                 .refreshToken(refreshToken)
-                .timeToLive(refreshTokenValidityInMilliseconds)
+                .expiredAt(now.plusSeconds(refreshTokenValidityInMilliseconds / 1000))
                 .build();
     }
 }

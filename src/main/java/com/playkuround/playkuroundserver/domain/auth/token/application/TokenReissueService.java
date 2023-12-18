@@ -33,7 +33,7 @@ public class TokenReissueService {
         if (!tokenManager.isValidateToken(sRefreshToken)) {
             throw new InvalidRefreshTokenException();
         }
-        if (!refreshTokenRepository.existsById(authentication.getName())) {
+        if (!refreshTokenRepository.existsByUserEmail(authentication.getName())) {
             throw new InvalidRefreshTokenException();
         }
     }

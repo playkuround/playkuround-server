@@ -1,6 +1,8 @@
 package com.playkuround.playkuroundserver.domain.landmark.api;
 
+import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,14 @@ class LandmarkApiTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+    }
 
     @Test
     @WithMockCustomUser

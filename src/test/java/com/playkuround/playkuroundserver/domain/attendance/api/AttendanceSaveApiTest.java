@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest
 @ActiveProfiles("test")
-class AttendanceApiTest {
+class AttendanceSaveApiTest {
 
     @Autowired
     private ObjectMapper objectMapper;

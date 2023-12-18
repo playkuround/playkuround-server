@@ -55,4 +55,14 @@ public class User extends BaseTimeEntity {
         this.highestScore = 0L;
     }
 
+    public void updateAttendanceDate() {
+        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+        if (lastAttendanceDate.equals(yesterday)) {
+            this.ConsecutiveAttendanceDays++;
+        }
+        else {
+            this.ConsecutiveAttendanceDays = 0;
+        }
+        this.lastAttendanceDate = LocalDateTime.now();
+    }
 }

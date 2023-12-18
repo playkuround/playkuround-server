@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -35,14 +36,14 @@ public class TokenManager {
     private final String tokenTypeHeaderKey;
     private final Long accessTokenValidityInMilliseconds;
     private final Long refreshTokenValidityInMilliseconds;
-    private final Integer authVerifyTokenValidityInSeconds;
+    private final Long authVerifyTokenValidityInSeconds;
     private final UserDetailsService userDetailsService;
 
     public TokenManager(@Value("${token.secret}") String secretKey,
                         @Value("${token.issuer}") String issuer,
                         @Value("${token.access-token-expiration-seconds}") Long accessTokenExpirationSeconds,
                         @Value("${token.refresh-token-expiration-seconds}") Long refreshTokenExpirationSeconds,
-                        @Value("${token.authverify-token-expiration-seconds}") Integer authVerifyTokenExpirationSeconds,
+                        @Value("${token.authverify-token-expiration-seconds}") Long authVerifyTokenExpirationSeconds,
                         UserDetailsService userDetailsService) {
         this.accessTokenValidityInMilliseconds = accessTokenExpirationSeconds * 1000;
         this.refreshTokenValidityInMilliseconds = refreshTokenExpirationSeconds * 1000;
@@ -168,7 +169,8 @@ public class TokenManager {
 
     public AuthVerifyToken createAuthVerifyToken() {
         String key = UUID.randomUUID().toString();
-        return new AuthVerifyToken(key, authVerifyTokenValidityInSeconds);
+        LocalDateTime now = LocalDateTime.now();
+        return new AuthVerifyToken(key, now.plusSeconds(authVerifyTokenValidityInSeconds));
     }
 
     public RefreshToken createRefreshToken(Authentication authentication, String refreshToken) {

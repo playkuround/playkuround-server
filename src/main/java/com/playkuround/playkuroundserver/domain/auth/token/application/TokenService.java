@@ -43,13 +43,13 @@ public class TokenService {
         if (Objects.equals(authVerifyToken, "testToken")) {
             return;
         }
-        if (!authVerifyTokenRepository.existsById(authVerifyToken)) {
+        if (!authVerifyTokenRepository.existsByAuthVerifyToken(authVerifyToken)) {
             throw new AuthVerifyTokenNotFoundException();
         }
     }
 
     public void deleteAuthVerifyToken(String authVerifyToken) {
-        authVerifyTokenRepository.findById(authVerifyToken)
+        authVerifyTokenRepository.findByAuthVerifyToken(authVerifyToken)
                 .ifPresent(authVerifyTokenRepository::delete);
     }
 }

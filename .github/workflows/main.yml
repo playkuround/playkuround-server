@@ -1,5 +1,5 @@
 # workflow 이름 지정
-name: deploy
+name: deploy(invalid)
 
 # 이 workflow가 언제 실행될 것인가?
 on:

@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
-public class FindNearLandmarkResponse {
+public class NearestLandmarkResponse {
 
     @Schema(description = "랜드마크 이름", example = "동물생명과학관", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
@@ -18,11 +18,11 @@ public class FindNearLandmarkResponse {
     @Schema(description = "랜드마크 ID", example = "4", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long landmarkId;
 
-    private FindNearLandmarkResponse() {
+    private NearestLandmarkResponse() {
     }
 
-    public static FindNearLandmarkResponse createEmptyResponse() {
-        FindNearLandmarkResponse response = new FindNearLandmarkResponse();
+    public static NearestLandmarkResponse createEmptyResponse() {
+        NearestLandmarkResponse response = new NearestLandmarkResponse();
         response.landmarkId = null;
         response.name = null;
         response.distance = null;

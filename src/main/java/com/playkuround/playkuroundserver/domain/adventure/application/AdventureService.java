@@ -4,8 +4,6 @@ import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepositor
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
-import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseMostVisitedUser;
-import com.playkuround.playkuroundserver.domain.adventure.dto.VisitedUserDto;
 import com.playkuround.playkuroundserver.domain.adventure.exception.DuplicateAdventureException;
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
@@ -23,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -93,16 +90,6 @@ public class AdventureService {
     @Transactional(readOnly = true)
     public ResponseFindAdventure findAdventureByUserEmail(User user) {
         return ResponseFindAdventure.of(adventureRepository.findDistinctLandmarkIdByUser(user));
-    }
-
-    @Transactional(readOnly = true)
-    public ResponseMostVisitedUser findMemberMostLandmark(User user, Long landmarkId) {
-        /*
-         * 해당 랜드마크에 가장 많이 방문한 회원
-         * 횟수가 같다면 방문한지 오래된 회원 -> 정책 논의 필요
-         */
-        List<VisitedUserDto> visitedInfoList = adventureRepository.findVisitedUsersRank(landmarkId);
-        return ResponseMostVisitedUser.of(visitedInfoList, user.getId());
     }
 
 }

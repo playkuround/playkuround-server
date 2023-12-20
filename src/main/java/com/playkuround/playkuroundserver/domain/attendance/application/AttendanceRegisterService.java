@@ -16,12 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class AttendanceRegisterService {
 
     private final BadgeRepository badgeRepository;
@@ -55,54 +54,49 @@ public class AttendanceRegisterService {
     }
 
     private AttendanceRegisterResponse updateNewBadges(User user) {
-        boolean hasAttendance_1 = false, hasAttendance_3 = false, hasAttendance_7 = false;
-        boolean hasAttendance_30 = false, hasAttendance_100 = false, hasAttendance_Foundation_Day = false;
+        Set<BadgeType> userBadgeSet = getUserBadgeSet(user);
 
-        List<Badge> badges = badgeRepository.findByUser(user);
-        AttendanceRegisterResponse response = new AttendanceRegisterResponse(new ArrayList<>());
-        for (Badge badge : badges) {
-            BadgeType badgeType = badge.getBadgeType();
-            if (badgeType.name().equals("ATTENDANCE_1")) hasAttendance_1 = true;
-            else if (badgeType.name().equals("ATTENDANCE_3")) hasAttendance_3 = true;
-            else if (badgeType.name().equals("ATTENDANCE_7")) hasAttendance_7 = true;
-            else if (badgeType.name().equals("ATTENDANCE_30")) hasAttendance_30 = true;
-            else if (badgeType.name().equals("ATTENDANCE_100")) hasAttendance_100 = true;
-            else if (badgeType.name().equals("ATTENDANCE_FOUNDATION_DAY")) hasAttendance_Foundation_Day = true;
-        }
-
-        if (!hasAttendance_1) {
+        AttendanceRegisterResponse response = new AttendanceRegisterResponse();
+        // TODO. 뱃지 생성 로직 리팩토링(클래스 분리 등)
+        if (!userBadgeSet.contains(BadgeType.ATTENDANCE_1)) {
             badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_1));
             response.addBadge(BadgeType.ATTENDANCE_1);
         }
-        else if (!hasAttendance_3) {
+        else if (!userBadgeSet.contains(BadgeType.ATTENDANCE_3)) {
             if (isEligibleForAttendanceBadge(user, 3)) {
                 badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_3));
                 response.addBadge(BadgeType.ATTENDANCE_3);
             }
         }
-        else if (!hasAttendance_7) {
+        else if (!userBadgeSet.contains(BadgeType.ATTENDANCE_7)) {
             if (isEligibleForAttendanceBadge(user, 7)) {
                 badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_7));
                 response.addBadge(BadgeType.ATTENDANCE_7);
             }
         }
-        else if (!hasAttendance_30) {
+        else if (!userBadgeSet.contains(BadgeType.ATTENDANCE_30)) {
             if (isEligibleForAttendanceBadge(user, 30)) {
                 badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_30));
                 response.addBadge(BadgeType.ATTENDANCE_30);
             }
         }
-        else if (!hasAttendance_100) {
+        else if (!userBadgeSet.contains(BadgeType.ATTENDANCE_100)) {
             if (isEligibleForAttendanceBadge(user, 100)) {
                 badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_100));
                 response.addBadge(BadgeType.ATTENDANCE_100);
             }
         }
-        if (isTodayFoundationDay() && !hasAttendance_Foundation_Day) {
+        if (isTodayFoundationDay() && !userBadgeSet.contains(BadgeType.ATTENDANCE_FOUNDATION_DAY)) {
             badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_FOUNDATION_DAY));
             response.addBadge(BadgeType.ATTENDANCE_FOUNDATION_DAY);
         }
         return response;
+    }
+
+    private Set<BadgeType> getUserBadgeSet(User user) {
+        return badgeRepository.findByUser(user).stream()
+                .map(Badge::getBadgeType)
+                .collect(Collectors.toSet());
     }
 
     private boolean isEligibleForAttendanceBadge(User user, Integer consecutiveDays) {

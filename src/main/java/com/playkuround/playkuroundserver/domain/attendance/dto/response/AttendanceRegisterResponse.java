@@ -7,12 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
 public class AttendanceRegisterResponse {
-    private List<BadgeInfo> newBadges;
+
+    private List<BadgeInfo> newBadges = new ArrayList<>();
 
     public void addBadge(BadgeType badgeType) {
         this.newBadges.add(new BadgeInfo(badgeType.name(), badgeType.getDescription()));

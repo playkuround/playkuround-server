@@ -36,8 +36,8 @@ class BadgeApiTest {
 
     @AfterEach
     void clean() {
-        badgeRepository.deleteAll();
         userRepository.deleteAll();
+        badgeRepository.deleteAll();
     }
 
     @Test

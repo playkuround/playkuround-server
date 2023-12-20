@@ -5,7 +5,6 @@ import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +18,15 @@ public class AttendanceRegisterResponse {
         this.newBadges.add(new BadgeInfo(badgeType.name(), badgeType.getDescription()));
     }
 
-    @NoArgsConstructor
+    @Getter
     @AllArgsConstructor
-    private static class BadgeInfo {
+    public static class BadgeInfo {
         @JsonProperty("name")
         @Schema(description = "뱃지 이름", example = "ATTENDANCE_7", requiredMode = Schema.RequiredMode.REQUIRED)
-        String name;
+        private String name;
 
         @JsonProperty("description")
         @Schema(description = "뱃지 설명", example = "7일 연속 출석", requiredMode = Schema.RequiredMode.REQUIRED)
-        String description;
+        private String description;
     }
 }

@@ -103,4 +103,14 @@ class LandmarkApiTest {
         landmark.updateFirstUser(null, 1001);
         landmarkRepository.save(landmark);
     }
+
+    @Test
+    @WithMockCustomUser
+    void 랜드마크에_최고점_유저가_없다면_아무것도_반환하지_않는다() throws Exception {
+        // expected
+        mockMvc.perform(get("/api/landmarks/1/highest"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.length()").value(0))
+                .andDo(print());
+    }
 }

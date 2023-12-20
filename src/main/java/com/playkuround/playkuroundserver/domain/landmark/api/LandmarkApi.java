@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.landmark.api;
 
 import com.playkuround.playkuroundserver.domain.landmark.application.LandmarkFindNearService;
-import com.playkuround.playkuroundserver.domain.landmark.dto.FindNearLandmarkResponse;
+import com.playkuround.playkuroundserver.domain.landmark.dto.response.FindNearLandmarkResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import com.playkuround.playkuroundserver.global.validation.Latitude;
@@ -22,7 +22,7 @@ public class LandmarkApi {
     @GetMapping
     public ApiResponse<FindNearLandmarkResponse> LandmarkFindNear(@RequestParam @Latitude Double latitude,
                                                                   @RequestParam @Longitude Double longitude) {
-        FindNearLandmarkResponse nearLandmarkResponse = landmarkFindNearService.findNearLandmark(latitude, longitude);
+        FindNearLandmarkResponse nearLandmarkResponse = landmarkFindNearService.findNearestLandmark(latitude, longitude);
         return ApiUtils.success(nearLandmarkResponse);
     }
 }

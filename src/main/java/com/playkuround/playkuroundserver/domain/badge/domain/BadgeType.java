@@ -2,8 +2,10 @@ package com.playkuround.playkuroundserver.domain.badge.domain;
 
 import com.playkuround.playkuroundserver.domain.badge.exception.BadgeTypeNotFoundException;
 import com.playkuround.playkuroundserver.global.error.ErrorCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public enum BadgeType {
 
@@ -27,10 +29,6 @@ public enum BadgeType {
     ;
 
     private final String description;
-
-    public String getDescription() {
-        return description;
-    }
 
     public static BadgeType findBadgeTypeByLandmarkId(Long landmarkId) {
         if (22 <= landmarkId && landmarkId <= 26) return ENGINEER;

@@ -1,6 +1,9 @@
 package com.playkuround.playkuroundserver.domain.landmark.api;
 
+import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
+import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +29,9 @@ class LandmarkApiTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private LandmarkRepository landmarkRepository;
 
     @AfterEach
     void tearDown() {
@@ -76,5 +82,25 @@ class LandmarkApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response.length()").value(0))
                 .andDo(print());
+    }
+
+    @Test
+    @WithMockCustomUser
+    void 랜드마크에_최고점_유저가_있다면_반환한다() throws Exception {
+        // given
+        User user = userRepository.findAll().get(0);
+        Landmark landmark = landmarkRepository.findById(1L).get();
+        landmark.updateFirstUser(user, 1000);
+        landmarkRepository.save(landmark);
+
+        // expected
+        mockMvc.perform(get("/api/landmarks/1/highest"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.nickname").value(user.getNickname()))
+                .andExpect(jsonPath("$.response.score").value(1000))
+                .andDo(print());
+
+        landmark.updateFirstUser(null, 1001);
+        landmarkRepository.save(landmark);
     }
 }

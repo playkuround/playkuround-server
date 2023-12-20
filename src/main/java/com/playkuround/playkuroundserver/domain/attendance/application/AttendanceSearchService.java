@@ -18,7 +18,7 @@ public class AttendanceSearchService {
 
     private final AttendanceRepository attendanceRepository;
 
-    public List<LocalDateTime> findByUserMonthLong(User user) {
+    public List<LocalDateTime> findAttendanceForMonth(User user) {
         LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
         List<Attendance> attendances = attendanceRepository.findByUserAndCreatedAtAfter(user, monthAgo);
         return attendances.stream()

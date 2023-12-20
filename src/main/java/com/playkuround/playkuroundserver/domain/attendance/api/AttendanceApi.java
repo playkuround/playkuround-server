@@ -38,7 +38,7 @@ public class AttendanceApi {
     @GetMapping
     @Operation(summary = "출석 조회하기", description = "한달의 출석 기록을 반환합니다. 가장 최신 기록이 배열의 마지막에 위치합니다.")
     public ApiResponse<AttendanceSearchResponse> attendanceSearch(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<LocalDateTime> attendances = attendanceSearchService.findByUserMonthLong(userDetails.getUser());
+        List<LocalDateTime> attendances = attendanceSearchService.findAttendanceForMonth(userDetails.getUser());
         return ApiUtils.success(AttendanceSearchResponse.from(attendances));
     }
 

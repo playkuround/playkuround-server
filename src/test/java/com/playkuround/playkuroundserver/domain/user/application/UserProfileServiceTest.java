@@ -1,20 +1,20 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
+import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
-import com.playkuround.playkuroundserver.domain.user.domain.Major;
-import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.response.UserProfileResponse;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserProfileServiceTest {
@@ -29,16 +29,13 @@ class UserProfileServiceTest {
     @DisplayName("프로필 얻기 성공")
     void getProfile() {
         // when
-        String email = "tester@konkuk.ac.kr";
-        String nickname = "tester";
-        Major major = Major.컴퓨터공학부;
-        User user = new User(email, nickname, major, Role.ROLE_USER);
+        User user = TestUtil.createUser();
         UserProfileResponse userProfile = userProfileService.getUserProfile(user);
 
         // then
-        assertThat(userProfile.getEmail()).isEqualTo(email);
-        assertThat(userProfile.getNickname()).isEqualTo(nickname);
-        assertThat(userProfile.getMajor()).isEqualTo(major.name());
+        assertThat(userProfile.getEmail()).isEqualTo(user.getEmail());
+        assertThat(userProfile.getNickname()).isEqualTo(user.getNickname());
+        assertThat(userProfile.getMajor()).isEqualTo(user.getMajor().name());
         assertThat(userProfile.getConsecutiveAttendanceDays()).isEqualTo(0);
         assertThat(userProfile.getLastAttendanceDate()).isBefore(LocalDateTime.now());
         assertThat(userProfile.getHighestScore()).isEqualTo(0);

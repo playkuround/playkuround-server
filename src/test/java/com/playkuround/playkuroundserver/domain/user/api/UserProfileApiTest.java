@@ -1,8 +1,8 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
+import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
-import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
 import org.junit.jupiter.api.AfterEach;
@@ -55,7 +55,7 @@ class UserProfileApiTest {
     @DisplayName("닉네임 중복 조회 - 중복일 때")
     void checkDuplicateWhenDuplication() throws Exception {
         // given
-        User user = new User("tester@konkuk.ac.kr", "tester", Major.컴퓨터공학부, Role.ROLE_USER);
+        User user = TestUtil.createUser();
         userRepository.save(user);
 
         // expected
@@ -71,7 +71,7 @@ class UserProfileApiTest {
     @DisplayName("닉네임 중복 조회 - 중복이 아닐 때")
     void checkDuplicateWhenNotDuplication() throws Exception {
         // given
-        User user = new User("tester@konkuk.ac.kr", "tester", Major.컴퓨터공학부, Role.ROLE_USER);
+        User user = TestUtil.createUser();
         userRepository.save(user);
 
         // expected

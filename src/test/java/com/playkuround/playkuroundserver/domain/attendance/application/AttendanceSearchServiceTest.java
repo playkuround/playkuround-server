@@ -1,5 +1,6 @@
 package com.playkuround.playkuroundserver.domain.attendance.application;
 
+import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
@@ -67,7 +68,7 @@ class AttendanceSearchServiceTest {
                 .thenReturn(new ArrayList<>());
 
         // when
-        User user = new User("tester@konkuk.ac.kr", "tester", Major.컴퓨터공학부, Role.ROLE_USER);
+        User user = TestUtil.createUser();
         List<LocalDateTime> target = attendanceSearchService.findAttendanceForMonth(user);
 
         // then

@@ -5,6 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.playkuround.playkuroundserver.domain.user.domain.Major;
+import com.playkuround.playkuroundserver.domain.user.domain.Role;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
 
 import java.io.IOException;
 import java.util.Map;
@@ -21,5 +24,18 @@ public class TestUtil {
         Map<String, Object> apiResponse = mapper.readValue(json, new TypeReference<>() {
         });
         return mapper.convertValue(apiResponse.get("response"), objectClass);
+    }
+
+    public static User createUser() {
+        return createUser("tester@konkuk.ac.kr", "tester", Major.컴퓨터공학부);
+    }
+
+    public static User createUser(String email, String nickname, Major major) {
+        return User.builder()
+                .email(email)
+                .nickname(nickname)
+                .major(major)
+                .role(Role.ROLE_USER)
+                .build();
     }
 }

@@ -1,8 +1,8 @@
 package com.playkuround.playkuroundserver.domain.adventure.api;
 
 import com.playkuround.playkuroundserver.domain.adventure.application.AdventureService;
-import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
-import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.request.AdventureSaveRequest;
+import com.playkuround.playkuroundserver.domain.adventure.dto.response.AdventureSaveResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -22,16 +22,18 @@ public class AdventureApi {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<?> saveAdventure(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                        @RequestBody @Valid AdventureSaveDto.Request request) {
-        adventureService.saveAdventure(userDetails.getUser(), request);
-        return ApiUtils.success(null);
+    public ApiResponse<AdventureSaveResponse> saveAdventure(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                            @RequestBody @Valid AdventureSaveRequest request) {
+        AdventureSaveResponse response = adventureService.saveAdventure(userDetails.getUser(), request);
+        return ApiUtils.success(response);
     }
 
+    /*
     @GetMapping
     public ApiResponse<ResponseFindAdventure> findAdventureByUserEmail(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         ResponseFindAdventure adventureByUserEmail = adventureService.findAdventureByUserEmail(userDetails.getUser());
         return ApiUtils.success(adventureByUserEmail);
 
     }
+     */
 }

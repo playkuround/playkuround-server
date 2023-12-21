@@ -29,6 +29,8 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
     )
     List<VisitedUserDto> findVisitedUsersRank(@Param(value = "landmark") Long landmarkId);
 
+    @Query("SELECT SUM(a.correctionScore) FROM Adventure a WHERE a.user.id=:#{#user.id} AND a.landmark.id=:#{#landmark.id}")
+    Long sumCorrectionScore(@Param(value = "user") User user, @Param(value = "landmark") Landmark landmark);
 
     @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id>=22 and a.landmark.id<=26")
     Long countAdventureForENGINEER();

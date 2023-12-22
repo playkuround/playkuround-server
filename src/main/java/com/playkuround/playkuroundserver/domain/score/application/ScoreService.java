@@ -2,7 +2,8 @@ package com.playkuround.playkuroundserver.domain.score.application;
 
 import com.playkuround.playkuroundserver.domain.score.dao.ScoreRepository;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
-import com.playkuround.playkuroundserver.domain.score.dto.PresentRankData;
+import com.playkuround.playkuroundserver.domain.score.dto.MyRank;
+import com.playkuround.playkuroundserver.domain.score.dto.RankData;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -39,36 +40,36 @@ public class ScoreService {
         return score;
     }
 
-    public List<ScoreRankingResponse> getRankTop100() {
+    public ScoreRankingResponse getRankTop100(User user) {
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
         Set<ZSetOperations.TypedTuple<String>> typedTuples = zSetOperations.reverseRangeWithScores(redisSetKey, 0, 99);
 
-        List<PresentRankData> presentRankDataList = getPresentRankDataList(typedTuples);
-        Map<String, String> emailBindingNickname = getNicknameBindingEmailMapList(presentRankDataList);
+        List<RankData> rankDataList = getPresentRankDataList(typedTuples);
+        Map<String, String> emailBindingNickname = getNicknameBindingEmailMapList(rankDataList);
 
-        return presentRankDataList.stream()
-                .map(presentRankData -> {
-                    String nickname = emailBindingNickname.get(presentRankData.getEmail());
+        ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
+        rankDataList.forEach(rankData -> {
+            String nickname = emailBindingNickname.get(rankData.getEmail());
+            response.addRank(nickname, rankData.getScore());
+        });
 
-                    return ScoreRankingResponse.builder()
-                            .nickname(nickname)
-                            .score(presentRankData.getScore())
-                            .build();
-                })
-                .toList();
+        MyRank myRank = getMyRank(user);
+        response.setMyRank(myRank.getRanking(), myRank.getScore());
+
+        return response;
     }
 
-    private List<PresentRankData> getPresentRankDataList(Set<ZSetOperations.TypedTuple<String>> typedTuples) {
-        List<PresentRankData> presentRankDataList = new ArrayList<>();
+    private List<RankData> getPresentRankDataList(Set<ZSetOperations.TypedTuple<String>> typedTuples) {
+        List<RankData> rankDataList = new ArrayList<>();
         for (ZSetOperations.TypedTuple<String> typedTuple : typedTuples) {
-            PresentRankData presentRankData = new PresentRankData(typedTuple.getValue(), typedTuple.getScore().intValue());
-            presentRankDataList.add(presentRankData);
+            RankData rankData = new RankData(typedTuple.getValue(), typedTuple.getScore().intValue());
+            rankDataList.add(rankData);
         }
-        return presentRankDataList;
+        return rankDataList;
     }
 
-    private Map<String, String> getNicknameBindingEmailMapList(List<PresentRankData> presentRankDataList) {
-        List<String> emails = presentRankDataList.stream().map(PresentRankData::getEmail).toList();
+    private Map<String, String> getNicknameBindingEmailMapList(List<RankData> rankDataList) {
+        List<String> emails = rankDataList.stream().map(RankData::getEmail).toList();
         List<Map<String, String>> nicknameBindingEmailMapList = userRepository.findNicknameByEmailIn(emails);
 
         Map<String, String> nicknameBindingEmailMap = new HashMap<>();
@@ -77,16 +78,16 @@ public class ScoreService {
         return nicknameBindingEmailMap;
     }
 
-    public Long getMyRank(User user) {
+    private MyRank getMyRank(User user) {
         ZSetOperations<String, String> ZSetOperations = redisTemplate.opsForZSet();
 
         Double myTotalScore = ZSetOperations.score(redisSetKey, user.getEmail());
         Set<String> emailSet = ZSetOperations.reverseRangeByScore(redisSetKey, myTotalScore, myTotalScore, 0, 1);
-        Long myRank = -1L;
-        for (String email : emailSet) {
-            myRank = ZSetOperations.reverseRank(redisSetKey, email);
-        }
-        return myRank + 1;
-    }
 
+        int myRank = -1;
+        for (String email : emailSet) {
+            myRank = ZSetOperations.reverseRank(redisSetKey, email).intValue();
+        }
+        return new MyRank(myRank + 1, myTotalScore.intValue());
+    }
 }

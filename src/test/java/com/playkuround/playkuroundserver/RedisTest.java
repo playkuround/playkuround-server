@@ -274,4 +274,12 @@ public class RedisTest {
             }
         }
     }
+
+    @Test
+    void 저장안된_value이면_null이_반환된다() {
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+        final String key = "ranking";
+        Double myScore = zSetOperations.score(key, "notSavedUser");
+        assertThat(myScore).isNull();
+    }
 }

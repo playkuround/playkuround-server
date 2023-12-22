@@ -79,8 +79,12 @@ public class ScoreService {
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
 
         Double myTotalScore = zSetOperations.score(redisSetKey, user.getEmail());
-        Set<String> emailSet = zSetOperations.reverseRangeByScore(redisSetKey, myTotalScore, myTotalScore, 0, 1);
+        if (myTotalScore == null) {
+            response.setMyRank(0, 0);
+            return;
+        }
 
+        Set<String> emailSet = zSetOperations.reverseRangeByScore(redisSetKey, myTotalScore, myTotalScore, 0, 1);
         int myRank = -1;
         for (String email : emailSet) {
             myRank = zSetOperations.reverseRank(redisSetKey, email).intValue();

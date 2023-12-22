@@ -92,6 +92,21 @@ public class RedisTest {
     }
 
     @Test
+    void value가_존재하지_않을때도_increment_수행하면_score가_0에서_증가() {
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+        final String key = "ranking";
+        zSetOperations.incrementScore(key, "a", 10);
+        Set<ZSetOperations.TypedTuple<String>> typedTuples = zSetOperations.reverseRangeWithScores(key, 0, 9);
+        for (ZSetOperations.TypedTuple<String> typedTuple : typedTuples) {
+            String value = typedTuple.getValue();
+            Double score = typedTuple.getScore();
+            System.out.println(value + " : " + score);
+            assertThat(value).isEqualTo("a");
+            assertThat(score).isEqualTo(10.0);
+        }
+    }
+
+    @Test
     void 이미_존재하는_value를_add하면_덮어써진다() {
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
         final String key = "ranking";

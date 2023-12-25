@@ -1,7 +1,8 @@
 package com.playkuround.playkuroundserver.domain.adventure.dao;
 
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
-import com.playkuround.playkuroundserver.domain.adventure.dto.VisitedUserDto;
+import com.playkuround.playkuroundserver.domain.adventure.dto.MyScore;
+import com.playkuround.playkuroundserver.domain.adventure.dto.UserScore;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface AdventureRepository extends JpaRepository<Adventure, Long> {
 
@@ -20,14 +22,20 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
     Long countDistinctLandmarkByUser(@Param(value = "user") User user);
 
     @Query(value =
-            "SELECT " +
-                    "count(a.user.id) as number, a.user.nickname as nickname, a.user.id as userId " +
+            "SELECT SUM(a.correctionScore) as score, a.user.nickname as nickname, a.user.id as userId " +
                     "FROM Adventure a " +
                     "where a.landmark.id=:landmark " +
                     "GROUP BY a.user.id " +
-                    "ORDER BY count(a.user.id) DESC, max(a.updatedAt) ASC "
-    )
-    List<VisitedUserDto> findVisitedUsersRank(@Param(value = "landmark") Long landmarkId);
+                    "ORDER BY SUM(a.correctionScore) DESC")
+    List<UserScore> findUserScoreRankDescByLandmarkId(@Param(value = "landmark") Long landmarkId);
+
+    @Query(value =
+            "SELECT SUM(a.correctionScore) as score, RANK() over (order by score desc) as rank " +
+                    "FROM Adventure a " +
+                    "where a.landmark.id=:landmark " +
+                    "GROUP BY a.user.id " +
+                    "HAVING a.user.id=:#{#user.id}")
+    Optional<MyScore> findMyRankByLandmarkId(@Param(value = "user") User user, @Param(value = "landmark") Long landmarkId);
 
     @Query("SELECT SUM(a.correctionScore) FROM Adventure a WHERE a.user.id=:#{#user.id} AND a.landmark.id=:#{#landmark.id}")
     Long sumCorrectionScore(@Param(value = "user") User user, @Param(value = "landmark") Landmark landmark);

@@ -2,7 +2,6 @@ package com.playkuround.playkuroundserver.domain.score.application;
 
 import com.playkuround.playkuroundserver.domain.score.dao.ScoreRepository;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
-import com.playkuround.playkuroundserver.domain.score.dto.RankData;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -12,7 +11,10 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -38,35 +40,24 @@ public class ScoreService {
     }
 
     public ScoreRankingResponse getRankTop100(User user) {
-        ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
-        setRankTop100(response);
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+        Set<ZSetOperations.TypedTuple<String>> typedTuples = zSetOperations.reverseRangeWithScores(redisSetKey, 0, 99);
+
+        ScoreRankService scoreRankService = new ScoreRankService(typedTuples);
+        ScoreRankingResponse response = setTop100(scoreRankService);
+
         setMyRank(user, response);
         return response;
     }
 
-    private void setRankTop100(ScoreRankingResponse response) {
-        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
-        Set<ZSetOperations.TypedTuple<String>> typedTuples = zSetOperations.reverseRangeWithScores(redisSetKey, 0, 99);
-
-        List<RankData> rankDataList = getPresentRankDataList(typedTuples);
-        Map<String, String> emailBindingNickname = getNicknameBindingEmailMapList(rankDataList);
-        rankDataList.forEach(rankData -> {
-            String nickname = emailBindingNickname.get(rankData.getEmail());
-            response.addRank(nickname, rankData.getScore());
-        });
+    private ScoreRankingResponse setTop100(ScoreRankService scoreRankService) {
+        List<String> emails = scoreRankService.getRankUserEmails();
+        Map<String, String> emailBindingNickname = getNicknameBindingEmailMapList(emails);
+        ScoreRankingResponse response = scoreRankService.createScoreRankingResponse(emailBindingNickname);
+        return response;
     }
 
-    private List<RankData> getPresentRankDataList(Set<ZSetOperations.TypedTuple<String>> typedTuples) {
-        List<RankData> rankDataList = new ArrayList<>();
-        for (ZSetOperations.TypedTuple<String> typedTuple : typedTuples) {
-            RankData rankData = new RankData(typedTuple.getValue(), typedTuple.getScore().intValue());
-            rankDataList.add(rankData);
-        }
-        return rankDataList;
-    }
-
-    private Map<String, String> getNicknameBindingEmailMapList(List<RankData> rankDataList) {
-        List<String> emails = rankDataList.stream().map(RankData::getEmail).toList();
+    private Map<String, String> getNicknameBindingEmailMapList(List<String> emails) {
         List<Map<String, String>> nicknameBindingEmailMapList = userRepository.findNicknameByEmailIn(emails);
 
         Map<String, String> nicknameBindingEmailMap = new HashMap<>();

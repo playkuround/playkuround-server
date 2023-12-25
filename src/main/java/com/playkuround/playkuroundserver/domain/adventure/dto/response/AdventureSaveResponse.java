@@ -14,6 +14,7 @@ import java.util.List;
 public class AdventureSaveResponse {
 
     @Setter
+    @Schema(description = "보정 점수(게임점수에 가중치 적용)", example = "40", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer correctionScore;
     private List<BadgeInfo> newBadges = new ArrayList<>();
 

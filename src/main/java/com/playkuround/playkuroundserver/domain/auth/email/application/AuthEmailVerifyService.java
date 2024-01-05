@@ -26,15 +26,15 @@ public class AuthEmailVerifyService {
 
     private final TokenService tokenService;
     private final UserRepository userRepository;
-    private final AuthEmailRepository authEmailRepository;
     private final UserLoginService userLoginService;
+    private final AuthEmailRepository authEmailRepository;
 
     public AuthVerifyEmailResponse verifyAuthEmail(String code, String email) {
         AuthEmail authEmail = authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(email)
                 .orElseThrow(AuthEmailNotFoundException::new);
 
         validateEmailAndCode(authEmail, code);
-        authEmail.makeInvalidate();
+        authEmail.changeInvalidate();
 
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isPresent()) {

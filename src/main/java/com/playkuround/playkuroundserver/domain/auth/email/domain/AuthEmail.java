@@ -40,13 +40,13 @@ public class AuthEmail extends BaseTimeEntity {
 
     public static AuthEmail createAuthEmail(String target, String code, LocalDateTime expireAt) {
         return AuthEmail.builder()
-                .target(target)
                 .code(code)
+                .target(target)
                 .expiredAt(expireAt)
                 .build();
     }
 
-    public void makeInvalidate() {
+    public void changeInvalidate() {
         this.validate = false;
     }
 

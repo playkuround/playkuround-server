@@ -32,12 +32,4 @@ public class AdventureApi {
         return ApiUtils.success(response);
     }
 
-    /*
-    @GetMapping
-    public ApiResponse<ResponseFindAdventure> findAdventureByUserEmail(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ResponseFindAdventure adventureByUserEmail = adventureService.findAdventureByUserEmail(userDetails.getUser());
-        return ApiUtils.success(adventureByUserEmail);
-
-    }
-     */
 }

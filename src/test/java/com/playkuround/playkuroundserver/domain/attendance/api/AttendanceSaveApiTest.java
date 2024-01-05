@@ -10,6 +10,7 @@ import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.global.util.Location;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -92,7 +93,7 @@ class AttendanceSaveApiTest {
         // given
         User user = userFindDao.findByEmail("tester@konkuk.ac.kr");
         AttendanceRegisterRequest attendanceRegisterRequest = new AttendanceRegisterRequest(37.539927, 127.073006);
-        attendanceRegisterService.registerAttendance(user, attendanceRegisterRequest);
+        attendanceRegisterService.registerAttendance(user, new Location(37.539927, 127.073006));
 
         String request = objectMapper.writeValueAsString(attendanceRegisterRequest);
 

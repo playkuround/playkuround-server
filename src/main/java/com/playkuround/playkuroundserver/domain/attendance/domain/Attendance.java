@@ -2,16 +2,16 @@ package com.playkuround.playkuroundserver.domain.attendance.domain;
 
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.global.util.Location;
 import com.playkuround.playkuroundserver.global.validation.Latitude;
 import com.playkuround.playkuroundserver.global.validation.Longitude;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
-import jakarta.persistence.*;
 
 @Entity
 @Getter
@@ -42,4 +42,11 @@ public class Attendance extends BaseTimeEntity {
         this.user = user;
     }
 
+    public static Attendance createAttendance(User user, Location location) {
+        return Attendance.builder()
+                .user(user)
+                .latitude(location.latitude())
+                .longitude(location.longitude())
+                .build();
+    }
 }

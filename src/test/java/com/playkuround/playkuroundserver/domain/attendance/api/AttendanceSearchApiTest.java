@@ -3,11 +3,11 @@ package com.playkuround.playkuroundserver.domain.attendance.api;
 import com.jayway.jsonpath.JsonPath;
 import com.playkuround.playkuroundserver.domain.attendance.application.AttendanceRegisterService;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
-import com.playkuround.playkuroundserver.domain.attendance.dto.request.AttendanceRegisterRequest;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.global.util.Location;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -76,7 +76,7 @@ class AttendanceSearchApiTest {
         auditingHandler.setDateTimeProvider(dateTimeProvider);
 
         User user = userFindDao.findByEmail("tester@konkuk.ac.kr");
-        AttendanceRegisterRequest attendanceRegisterRequest = new AttendanceRegisterRequest(37.539927, 127.073006);
+        Location location = new Location(37.539927, 127.073006);
 
         LocalDateTime todayLocalDate = LocalDateTime.now();
         List<String> dateList = new ArrayList<>();
@@ -86,7 +86,7 @@ class AttendanceSearchApiTest {
             dateList.add(formatDate);
 
             doReturn(Optional.of(thatLocalDateTime)).when(dateTimeProvider).getNow();
-            attendanceRegisterService.registerAttendance(user, attendanceRegisterRequest);
+            attendanceRegisterService.registerAttendance(user, location);
         }
 
         // expected

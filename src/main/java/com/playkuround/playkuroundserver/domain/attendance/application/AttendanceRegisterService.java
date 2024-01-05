@@ -2,7 +2,6 @@ package com.playkuround.playkuroundserver.domain.attendance.application;
 
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
-import com.playkuround.playkuroundserver.domain.attendance.dto.request.AttendanceRegisterRequest;
 import com.playkuround.playkuroundserver.domain.attendance.dto.response.AttendanceRegisterResponse;
 import com.playkuround.playkuroundserver.domain.attendance.exception.DuplicateAttendanceException;
 import com.playkuround.playkuroundserver.domain.attendance.exception.InvalidAttendanceLocationException;
@@ -10,6 +9,7 @@ import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.global.util.Location;
 import com.playkuround.playkuroundserver.global.util.LocationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,21 +27,21 @@ public class AttendanceRegisterService {
     private final AttendanceRepository attendanceRepository;
 
     @Transactional
-    public AttendanceRegisterResponse registerAttendance(User user, AttendanceRegisterRequest registerRequest) {
-        validateAttendance(user, registerRequest.getLongitude(), registerRequest.getLatitude());
-        Attendance attendance = registerRequest.toEntity(user);
+    public AttendanceRegisterResponse registerAttendance(User user, Location location) {
+        validateAttendance(user, location);
+        Attendance attendance = Attendance.createAttendance(user, location);
         attendanceRepository.save(attendance);
         user.updateAttendanceDate();
         return updateNewBadges(user);
     }
 
-    private void validateAttendance(User user, double longitude, double latitude) {
-        validateLocation(longitude, latitude);
+    private void validateAttendance(User user, Location location) {
+        validateLocation(location);
         validateDuplicateAttendance(user);
     }
 
-    private void validateLocation(double longitude, double latitude) {
-        boolean isLocatedInKU = LocationUtils.isLocatedInKU(latitude, longitude);
+    private void validateLocation(Location location) {
+        boolean isLocatedInKU = LocationUtils.isLocatedInKU(location);
         if (!isLocatedInKU) {
             throw new InvalidAttendanceLocationException();
         }

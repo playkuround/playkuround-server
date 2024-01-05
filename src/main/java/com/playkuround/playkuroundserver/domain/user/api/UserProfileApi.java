@@ -30,7 +30,7 @@ public class UserProfileApi {
         return ApiUtils.success(profileResponse);
     }
 
-    @GetMapping
+    @GetMapping("/game-score")
     @Operation(summary = "게임별 최고 점수 얻기", description = "로그인 유저의 게임별 최고 점수를 얻습니다. 플레이한적이 없는 게임은 null이 반환됩니다.")
     public ApiResponse<UserGameHighestScoreResponse> userGameHighestScore(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         UserGameHighestScoreResponse gameScoreResponse = userProfileService.getUserGameHighestScore(userDetails.getUser());

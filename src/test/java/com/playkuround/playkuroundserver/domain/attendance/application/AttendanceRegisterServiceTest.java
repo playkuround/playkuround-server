@@ -3,7 +3,6 @@ package com.playkuround.playkuroundserver.domain.attendance.application;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
-import com.playkuround.playkuroundserver.domain.attendance.dto.request.AttendanceRegisterRequest;
 import com.playkuround.playkuroundserver.domain.attendance.dto.response.AttendanceRegisterResponse;
 import com.playkuround.playkuroundserver.domain.attendance.exception.DuplicateAttendanceException;
 import com.playkuround.playkuroundserver.domain.attendance.exception.InvalidAttendanceLocationException;
@@ -11,6 +10,7 @@ import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.global.util.Location;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -49,8 +49,8 @@ class AttendanceRegisterServiceTest {
         when(badgeRepository.findByUser(any())).thenReturn(new ArrayList<>());
 
         // when
-        AttendanceRegisterRequest request = new AttendanceRegisterRequest(37.539927, 127.073006);
-        AttendanceRegisterResponse result = attendanceRegisterService.registerAttendance(user, request);
+        Location location = new Location(37.539927, 127.073006);
+        AttendanceRegisterResponse result = attendanceRegisterService.registerAttendance(user, location);
 
         // then
         assertThat(result.getNewBadges()).hasSize(1);
@@ -69,9 +69,9 @@ class AttendanceRegisterServiceTest {
     void 출석_범위에_벗어나면_에러가_발생한다() {
         // expect
         User user = TestUtil.createUser();
-        AttendanceRegisterRequest request = new AttendanceRegisterRequest(0.0, 0.0);
+        Location location = new Location(0.0, 0.0);
         assertThrows(InvalidAttendanceLocationException.class,
-                () -> attendanceRegisterService.registerAttendance(user, request));
+                () -> attendanceRegisterService.registerAttendance(user, location));
     }
 
     @Test
@@ -82,9 +82,9 @@ class AttendanceRegisterServiceTest {
 
         // expect
         User user = TestUtil.createUser();
-        AttendanceRegisterRequest request = new AttendanceRegisterRequest(37.539927, 127.073006);
+        Location location = new Location(37.539927, 127.073006);
         assertThrows(DuplicateAttendanceException.class,
-                () -> attendanceRegisterService.registerAttendance(user, request));
+                () -> attendanceRegisterService.registerAttendance(user, location));
     }
 
 }

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class AttendanceSearchService {
     private final AttendanceRepository attendanceRepository;
 
     public List<LocalDateTime> findAttendanceForMonth(User user) {
-        LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
+        LocalDateTime monthAgo = LocalDate.now().minusMonths(30).atStartOfDay();
         List<Attendance> attendances = attendanceRepository.findByUserAndCreatedAtAfter(user, monthAgo);
         return attendances.stream()
                 .map(BaseTimeEntity::getCreatedAt)

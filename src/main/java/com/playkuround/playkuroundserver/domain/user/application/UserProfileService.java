@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.domain.user.dto.response.UserGameHighestScoreResponse;
 import com.playkuround.playkuroundserver.domain.user.dto.response.UserProfileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,4 +23,7 @@ public class UserProfileService {
         return userRepository.existsByNickname(nickname);
     }
 
+    public UserGameHighestScoreResponse getUserGameHighestScore(User user) {
+        return UserGameHighestScoreResponse.from(user.getHighestScore());
+    }
 }

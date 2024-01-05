@@ -53,6 +53,7 @@ public class User extends BaseTimeEntity {
         this.ConsecutiveAttendanceDays = 0;
         this.lastAttendanceDate = LocalDateTime.now().minusDays(1);
         this.role = role;
+        this.highestScore = new HighestScore();
     }
 
     public void updateAttendanceDate() {

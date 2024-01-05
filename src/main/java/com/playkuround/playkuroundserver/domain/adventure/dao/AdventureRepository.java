@@ -22,22 +22,22 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
     Long countDistinctLandmarkByUser(@Param(value = "user") User user);
 
     @Query(value =
-            "SELECT SUM(a.correctionScore) as score, a.user.nickname as nickname, a.user.id as userId " +
+            "SELECT SUM(a.score) as score, a.user.nickname as nickname, a.user.id as userId " +
                     "FROM Adventure a " +
                     "where a.landmark.id=:landmark " +
                     "GROUP BY a.user.id " +
-                    "ORDER BY SUM(a.correctionScore) DESC")
+                    "ORDER BY SUM(a.score) DESC")
     List<UserScore> findUserScoreRankDescByLandmarkId(@Param(value = "landmark") Long landmarkId);
 
     @Query(value =
-            "SELECT SUM(a.correctionScore) as score, RANK() over (order by score desc) as rank " +
+            "SELECT SUM(a.score) as score, RANK() over (order by score desc) as rank " +
                     "FROM Adventure a " +
                     "where a.landmark.id=:landmark " +
                     "GROUP BY a.user.id " +
                     "HAVING a.user.id=:#{#user.id}")
     Optional<MyScore> findMyRankByLandmarkId(@Param(value = "user") User user, @Param(value = "landmark") Long landmarkId);
 
-    @Query("SELECT SUM(a.correctionScore) FROM Adventure a WHERE a.user.id=:#{#user.id} AND a.landmark.id=:#{#landmark.id}")
+    @Query("SELECT SUM(a.score) FROM Adventure a WHERE a.user.id=:#{#user.id} AND a.landmark.id=:#{#landmark.id}")
     Long sumCorrectionScore(@Param(value = "user") User user, @Param(value = "landmark") Landmark landmark);
 
     @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id>=22 and a.landmark.id<=26")

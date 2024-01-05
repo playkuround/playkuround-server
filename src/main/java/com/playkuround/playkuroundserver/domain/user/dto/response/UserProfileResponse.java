@@ -23,7 +23,7 @@ public class UserProfileResponse {
     private String major;
     @Schema(description = "연속출석일 수", example = "13", requiredMode = RequiredMode.REQUIRED)
     private Integer consecutiveAttendanceDays;
-    @Schema(description = "자신의 토탈 스코어 최고점", example = "1500", requiredMode = RequiredMode.REQUIRED)
+    @Schema(description = "자신의 토탈 스코어 최고점(점수가 없다면 null 리턴)", example = "1500", requiredMode = RequiredMode.REQUIRED)
     private Long highestScore;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -37,7 +37,7 @@ public class UserProfileResponse {
                 .major(user.getMajor().name())
                 .consecutiveAttendanceDays(user.getConsecutiveAttendanceDays())
                 .lastAttendanceDate(user.getLastAttendanceDate())
-                .highestScore(user.getHighestScore())
+                .highestScore(user.getHighestScore().getHighestTotalScore())
                 .build();
     }
 }

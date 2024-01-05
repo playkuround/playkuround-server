@@ -16,6 +16,7 @@ import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFo
 import com.playkuround.playkuroundserver.domain.score.application.TotalScoreService;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.global.util.Location;
 import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,9 @@ public class AdventureService {
     public AdventureSaveResponse saveAdventure(User user, AdventureSaveRequest request) {
         Landmark landmark = landmarkRepository.findById(request.getLandmarkId())
                 .orElseThrow(() -> new LandmarkNotFoundException(request.getLandmarkId()));
-        validateLocation(landmark, request.getLatitude(), request.getLongitude());
+
+        Location location = new Location(request.getLatitude(), request.getLongitude());
+        validateLocation(landmark, location);
         ScoreType scoreType = ScoreType.fromString(request.getScoreType());
 
         // 1. Total Score 저장 및 최고 점수 갱신
@@ -55,8 +58,9 @@ public class AdventureService {
         return response;
     }
 
-    private void validateLocation(Landmark landmark, double latitude, double longitude) {
-        double distance = LocationDistanceUtils.distance(landmark.getLatitude(), landmark.getLongitude(), latitude, longitude);
+    private void validateLocation(Landmark landmark, Location location) {
+        Location locationOfLandmark = new Location(landmark.getLatitude(), landmark.getLongitude());
+        double distance = LocationDistanceUtils.distance(locationOfLandmark, location);
         if (distance > landmark.getRecognitionRadius()) {
             throw new InvalidLandmarkLocationException();
         }

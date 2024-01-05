@@ -6,6 +6,7 @@ import com.playkuround.playkuroundserver.domain.landmark.dto.response.LandmarkHi
 import com.playkuround.playkuroundserver.domain.landmark.dto.response.NearestLandmarkResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
+import com.playkuround.playkuroundserver.global.util.Location;
 import com.playkuround.playkuroundserver.global.validation.Latitude;
 import com.playkuround.playkuroundserver.global.validation.Longitude;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +29,8 @@ public class LandmarkApi {
                     "인식 반경에 랜드마크가 없을 경우 아무것도 반환하지 않습니다.")
     public ApiResponse<NearestLandmarkResponse> LandmarkFindNear(@RequestParam @Latitude Double latitude,
                                                                  @RequestParam @Longitude Double longitude) {
-        NearestLandmarkResponse response = landmarkFindNearService.findNearestLandmark(latitude, longitude);
+        Location location = new Location(latitude, longitude);
+        NearestLandmarkResponse response = landmarkFindNearService.findNearestLandmark(location);
         return ApiUtils.success(response);
     }
 

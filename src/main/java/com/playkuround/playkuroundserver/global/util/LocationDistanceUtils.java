@@ -2,10 +2,10 @@ package com.playkuround.playkuroundserver.global.util;
 
 public class LocationDistanceUtils {
 
-    public static double distance(double lat1, double lon1, double lat2, double lon2) {
-        double theta = lon1 - lon2;
-        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2))
-                + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+    public static double distance(Location location1, Location location2) {
+        double theta = location1.longitude() - location2.longitude();
+        double dist = Math.sin(deg2rad(location1.latitude())) * Math.sin(deg2rad(location2.latitude()))
+                + Math.cos(deg2rad(location1.latitude())) * Math.cos(deg2rad(location2.latitude())) * Math.cos(deg2rad(theta));
 
         dist = Math.acos(dist);
         dist = rad2deg(dist);

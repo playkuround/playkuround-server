@@ -1,6 +1,6 @@
 package com.playkuround.playkuroundserver.domain.score.api;
 
-import com.playkuround.playkuroundserver.domain.score.application.ScoreService;
+import com.playkuround.playkuroundserver.domain.score.application.TotalScoreService;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Score", description = "Score API")
 public class ScoreApi {
 
-    private final ScoreService scoreService;
+    private final TotalScoreService totalScoreService;
 
     @GetMapping("/rank")
     @Operation(summary = "종합 점수 탑100 얻기", description = "토탈 점수 탑100과 내 점수, 등수를 반환합니다. 내 점수가 0점이면 등수는 0등으로 반환됩니다.")
     public ApiResponse<ScoreRankingResponse> getScoreTop100(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ScoreRankingResponse response = scoreService.getRankTop100(userDetails.getUser());
+        ScoreRankingResponse response = totalScoreService.getRankTop100(userDetails.getUser());
         return ApiUtils.success(response);
     }
 
@@ -33,7 +33,7 @@ public class ScoreApi {
     @Operation(summary = "해당 랜드마크의 점수 탑100 얻기", description = "해당 랜드마크 점수 탑100과 내 점수, 등수를 반환합니다. 내 점수가 0점이면 등수는 0등으로 반환됩니다.")
     public ApiResponse<ScoreRankingResponse> getScoreTop100ByLandmark(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                       @PathVariable Long landmarkId) {
-        ScoreRankingResponse response = scoreService.getRankTop100ByLandmark(userDetails.getUser(), landmarkId);
+        ScoreRankingResponse response = totalScoreService.getRankTop100ByLandmark(userDetails.getUser(), landmarkId);
         return ApiUtils.success(response);
     }
 

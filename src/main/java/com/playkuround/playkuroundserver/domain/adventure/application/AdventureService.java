@@ -13,7 +13,7 @@ import com.playkuround.playkuroundserver.domain.badge.exception.BadgeTypeNotFoun
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
-import com.playkuround.playkuroundserver.domain.score.application.ScoreService;
+import com.playkuround.playkuroundserver.domain.score.application.TotalScoreService;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
@@ -26,8 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AdventureService {
 
-    private final ScoreService scoreService;
     private final BadgeRepository badgeRepository;
+    private final TotalScoreService totalScoreService;
     private final LandmarkRepository landmarkRepository;
     private final AdventureRepository adventureRepository;
 
@@ -37,8 +37,10 @@ public class AdventureService {
         validateLocation(landmark, request.getLatitude(), request.getLongitude());
         ScoreType scoreType = ScoreType.fromString(request.getScoreType());
 
-        // 1. Total Score 저장
-        scoreService.saveScore(user, scoreType, request.getScore());
+        // 1. Total Score 저장 및 최고 점수 갱신
+        Long myTotalScore = totalScoreService.saveScore(user, request.getScore());
+        user.getHighestScore().updateHighestTotalScore(myTotalScore);
+        user.getHighestScore().updateGameHighestScore(scoreType, request.getScore());
 
         // 2. Adventure 저장
         Adventure adventure = new Adventure(user, landmark, scoreType, request.getScore());
@@ -46,10 +48,10 @@ public class AdventureService {
 
         // 3. 뱃지 저장
         AdventureSaveResponse response = updateNewBadges(user, landmark);// TODO. 뱃지 클래스로 분리하기
-        response.setCorrectionScore(request.getScore());
 
         // 4. 랜드마크 최고 점수 갱신
         updateLandmarkHighestScore(user, landmark);
+
         return response;
     }
 

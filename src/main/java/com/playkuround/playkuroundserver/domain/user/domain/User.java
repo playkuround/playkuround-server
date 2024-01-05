@@ -65,4 +65,6 @@ public class User extends BaseTimeEntity {
         }
         this.lastAttendanceDate = LocalDateTime.now();
     }
+
+
 }

@@ -28,7 +28,7 @@ public class AdventureSaveRequest {
 
     @NotNull(message = "점수는 필수입니다.")
     @Schema(description = "점수", example = "110", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Integer score;
+    private Long score;
 
     @NotBlank(message = "점수 타입은 필수입니다.")
     @Schema(description = "점수타입(별도문서 참고)", example = "QUIZ", requiredMode = Schema.RequiredMode.REQUIRED)

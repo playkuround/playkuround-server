@@ -3,7 +3,6 @@ package com.playkuround.playkuroundserver.domain.score.application;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.adventure.dto.MyScore;
 import com.playkuround.playkuroundserver.domain.adventure.dto.UserScore;
-import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -18,7 +17,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ScoreService {
+public class TotalScoreService {
     /**
      * TODO. 테스트 필요!!!!!!!!!!!!!!!!!!!!!!!!
      */
@@ -29,16 +28,15 @@ public class ScoreService {
     private final String redisSetKey = "ranking";
 
     @Transactional
-    public int saveScore(User user, ScoreType scoreType, Integer score) {
-        int correctScore = convertCorrectScore(scoreType, score);
+    public Long saveScore(User user, Long score) {
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
-        zSetOperations.incrementScore(redisSetKey, user.getEmail(), correctScore);
-        return correctScore;
-    }
+        zSetOperations.incrementScore(redisSetKey, user.getEmail(), score);
 
-    private int convertCorrectScore(ScoreType scoreType, Integer score) {
-        // TODO 가중치 적용
-        return score;
+        Double myTotalScore = zSetOperations.score(redisSetKey, user.getEmail());
+        if (myTotalScore == null) {
+            return score; // 발생하지 않음
+        }
+        return myTotalScore.longValue();
     }
 
     public ScoreRankingResponse getRankTop100(User user) {

@@ -5,7 +5,6 @@ import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +12,6 @@ import java.util.List;
 @Getter
 public class AdventureSaveResponse {
 
-    @Setter
-    @Schema(description = "보정 점수(게임점수에 가중치 적용)", example = "40", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Integer correctionScore;
     private List<BadgeInfo> newBadges = new ArrayList<>();
 
     public void addBadge(BadgeType badgeType) {

@@ -33,16 +33,12 @@ public class Adventure extends BaseTimeEntity {
     private Integer score;
 
     @Column(nullable = false)
-    private Integer correctionScore;
-
-    @Column(nullable = false)
     private ScoreType scoreType;
 
-    public Adventure(User user, Landmark landmark, ScoreType scoreType, Integer score, Integer correctionScore) {
+    public Adventure(User user, Landmark landmark, ScoreType scoreType, Integer score) {
         this.user = user;
         this.landmark = landmark;
         this.scoreType = scoreType;
         this.score = score;
-        this.correctionScore = correctionScore;
     }
 }

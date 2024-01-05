@@ -19,6 +19,9 @@ import java.util.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ScoreService {
+    /**
+     * TODO. 테스트 필요!!!!!!!!!!!!!!!!!!!!!!!!
+     */
 
     private final UserRepository userRepository;
     private final AdventureRepository adventureRepository;

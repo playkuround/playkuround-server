@@ -42,7 +42,8 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Role role;
 
-    private Long highestScore;
+    @Embedded
+    private HighestScore highestScore;
 
     @Builder
     public User(@NonNull String email, @NonNull String nickname, @NonNull Major major, @NonNull Role role) {
@@ -52,7 +53,6 @@ public class User extends BaseTimeEntity {
         this.ConsecutiveAttendanceDays = 0;
         this.lastAttendanceDate = LocalDateTime.now().minusDays(1);
         this.role = role;
-        this.highestScore = 0L;
     }
 
     public void updateAttendanceDate() {

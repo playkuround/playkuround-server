@@ -38,15 +38,15 @@ public class AdventureService {
         ScoreType scoreType = ScoreType.fromString(request.getScoreType());
 
         // 1. Total Score 저장
-        int correctionScore = scoreService.saveScore(user, scoreType, request.getScore());
+        scoreService.saveScore(user, scoreType, request.getScore());
 
         // 2. Adventure 저장
-        Adventure adventure = new Adventure(user, landmark, scoreType, request.getScore(), correctionScore);
+        Adventure adventure = new Adventure(user, landmark, scoreType, request.getScore());
         adventureRepository.save(adventure);
 
         // 3. 뱃지 저장
         AdventureSaveResponse response = updateNewBadges(user, landmark);// TODO. 뱃지 클래스로 분리하기
-        response.setCorrectionScore(correctionScore);
+        response.setCorrectionScore(request.getScore());
 
         // 4. 랜드마크 최고 점수 갱신
         updateLandmarkHighestScore(user, landmark);

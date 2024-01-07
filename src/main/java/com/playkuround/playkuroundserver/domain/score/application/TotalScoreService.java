@@ -18,9 +18,6 @@ import java.util.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class TotalScoreService {
-    /**
-     * TODO. 테스트 필요!!!!!!!!!!!!!!!!!!!!!!!!
-     */
 
     private final UserRepository userRepository;
     private final AdventureRepository adventureRepository;
@@ -44,26 +41,21 @@ public class TotalScoreService {
         Set<ZSetOperations.TypedTuple<String>> typedTuples = zSetOperations.reverseRangeWithScores(redisSetKey, 0, 99);
 
         ScoreRankService scoreRankService = new ScoreRankService(typedTuples);
-        ScoreRankingResponse response = setTop100(scoreRankService);
+        Map<String, String> emailBindingNickname = getNicknameBindingEmailMapList(scoreRankService.getRankUserEmails());
+        scoreRankService.setEmailBindingNickname(emailBindingNickname);
+        ScoreRankingResponse response = scoreRankService.createScoreRankingResponse();
 
         setMyRank(user, response);
-        return response;
-    }
-
-    private ScoreRankingResponse setTop100(ScoreRankService scoreRankService) {
-        List<String> emails = scoreRankService.getRankUserEmails();
-        Map<String, String> emailBindingNickname = getNicknameBindingEmailMapList(emails);
-        ScoreRankingResponse response = scoreRankService.createScoreRankingResponse(emailBindingNickname);
         return response;
     }
 
     private Map<String, String> getNicknameBindingEmailMapList(List<String> emails) {
         List<Map<String, String>> nicknameBindingEmailMapList = userRepository.findNicknameByEmailIn(emails);
 
-        Map<String, String> nicknameBindingEmailMap = new HashMap<>();
+        Map<String, String> emailBindingNickname = new HashMap<>();
         nicknameBindingEmailMapList
-                .forEach(map -> nicknameBindingEmailMap.put(map.get("email"), map.get("nickname")));
-        return nicknameBindingEmailMap;
+                .forEach(map -> emailBindingNickname.put(map.get("email"), map.get("nickname")));
+        return emailBindingNickname;
     }
 
     private void setMyRank(User user, ScoreRankingResponse response) {

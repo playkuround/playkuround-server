@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.domain.score.application;
 
 import com.playkuround.playkuroundserver.domain.score.dto.RankData;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
+import lombok.Setter;
 import org.springframework.data.redis.core.ZSetOperations;
 
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ import java.util.Set;
 public class ScoreRankService {
 
     private final List<RankData> rankDataList;
+    @Setter
+    private Map<String, String> emailBindingNickname;
 
     public ScoreRankService(Set<ZSetOperations.TypedTuple<String>> typedTuples) {
         this.rankDataList = new ArrayList<>();
@@ -27,7 +30,11 @@ public class ScoreRankService {
                 .toList();
     }
 
-    public ScoreRankingResponse createScoreRankingResponse(Map<String, String> emailBindingNickname) {
+    public ScoreRankingResponse createScoreRankingResponse() {
+        if (emailBindingNickname == null) {
+            throw new IllegalArgumentException("emailBindingNickname must not be null");
+        }
+
         ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
         rankDataList.forEach(rankData -> {
             String nickname = emailBindingNickname.get(rankData.getEmail());

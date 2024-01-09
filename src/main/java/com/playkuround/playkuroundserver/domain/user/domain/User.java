@@ -40,6 +40,8 @@ public class User extends BaseTimeEntity {
     @Embedded
     private HighestScore highestScore;
 
+    private String notification;
+
     @Builder
     public User(@NonNull String email, @NonNull String nickname, @NonNull Major major, @NonNull Role role) {
         this.email = email;
@@ -54,5 +56,7 @@ public class User extends BaseTimeEntity {
         attendanceDays++;
     }
 
-
+    public void clearNotification() {
+        this.notification = null;
+    }
 }

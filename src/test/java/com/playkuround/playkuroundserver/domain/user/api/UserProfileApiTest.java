@@ -46,8 +46,7 @@ class UserProfileApiTest {
                 .andExpect(jsonPath("$.response.email").value("tester@konkuk.ac.kr"))
                 .andExpect(jsonPath("$.response.nickname").value("tester"))
                 .andExpect(jsonPath("$.response.major").value(Major.컴퓨터공학부.name()))
-                .andExpect(jsonPath("$.response.consecutiveAttendanceDays").value(0))
-                .andExpect(jsonPath("$.response.lastAttendanceDate").isString())
+                .andExpect(jsonPath("$.response.highestScore").isEmpty())
                 .andDo(print());
     }
 

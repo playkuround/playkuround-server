@@ -46,8 +46,8 @@ class BadgeServiceTest {
         // given
         User user = TestUtil.createUser();
         List<Badge> badges = List.of(
-                new Badge(user, BadgeType.ENGINEER),
-                new Badge(user, BadgeType.ADVENTURE_1),
+                new Badge(user, BadgeType.COLLEGE_OF_ENGINEERING_A),
+                new Badge(user, BadgeType.MONTHLY_RANKING_3),
                 new Badge(user, BadgeType.ATTENDANCE_1)
         );
         when(badgeRepository.findByUser(user))
@@ -62,6 +62,8 @@ class BadgeServiceTest {
         List<String> target = result.stream()
                 .map(BadgeFindRequest::getName)
                 .toList();
-        assertThat(target).containsOnly(BadgeType.ENGINEER.name(), BadgeType.ADVENTURE_1.name(), BadgeType.ATTENDANCE_1.name());
+        assertThat(target).containsOnly(BadgeType.COLLEGE_OF_ENGINEERING_A.name(),
+                BadgeType.MONTHLY_RANKING_3.name(),
+                BadgeType.ATTENDANCE_1.name());
     }
 }

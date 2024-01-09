@@ -54,15 +54,15 @@ class BadgeApiTest {
     @WithMockCustomUser
     void Badge_찾기_3개() throws Exception {
         User user = userRepository.findAll().get(0);
-        badgeRepository.save(new Badge(user, BadgeType.ENGINEER));
-        badgeRepository.save(new Badge(user, BadgeType.ADVENTURE_5));
-        badgeRepository.save(new Badge(user, BadgeType.ATTENDANCE_3));
+        badgeRepository.save(new Badge(user, BadgeType.ATTENDANCE_FOUNDATION_DAY));
+        badgeRepository.save(new Badge(user, BadgeType.ATTENDANCE_30));
+        badgeRepository.save(new Badge(user, BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_50));
 
         mockMvc.perform(get("/api/badges"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.[?(@.name == '%s')]", "ADVENTURE_5").exists())
-                .andExpect(jsonPath("$.response.[?(@.name == '%s')]", "ENGINEER").exists())
-                .andExpect(jsonPath("$.response.[?(@.name == '%s')]", "ATTENDANCE_3").exists())
+                .andExpect(jsonPath("$.response.[?(@.name == '%s')]", "ATTENDANCE_FOUNDATION_DAY").exists())
+                .andExpect(jsonPath("$.response.[?(@.name == '%s')]", "ATTENDANCE_30").exists())
+                .andExpect(jsonPath("$.response.[?(@.name == '%s')]", "COLLEGE_OF_BUSINESS_ADMINISTRATION_50").exists())
                 .andDo(print())
                 .andReturn();
     }

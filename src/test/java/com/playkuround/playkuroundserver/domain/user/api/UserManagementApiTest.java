@@ -29,7 +29,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,8 +111,7 @@ class UserManagementApiTest {
         assertThat(user.getNickname()).isEqualTo(nickname);
         assertThat(user.getMajor()).isEqualTo(major);
         assertThat(user.getRole()).isEqualTo(Role.ROLE_USER);
-        assertThat(user.getConsecutiveAttendanceDays()).isEqualTo(0);
-        assertThat(user.getLastAttendanceDate().toLocalDate()).isEqualTo(LocalDate.now().minusDays(1));
+        assertThat(user.getAttendanceDays()).isEqualTo(0);
     }
 
     @Test

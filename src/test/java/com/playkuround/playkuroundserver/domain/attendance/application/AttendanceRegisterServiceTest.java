@@ -6,9 +6,9 @@ import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
 import com.playkuround.playkuroundserver.domain.attendance.dto.response.AttendanceRegisterResponse;
 import com.playkuround.playkuroundserver.domain.attendance.exception.DuplicateAttendanceException;
 import com.playkuround.playkuroundserver.domain.attendance.exception.InvalidAttendanceLocationException;
-import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
-import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
+import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
+import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.Location;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,7 +32,7 @@ class AttendanceRegisterServiceTest {
     private AttendanceRegisterService attendanceRegisterService;
 
     @Mock
-    private BadgeRepository badgeRepository;
+    private BadgeService badgeService;
 
     @Mock
     private AttendanceRepository attendanceRepository;
@@ -42,11 +41,14 @@ class AttendanceRegisterServiceTest {
     void 첫_출석_시_뱃지와_출석정보가_저장된다() {
         // given
         User user = TestUtil.createUser();
+        NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
+        newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_1);
+
         when(attendanceRepository.existsByUserAndCreatedAtAfter(any(User.class), any(LocalDateTime.class)))
                 .thenReturn(false);
         when(attendanceRepository.save(any())).then(invocation -> invocation.getArgument(0));
-        when(badgeRepository.save(any())).then(invocation -> invocation.getArgument(0));
-        when(badgeRepository.findByUser(any())).thenReturn(new ArrayList<>());
+        when(badgeService.updateNewlyAttendanceBadges(any(User.class)))
+                .thenReturn(newlyRegisteredBadge);
 
         // when
         Location location = new Location(37.539927, 127.073006);
@@ -59,10 +61,6 @@ class AttendanceRegisterServiceTest {
         ArgumentCaptor<Attendance> attendanceArgument = ArgumentCaptor.forClass(Attendance.class);
         verify(attendanceRepository, times(1)).save(attendanceArgument.capture());
         assertThat(attendanceArgument.getValue().getUser()).isEqualTo(user);
-
-        ArgumentCaptor<Badge> badgeArgument = ArgumentCaptor.forClass(Badge.class);
-        verify(badgeRepository, times(1)).save(badgeArgument.capture());
-        assertThat(badgeArgument.getValue().getBadgeType()).isEqualTo(BadgeType.ATTENDANCE_1);
     }
 
     @Test

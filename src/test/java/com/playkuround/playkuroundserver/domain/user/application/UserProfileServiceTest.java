@@ -11,8 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -36,8 +34,6 @@ class UserProfileServiceTest {
         assertThat(userProfile.getEmail()).isEqualTo(user.getEmail());
         assertThat(userProfile.getNickname()).isEqualTo(user.getNickname());
         assertThat(userProfile.getMajor()).isEqualTo(user.getMajor().name());
-        assertThat(userProfile.getConsecutiveAttendanceDays()).isEqualTo(0);
-        assertThat(userProfile.getLastAttendanceDate()).isBefore(LocalDateTime.now());
         assertThat(userProfile.getHighestScore()).isEqualTo(null);
     }
 

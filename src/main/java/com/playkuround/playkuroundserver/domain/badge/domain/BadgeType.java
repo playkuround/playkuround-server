@@ -1,7 +1,5 @@
 package com.playkuround.playkuroundserver.domain.badge.domain;
 
-import com.playkuround.playkuroundserver.domain.badge.exception.BadgeTypeNotFoundException;
-import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -9,51 +7,61 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum BadgeType {
 
+    // 출석 체크
     ATTENDANCE_1("첫 출석"),
-    ATTENDANCE_3("3일 연속 출석"),
-    ATTENDANCE_7("7일 연속 출석"),
-    ATTENDANCE_30("30일 연속 출석"),
-    ATTENDANCE_100("100일 연속 출석"),
-    ATTENDANCE_FOUNDATION_DAY("개교 기념일"),
+    ATTENDANCE_5("5회 출석"),
+    ATTENDANCE_10("10회 출석"),
+    ATTENDANCE_30("30회 출석"),
+    ATTENDANCE_50("50회 출석"),
+    ATTENDANCE_100("100회 출석"),
 
-    ADVENTURE_1("첫 탐험"),
-    ADVENTURE_5("탐험한 랜드마크 종류가 5개"),
-    ADVENTURE_10("탐험한 랜드마크 종류가 10개"),
-    ADVENTURE_30("탐험한 랜드마크 종류가 30개"),
-    CONQUEROR("정복자"), // 모든 랜드마크 종류를 다 탐험
-    ENGINEER("공대생"), // 공대 건물(A, B, C, 신공, 이과대) 모두 탐험
-    ARTIST("예술가"), // 예디대, 공예관 탐험
-    CEO("CEO"), // 경영관, 상허연구관, 문과대 탐험
-    NATIONAL_PLAYER("국가대표"), // 체육시설, 운동장, 실내 체육관
-    NEIL_ARMSTRONG("닐 암스트롱") // 문 모두 탐험
+    // 대학별
+    COLLEGE_OF_LIBERAL_ARTS("문과대학 1회 이상 탐험"),
+    COLLEGE_OF_SCIENCES("이과대학 1회 이상 탐험"),
+    COLLEGE_OF_ARCHITECTURE("건축대학 1회 이상 탐험"),
+    COLLEGE_OF_ENGINEERING("공과대학 1회 이상 탐험"),
+    COLLEGE_OF_SOCIAL_SCIENCES("사회과학대학 1회 이상 탐험"),
+    COLLEGE_OF_BUSINESS_ADMINISTRATION("경영대학 1회 이상 탐험"),
+    COLLEGE_OF_REAL_ESTATE("부동산과학원 1회 이상 탐험"),
+    COLLEGE_OF_INSTITUTE_TECHNOLOGY("융합과학기술원 1회 이상 탐험"),
+    COLLEGE_OF_BIOLOGICAL_SCIENCES("생명과학대학 1회 이상 탐험"),
+    COLLEGE_OF_VETERINARY_MEDICINE("수의과대학 1회 이상 탐험"),
+    COLLEGE_OF_ART_AND_DESIGN("예술디자인대학 1회 이상 탐험"),
+    COLLEGE_OF_EDUCATION("사범대학 1회 이상 탐험"),
+
+    // 경영대 특별
+    COLLEGE_OF_BUSINESS_ADMINISTRATION_10("경영대학 10회 이상 탐험"),
+    COLLEGE_OF_BUSINESS_ADMINISTRATION_30("경영대학 30회 이상 탐험"),
+    COLLEGE_OF_BUSINESS_ADMINISTRATION_50("경영대학 50회 이상 탐험"),
+    COLLEGE_OF_BUSINESS_ADMINISTRATION_70("경영대학 70회 이상 탐험"),
+    COLLEGE_OF_BUSINESS_ADMINISTRATION_100_AND_FIRST_PLACE("경영대학 100회 이상 탐험 및 1등 달성"),
+
+    // 예디대 특별
+    COLLEGE_OF_ART_AND_DESIGN_BEFORE_NOON("예술디자인대학 09:00 ~ 11:59 탐험"),
+    COLLEGE_OF_ART_AND_DESIGN_AFTER_NOON("예술디자인대학 12:00 ~ 18:00 탐험"),
+    COLLEGE_OF_ART_AND_DESIGN_NIGHT("예술디자인대학 23:00 ~ 04:00 탐험"),
+
+    // 공대 특별
+    COLLEGE_OF_ENGINEERING_A("공대 A동 10회 이상 탐험"),
+    COLLEGE_OF_ENGINEERING_B("공대 B동 10회 이상 탐험"),
+    COLLEGE_OF_ENGINEERING_C("공대 C동 10회 이상 탐험"),
+
+    // 스토리용
+    THE_DREAM_OF_DUCK("스토리 컷씬 마스터"),
+
+    // 기념일
+    ATTENDANCE_FOUNDATION_DAY("05월 15일 개교 기념일에 출석"),
+    ATTENDANCE_ARBOR_DAY("04월 05일 식목일에 출석"),
+    ATTENDANCE_CHILDREN_DAY("05월 05일 어린이날에 출석"),
+    ATTENDANCE_WHITE_DAY("03월 14일 화이트데이에 출석"),
+    ATTENDANCE_DUCK_DAY("05월 02일 오리데이에 출석"),
+
+    // 월간랭킹
+    MONTHLY_RANKING_1("월간 랭킹 1등"),
+    MONTHLY_RANKING_2("월간 랭킹 2등"),
+    MONTHLY_RANKING_3("월간 랭킹 3등"),
+
     ;
 
     private final String description;
-
-    public static BadgeType findBadgeTypeByLandmarkId(Long landmarkId) {
-        if (22 <= landmarkId && landmarkId <= 26) return ENGINEER;
-        if (landmarkId == 8 || landmarkId == 28) return ARTIST;
-        if (landmarkId == 14 || landmarkId == 15 || landmarkId == 19) return CEO;
-        if (landmarkId == 37 || landmarkId == 38) return NATIONAL_PLAYER;
-        if (39 <= landmarkId && landmarkId <= 44) return NEIL_ARMSTRONG;
-        throw new BadgeTypeNotFoundException(ErrorCode.INVALID_Badge_TYPE);
-    }
-
-    public static Long requiredAdventureCountForBadge(BadgeType badgeType) {
-        if (badgeType == ENGINEER) return 5L;
-        if (badgeType == ARTIST) return 2L;
-        if (badgeType == CEO) return 3L;
-        if (badgeType == NATIONAL_PLAYER) return 2L;
-        if (badgeType == NEIL_ARMSTRONG) return 6L;
-        throw new BadgeTypeNotFoundException(ErrorCode.INVALID_Badge_TYPE);
-    }
-
-    public static BadgeType findBadgeTypeByLandmarkTypeCount(Long count) {
-        if (count == 1) return BadgeType.ADVENTURE_1;
-        else if (count == 5) return BadgeType.ADVENTURE_5;
-        else if (count == 10) return BadgeType.ADVENTURE_10;
-        else if (count == 30) return BadgeType.ADVENTURE_30;
-        else if (count == 44) return BadgeType.CONQUEROR;
-        throw new BadgeTypeNotFoundException(ErrorCode.INVALID_Badge_TYPE);
-    }
 }

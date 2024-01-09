@@ -15,6 +15,13 @@ public enum BadgeType {
     ATTENDANCE_50("50회 출석"),
     ATTENDANCE_100("100회 출석"),
 
+    // 기념일
+    ATTENDANCE_FOUNDATION_DAY("05월 15일 개교 기념일에 출석"),
+    ATTENDANCE_ARBOR_DAY("04월 05일 식목일에 출석"),
+    ATTENDANCE_CHILDREN_DAY("05월 05일 어린이날에 출석"),
+    ATTENDANCE_WHITE_DAY("03월 14일 화이트데이에 출석"),
+    ATTENDANCE_DUCK_DAY("05월 02일 오리데이에 출석"),
+
     // 대학별
     COLLEGE_OF_LIBERAL_ARTS("문과대학 1회 이상 탐험"),
     COLLEGE_OF_SCIENCES("이과대학 1회 이상 탐험"),
@@ -48,13 +55,6 @@ public enum BadgeType {
 
     // 스토리용
     THE_DREAM_OF_DUCK("스토리 컷씬 마스터"),
-
-    // 기념일
-    ATTENDANCE_FOUNDATION_DAY("05월 15일 개교 기념일에 출석"),
-    ATTENDANCE_ARBOR_DAY("04월 05일 식목일에 출석"),
-    ATTENDANCE_CHILDREN_DAY("05월 05일 어린이날에 출석"),
-    ATTENDANCE_WHITE_DAY("03월 14일 화이트데이에 출석"),
-    ATTENDANCE_DUCK_DAY("05월 02일 오리데이에 출석"),
 
     // 월간랭킹
     MONTHLY_RANKING_1("월간 랭킹 1등"),

@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.domain.attendance.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
+import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +13,17 @@ import java.util.List;
 @Getter
 public class AttendanceRegisterResponse {
 
-    private List<BadgeInfo> newBadges = new ArrayList<>();
+    private final List<BadgeInfo> newBadges = new ArrayList<>();
+
+    private AttendanceRegisterResponse() {
+    }
+
+    public static AttendanceRegisterResponse from(NewlyRegisteredBadge newlyRegisteredBadge) {
+        AttendanceRegisterResponse response = new AttendanceRegisterResponse();
+        newlyRegisteredBadge.getNewlyBadges()
+                .forEach(badgeInfo -> response.addBadge(BadgeType.valueOf(badgeInfo.getName())));
+        return response;
+    }
 
     public void addBadge(BadgeType badgeType) {
         this.newBadges.add(new BadgeInfo(badgeType.name(), badgeType.getDescription()));

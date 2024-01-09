@@ -7,9 +7,6 @@ import com.playkuround.playkuroundserver.domain.adventure.dto.request.AdventureS
 import com.playkuround.playkuroundserver.domain.adventure.dto.response.AdventureSaveResponse;
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
-import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
-import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.domain.badge.exception.BadgeTypeNotFoundException;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
@@ -68,48 +65,48 @@ public class AdventureService {
 
     private AdventureSaveResponse updateNewBadges(User user, Landmark requestSaveLandmark) {
         AdventureSaveResponse response = new AdventureSaveResponse();
-
-        // 이미 모든 랜드마크 종류를 다 탐험했다면, 탐험 관련 뱃지는 이미 가지고 있음
-        if (badgeRepository.existsByUserAndBadgeType(user, BadgeType.CONQUEROR)) {
-            return response;
-        }
-
-        // 1. (탐험한 랜드마크의 종류 개수)에 따른 뱃지
-        Long numberOfLandmarkType = adventureRepository.countDistinctLandmarkByUser(user);
-        try {
-            BadgeType badgeType = BadgeType.findBadgeTypeByLandmarkTypeCount(numberOfLandmarkType);
-            badgeRepository.save(Badge.createBadge(user, badgeType));
-            response.addBadge(badgeType);
-        } catch (BadgeTypeNotFoundException ignored) {
-        }
-
-        // 2. 탐험 장소에 따른 배지
-        Long saveLandmarkId = requestSaveLandmark.getId();
-        try {
-            BadgeType badgeType = BadgeType.findBadgeTypeByLandmarkId(saveLandmarkId);
-            Long adventureCountForBadge = -1L;
-            if (badgeType == BadgeType.ENGINEER) {
-                adventureCountForBadge = adventureRepository.countAdventureForENGINEER();
-            }
-            else if (badgeType == BadgeType.ARTIST) {
-                adventureCountForBadge = adventureRepository.countAdventureForARTIST();
-            }
-            else if (badgeType == BadgeType.CEO) {
-                adventureCountForBadge = adventureRepository.countAdventureForCEO();
-            }
-            else if (badgeType == BadgeType.NATIONAL_PLAYER) {
-                adventureCountForBadge = adventureRepository.countAdventureForNATIONAL_PLAYER();
-            }
-            else if (badgeType == BadgeType.NEIL_ARMSTRONG) {
-                adventureCountForBadge = adventureRepository.countAdventureForNEIL_ARMSTRONG();
-            }
-
-            if (adventureCountForBadge.equals(BadgeType.requiredAdventureCountForBadge(badgeType))) {
-                badgeRepository.save(Badge.createBadge(user, badgeType));
-                response.addBadge(badgeType);
-            }
-        } catch (BadgeTypeNotFoundException ignored) {
-        }
+//
+//        // 이미 모든 랜드마크 종류를 다 탐험했다면, 탐험 관련 뱃지는 이미 가지고 있음
+//        if (badgeRepository.existsByUserAndBadgeType(user, BadgeType.CONQUEROR)) {
+//            return response;
+//        }
+//
+//        // 1. (탐험한 랜드마크의 종류 개수)에 따른 뱃지
+//        Long numberOfLandmarkType = adventureRepository.countDistinctLandmarkByUser(user);
+//        try {
+//            BadgeType badgeType = BadgeType.findBadgeTypeByLandmarkTypeCount(numberOfLandmarkType);
+//            badgeRepository.save(Badge.createBadge(user, badgeType));
+//            response.addBadge(badgeType);
+//        } catch (BadgeTypeNotFoundException ignored) {
+//        }
+//
+//        // 2. 탐험 장소에 따른 배지
+//        Long saveLandmarkId = requestSaveLandmark.getId();
+//        try {
+//            BadgeType badgeType = BadgeType.findBadgeTypeByLandmarkId(saveLandmarkId);
+//            Long adventureCountForBadge = -1L;
+//            if (badgeType == BadgeType.ENGINEER) {
+//                adventureCountForBadge = adventureRepository.countAdventureForENGINEER();
+//            }
+//            else if (badgeType == BadgeType.ARTIST) {
+//                adventureCountForBadge = adventureRepository.countAdventureForARTIST();
+//            }
+//            else if (badgeType == BadgeType.CEO) {
+//                adventureCountForBadge = adventureRepository.countAdventureForCEO();
+//            }
+//            else if (badgeType == BadgeType.NATIONAL_PLAYER) {
+//                adventureCountForBadge = adventureRepository.countAdventureForNATIONAL_PLAYER();
+//            }
+//            else if (badgeType == BadgeType.NEIL_ARMSTRONG) {
+//                adventureCountForBadge = adventureRepository.countAdventureForNEIL_ARMSTRONG();
+//            }
+//
+//            if (adventureCountForBadge.equals(BadgeType.requiredAdventureCountForBadge(badgeType))) {
+//                badgeRepository.save(Badge.createBadge(user, badgeType));
+//                response.addBadge(badgeType);
+//            }
+//        } catch (BadgeTypeNotFoundException ignored) {
+//        }
         return response;
     }
 

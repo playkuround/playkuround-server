@@ -7,8 +7,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Table(name = "users")
@@ -33,10 +31,7 @@ public class User extends BaseTimeEntity {
     private Major major;
 
     @Column(nullable = false)
-    private Integer ConsecutiveAttendanceDays;
-
-    @Column(nullable = false)
-    private LocalDateTime lastAttendanceDate;
+    private int attendanceDays;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -50,21 +45,13 @@ public class User extends BaseTimeEntity {
         this.email = email;
         this.nickname = nickname;
         this.major = major;
-        this.ConsecutiveAttendanceDays = 0;
-        this.lastAttendanceDate = LocalDateTime.now().minusDays(1);
+        this.attendanceDays = 0;
         this.role = role;
         this.highestScore = new HighestScore();
     }
 
-    public void updateAttendanceDate() {
-        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
-        if (lastAttendanceDate.equals(yesterday)) {
-            this.ConsecutiveAttendanceDays++;
-        }
-        else {
-            this.ConsecutiveAttendanceDays = 0;
-        }
-        this.lastAttendanceDate = LocalDateTime.now();
+    public void increaseAttendanceDay() {
+        attendanceDays++;
     }
 
 

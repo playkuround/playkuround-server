@@ -32,7 +32,7 @@ public class NearestLandmarkResponse {
     public void update(Landmark landmark, double distance) {
         if (landmarkId == null || this.distance > distance) {
             this.distance = distance;
-            this.name = landmark.getName();
+            this.name = landmark.getName().name();
             this.landmarkId = landmark.getId();
         }
     }

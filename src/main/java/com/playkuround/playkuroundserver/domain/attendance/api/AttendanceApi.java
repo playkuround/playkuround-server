@@ -29,7 +29,8 @@ public class AttendanceApi {
     private final AttendanceRegisterService attendanceRegisterService;
 
     @PostMapping
-    @Operation(summary = "출석하기", description = "오늘 출석을 저장합니다. 출석은 하루에 한번만 가능하며, 새롭게 얻은 뱃지가 있을 시 반환됩니다. 뱃지는 DB에 자동 반영됩니다.")
+    @Operation(summary = "출석하기", description = "오늘 출석을 저장합니다. 출석은 하루에 한번만 가능하며, " +
+            "새롭게 얻은 뱃지가 있을 시 반환됩니다. 뱃지는 DB에 자동 반영됩니다.")
     public ApiResponse<AttendanceRegisterResponse> attendanceRegister(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                       @Valid @RequestBody AttendanceRegisterRequest registerRequest) {
         Location location = new Location(registerRequest.getLatitude(), registerRequest.getLongitude());
@@ -41,7 +42,8 @@ public class AttendanceApi {
     @Operation(summary = "출석 조회하기", description = "30일 간의 출석 기록을 반환합니다. 가장 최신 기록이 배열의 마지막에 위치합니다.")
     public ApiResponse<AttendanceSearchResponse> attendanceSearch(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<LocalDateTime> attendances = attendanceSearchService.findAttendanceForMonth(userDetails.getUser());
-        return ApiUtils.success(AttendanceSearchResponse.from(attendances));
+        AttendanceSearchResponse response = new AttendanceSearchResponse(attendances);
+        return ApiUtils.success(response);
     }
 
 }

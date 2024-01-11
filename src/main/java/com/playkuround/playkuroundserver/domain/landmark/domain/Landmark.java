@@ -16,7 +16,8 @@ public class Landmark {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private LandmarkType name;
 
     @Column(nullable = false)
     private double latitude;

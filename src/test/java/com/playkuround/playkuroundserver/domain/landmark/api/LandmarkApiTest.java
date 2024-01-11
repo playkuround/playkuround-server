@@ -49,7 +49,7 @@ class LandmarkApiTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response.landmarkId").value(19))
-                .andExpect(jsonPath("$.response.name").value("인문학관(인문대)"))
+                .andExpect(jsonPath("$.response.name").value("인문학관"))
                 .andExpect(jsonPath("$.response.distance").value(0.0))
                 .andDo(print());
     }
@@ -65,7 +65,7 @@ class LandmarkApiTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response.landmarkId").value(19))
-                .andExpect(jsonPath("$.response.name").value("인문학관(인문대)"))
+                .andExpect(jsonPath("$.response.name").value("인문학관"))
                 .andExpect(jsonPath("$.response.distance").value(4))
                 .andDo(print());
     }

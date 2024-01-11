@@ -8,7 +8,7 @@ import java.awt.geom.Path2D;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LocationUtils {
 
-    private static Path2D.Double polygonKU;
+    private static final Path2D.Double polygonKU;
 
     static {
         polygonKU = new Path2D.Double();

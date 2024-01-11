@@ -7,7 +7,6 @@ import com.playkuround.playkuroundserver.global.validation.Latitude;
 import com.playkuround.playkuroundserver.global.validation.Longitude;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -35,7 +34,6 @@ public class Attendance extends BaseTimeEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    @Builder
     public Attendance(Double latitude, Double longitude, User user) {
         this.latitude = latitude;
         this.longitude = longitude;
@@ -43,10 +41,6 @@ public class Attendance extends BaseTimeEntity {
     }
 
     public static Attendance createAttendance(User user, Location location) {
-        return Attendance.builder()
-                .user(user)
-                .latitude(location.latitude())
-                .longitude(location.longitude())
-                .build();
+        return new Attendance(location.latitude(), location.longitude(), user);
     }
 }

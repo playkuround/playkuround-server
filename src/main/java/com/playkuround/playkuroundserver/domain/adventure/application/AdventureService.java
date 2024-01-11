@@ -6,6 +6,7 @@ import com.playkuround.playkuroundserver.domain.adventure.dto.ResponseFindAdvent
 import com.playkuround.playkuroundserver.domain.adventure.dto.request.AdventureSaveRequest;
 import com.playkuround.playkuroundserver.domain.adventure.dto.response.AdventureSaveResponse;
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
+import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdventureService {
 
     private final BadgeRepository badgeRepository;
+    private final BadgeService badgeService;
     private final TotalScoreService totalScoreService;
     private final LandmarkRepository landmarkRepository;
     private final AdventureRepository adventureRepository;

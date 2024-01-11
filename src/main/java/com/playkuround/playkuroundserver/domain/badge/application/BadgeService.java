@@ -5,6 +5,7 @@ import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.domain.badge.dto.request.BadgeFindRequest;
+import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.DateUtils;
 import lombok.RequiredArgsConstructor;
@@ -90,6 +91,20 @@ public class BadgeService {
                 newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_DUCK_DAY);
             }
         }
+
+        return newlyRegisteredBadge;
+    }
+
+    private NewlyRegisteredBadge updateNewlyAdventureBadges(User user, Landmark requestSaveLandmark) {
+        Set<BadgeType> userBadgeSet = getUserBadgeSet(user);
+
+        NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
+
+        // 1. 대학별뱃지
+        if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_LIBERAL_ARTS)) {
+            return newlyRegisteredBadge;
+        }
+
 
         return newlyRegisteredBadge;
     }

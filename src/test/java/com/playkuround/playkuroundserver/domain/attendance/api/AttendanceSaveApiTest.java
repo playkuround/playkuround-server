@@ -10,6 +10,7 @@ import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import com.playkuround.playkuroundserver.global.util.Location;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
 import org.junit.jupiter.api.AfterEach;
@@ -78,7 +79,8 @@ class AttendanceSaveApiTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", "ATTENDANCE_1").exists())
+                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.ATTENDANCE_1.name()).exists())
+                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.ATTENDANCE_1.getDescription()).exists())
                 .andDo(print());
 
         List<Badge> badges = badgeRepository.findAll();
@@ -88,7 +90,7 @@ class AttendanceSaveApiTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("중복 출석 요청 - 에러발생")
+    @DisplayName("에러발생 - 중복 출석 요청")
     void duplicateAttendance() throws Exception {
         // given
         User user = userFindDao.findByEmail("tester@konkuk.ac.kr");
@@ -104,9 +106,30 @@ class AttendanceSaveApiTest {
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(400))
-                .andExpect(jsonPath("$.errorResponse.code").value("AT01"))
-                .andExpect(jsonPath("$.errorResponse.message").value("이미 오늘 출석한 회원입니다."))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.DUPLICATE_ATTENDANCE.getStatus().value()))
+                .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.DUPLICATE_ATTENDANCE.getCode()))
+                .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.DUPLICATE_ATTENDANCE.getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("에러발생 - 건대 밖에서 출석")
+    void attendanceNotInKU() throws Exception {
+        // given
+        AttendanceRegisterRequest attendanceRegisterRequest = new AttendanceRegisterRequest(0.0, 0.0);
+        String request = objectMapper.writeValueAsString(attendanceRegisterRequest);
+
+        // expected
+        mockMvc.perform(post("/api/attendances")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.isSuccess").value(false))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_LOCATION_KU.getStatus().value()))
+                .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.INVALID_LOCATION_KU.getCode()))
+                .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.INVALID_LOCATION_KU.getMessage()))
                 .andDo(print());
     }
 

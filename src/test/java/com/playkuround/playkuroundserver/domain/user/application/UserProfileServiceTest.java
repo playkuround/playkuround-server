@@ -38,31 +38,48 @@ class UserProfileServiceTest {
     }
 
     @Test
-    @DisplayName("닉네임 중복 테스트 - 중복된 경우 True 리턴")
+    @DisplayName("닉네임 사용 가능 테스트 - 중복된 경우 True 리턴")
     void duplicateNickname() {
         // given
         String nickname = "tester";
         when(userRepository.existsByNickname(nickname)).thenReturn(true);
 
         // when
-        boolean result = userProfileService.checkDuplicateNickname(nickname);
+        boolean result = userProfileService.isAvailableNickname(nickname);
 
         // then
         assertThat(result).isTrue();
     }
 
     @Test
-    @DisplayName("닉네임 중복 테스트 - 중복되지 않는 경우 False 리턴")
+    @DisplayName("닉네임 사용 가능 테스트 - 중복되지 않는 경우 False 리턴")
     void notDuplicateNickname() {
         // given
         String nickname = "tester";
         when(userRepository.existsByNickname(nickname)).thenReturn(false);
 
         // when
-        boolean result = userProfileService.checkDuplicateNickname(nickname);
+        boolean result = userProfileService.isAvailableNickname(nickname);
 
         // then
         assertThat(result).isFalse();
+    }
+
+    @Test
+    @DisplayName("닉네임 사용 가능 테스트 - 닉네임은 2자 이상 8자 이하여야 한다.")
+    void notSatisfiedLengthNickname() {
+        assertThat(userProfileService.isAvailableNickname("")).isFalse();
+        assertThat(userProfileService.isAvailableNickname("a")).isFalse();
+        assertThat(userProfileService.isAvailableNickname("nineLengt")).isFalse();
+    }
+
+    @Test
+    @DisplayName("닉네임 사용 가능 테스트 - 닉네임은 숫자, 한글, 영문자만 가능하다")
+    void notSatisfiedCharTypeNickname() {
+        assertThat(userProfileService.isAvailableNickname("!")).isFalse();
+        assertThat(userProfileService.isAvailableNickname("♥")).isFalse();
+        assertThat(userProfileService.isAvailableNickname("  aa")).isFalse();
+        assertThat(userProfileService.isAvailableNickname("😄")).isFalse();
     }
 
 }

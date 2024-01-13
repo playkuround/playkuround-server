@@ -12,16 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserLoginService {
 
     private final TokenManager tokenManager;
     private final TokenService tokenService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
+    @Transactional
     public TokenDto login(String userEmail) {
-        UsernamePasswordAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(userEmail, "");
+        var authenticationToken = new UsernamePasswordAuthenticationToken(userEmail, "");
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(authenticationToken);
 

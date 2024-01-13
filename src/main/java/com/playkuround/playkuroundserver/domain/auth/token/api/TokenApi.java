@@ -25,7 +25,7 @@ public class TokenApi {
     @PostMapping("reissue")
     @Operation(summary = "access token 재발급", description = "access token과 refresh token을 재발급받습니다.")
     public ApiResponse<TokenReissueResponse> accessTokenReissue(@RequestBody @Valid TokenReissueRequest request) {
-        TokenReissueResponse response = tokenReissueService.reissue(request);
+        TokenReissueResponse response = tokenReissueService.reissue(request.getAccessToken(), request.getRefreshToken());
         return ApiUtils.success(response);
     }
 

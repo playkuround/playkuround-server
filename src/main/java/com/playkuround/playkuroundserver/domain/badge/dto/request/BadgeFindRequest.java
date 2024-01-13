@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class BadgeFindRequest {
 

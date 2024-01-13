@@ -26,7 +26,7 @@ public class BadgeApi {
     @GetMapping
     @Operation(summary = "뱃지조회", description = "사용자가 획득한 뱃지를 조회합니다.")
     public ApiResponse<List<BadgeFindRequest>> findBadge(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<BadgeFindRequest> badges = badgeService.findBadgeByEmail(userDetails.getUser());
-        return ApiUtils.success(badges);
+        List<BadgeFindRequest> response = badgeService.findBadgeByEmail(userDetails.getUser());
+        return ApiUtils.success(response);
     }
 }

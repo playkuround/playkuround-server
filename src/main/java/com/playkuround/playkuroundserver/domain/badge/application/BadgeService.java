@@ -10,6 +10,7 @@ import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -21,12 +22,14 @@ public class BadgeService {
 
     private final BadgeRepository badgeRepository;
 
+    @Transactional(readOnly = true)
     public List<BadgeFindRequest> findBadgeByEmail(User user) {
         return badgeRepository.findByUser(user).stream()
                 .map(BadgeFindRequest::from)
                 .toList();
     }
 
+    @Transactional
     public NewlyRegisteredBadge updateNewlyAttendanceBadges(User user) {
         Set<BadgeType> userBadgeSet = getUserBadgeSet(user);
 
@@ -95,7 +98,8 @@ public class BadgeService {
         return newlyRegisteredBadge;
     }
 
-    private NewlyRegisteredBadge updateNewlyAdventureBadges(User user, Landmark requestSaveLandmark) {
+    @Transactional
+    public NewlyRegisteredBadge updateNewlyAdventureBadges(User user, Landmark requestSaveLandmark) {
         Set<BadgeType> userBadgeSet = getUserBadgeSet(user);
 
         NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();

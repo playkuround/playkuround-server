@@ -6,10 +6,12 @@ import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@AllArgsConstructor
+@Builder(access = lombok.AccessLevel.PRIVATE)
+@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class UserGameHighestScoreResponse {
 
     @Schema(description = "토탈 최고점수", example = "1500", requiredMode = RequiredMode.REQUIRED)
@@ -32,6 +34,7 @@ public class UserGameHighestScoreResponse {
     private Long highestMicrobeScore;
 
     public static UserGameHighestScoreResponse from(HighestScore highestScore) {
+        if (highestScore == null) return new UserGameHighestScoreResponse();
         return UserGameHighestScoreResponse.builder()
                 .highestTotalScore(highestScore.getHighestTotalScore())
                 .highestQuizScore(highestScore.getHighestQuizScore())

@@ -10,10 +10,10 @@ import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -29,21 +29,21 @@ public class UserProfileApi {
     @GetMapping
     @Operation(summary = "프로필 얻기", description = "로그인 유저의 기본 정보를 얻습니다.")
     public ApiResponse<UserProfileResponse> userProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        UserProfileResponse profileResponse = userProfileService.getUserProfile(userDetails.getUser());
-        return ApiUtils.success(profileResponse);
+        UserProfileResponse response = userProfileService.getUserProfile(userDetails.getUser());
+        return ApiUtils.success(response);
     }
 
     @GetMapping("/game-score")
     @Operation(summary = "게임별 최고 점수 얻기", description = "로그인 유저의 게임별 최고 점수를 얻습니다. 플레이한적이 없는 게임은 null이 반환됩니다.")
     public ApiResponse<UserGameHighestScoreResponse> userGameHighestScore(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        UserGameHighestScoreResponse gameScoreResponse = userProfileService.getUserGameHighestScore(userDetails.getUser());
-        return ApiUtils.success(gameScoreResponse);
+        UserGameHighestScoreResponse response = userProfileService.getUserGameHighestScore(userDetails.getUser());
+        return ApiUtils.success(response);
     }
 
     @GetMapping("/availability")
     @Operation(summary = "해당 닉네임이 사용 가능한지 체크", description = "사용 가능하다면 true가 반환됩니다.")
-    public ApiResponse<Boolean> nicknameDuplication(@Param("nickname") String nickname) {
-        boolean isDuplicate = userProfileService.checkDuplicateNickname(nickname);
+    public ApiResponse<Boolean> nicknameDuplication(@RequestParam("nickname") String nickname) {
+        boolean isDuplicate = userProfileService.isAvailableNickname(nickname);
         return ApiUtils.success(!isDuplicate);
     }
 

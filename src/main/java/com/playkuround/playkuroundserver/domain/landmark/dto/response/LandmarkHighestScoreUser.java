@@ -9,8 +9,10 @@ import lombok.Getter;
 @AllArgsConstructor
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 public class LandmarkHighestScoreUser {
+
     @Schema(description = "사용자 닉네임", example = "내가제일이다")
     private String nickname;
+
     @Schema(description = "최고 점수", example = "294")
     private Long score;
 

@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,22 +37,5 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
     Optional<MyScore> findMyRankByLandmarkId(@Param(value = "user") User user, @Param(value = "landmark") Long landmarkId);
 
     @Query("SELECT SUM(a.score) FROM Adventure a WHERE a.user.id=:#{#user.id} AND a.landmark.id=:#{#landmark.id}")
-    Long sumCorrectionScore(@Param(value = "user") User user, @Param(value = "landmark") Landmark landmark);
-
-    @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id>=22 and a.landmark.id<=26")
-    Long countAdventureForENGINEER();
-
-    @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id=8 or a.landmark.id=28")
-    Long countAdventureForARTIST();
-
-    @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id=14 or a.landmark.id=15 or a.landmark.id=19")
-    Long countAdventureForCEO();
-
-    @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id=37 or a.landmark.id=38")
-    Long countAdventureForNATIONAL_PLAYER();
-
-    @Query("SELECT COUNT(*) FROM Adventure a where a.landmark.id>=39 and a.landmark.id<=44")
-    Long countAdventureForNEIL_ARMSTRONG();
-
-    boolean existsByUserAndLandmarkAndCreatedAtAfter(User user, Landmark landmark, LocalDateTime localDateTime);
+    long sumScoreByUserAndLandmark(@Param(value = "user") User user, @Param(value = "landmark") Landmark landmark);
 }

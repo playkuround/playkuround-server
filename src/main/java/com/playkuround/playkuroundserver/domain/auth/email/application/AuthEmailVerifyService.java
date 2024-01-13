@@ -21,7 +21,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class AuthEmailVerifyService {
 
     private final TokenService tokenService;
@@ -29,6 +28,7 @@ public class AuthEmailVerifyService {
     private final UserLoginService userLoginService;
     private final AuthEmailRepository authEmailRepository;
 
+    @Transactional
     public AuthVerifyEmailResponse verifyAuthEmail(String code, String email) {
         AuthEmail authEmail = authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(email)
                 .orElseThrow(AuthEmailNotFoundException::new);

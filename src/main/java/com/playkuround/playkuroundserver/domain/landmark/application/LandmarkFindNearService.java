@@ -7,6 +7,7 @@ import com.playkuround.playkuroundserver.global.util.Location;
 import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class LandmarkFindNearService {
 
     private final LandmarkRepository landmarkRepository;
 
+    @Transactional(readOnly = true)
     public NearestLandmarkResponse findNearestLandmark(Location location) {
         List<Landmark> landmarks = landmarkRepository.findAll();
 

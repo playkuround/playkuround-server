@@ -14,12 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserRegisterService {
 
     private final UserRepository userRepository;
     private final UserLoginService userLoginService;
 
+    @Transactional
     public UserRegisterResponse registerUser(UserRegisterRequest registerRequest) {
         validateDuplicateEmail(registerRequest.getEmail());
         validateDuplicateNickName(registerRequest.getNickname());
@@ -39,10 +39,6 @@ public class UserRegisterService {
         if (userRepository.existsByNickname(nickname)) {
             throw new UserNicknameDuplicationException();
         }
-    }
-
-    public void deleteUser(User user) {
-        userRepository.delete(user);
     }
 
 }

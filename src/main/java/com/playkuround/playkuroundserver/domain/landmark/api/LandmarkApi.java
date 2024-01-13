@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Landmark", description = "Landmark API")
 public class LandmarkApi {
 
-    private final LandmarkFindNearService landmarkFindNearService;
     private final LandmarkScoreService landmarkScoreService;
+    private final LandmarkFindNearService landmarkFindNearService;
 
     @GetMapping
     @Operation(summary = "가장 가까운 랜드마크 찾기",

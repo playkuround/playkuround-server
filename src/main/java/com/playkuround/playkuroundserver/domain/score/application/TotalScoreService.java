@@ -16,7 +16,6 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class TotalScoreService {
 
     private final UserRepository userRepository;
@@ -36,6 +35,7 @@ public class TotalScoreService {
         return myTotalScore.longValue();
     }
 
+    @Transactional(readOnly = true)
     public ScoreRankingResponse getRankTop100(User user) {
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
         Set<ZSetOperations.TypedTuple<String>> typedTuples = zSetOperations.reverseRangeWithScores(redisSetKey, 0, 99);

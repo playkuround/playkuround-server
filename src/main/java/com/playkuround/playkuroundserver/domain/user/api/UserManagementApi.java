@@ -43,10 +43,4 @@ public class UserManagementApi {
         return ApiUtils.success(null);
     }
 
-    @DeleteMapping
-    public ApiResponse<Void> userDelete(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userRegisterService.deleteUser(userDetails.getUser());
-        return ApiUtils.success(null);
-    }
-
 }

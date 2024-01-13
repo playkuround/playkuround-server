@@ -1,11 +1,11 @@
 package com.playkuround.playkuroundserver.global.util;
 
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class DateUtils {
-
-    private DateUtils() {
-    }
 
     public static boolean isTodayFoundationDay() {
         LocalDate today = LocalDate.now();

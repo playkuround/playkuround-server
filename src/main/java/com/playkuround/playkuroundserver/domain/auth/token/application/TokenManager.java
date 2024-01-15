@@ -13,19 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -55,13 +50,13 @@ public class TokenManager {
         this.userDetailsService = userDetailsService;
     }
 
-    public TokenDto createTokenDto(Authentication authentication) {
+    public TokenDto createTokenDto(String username) {
         long now = new Date().getTime();
         Date accessTokenExpiredAt = createAccessTokenExpirationTime(now);
         Date refreshTokenExpiredAt = createRefreshTokenExpirationTime(now);
 
-        String accessToken = createAccessToken(authentication, accessTokenExpiredAt);
-        String refreshToken = createRefreshToken(refreshTokenExpiredAt);
+        String accessToken = createAccessToken(username, accessTokenExpiredAt);
+        String refreshToken = createRefreshTokenEntity(refreshTokenExpiredAt);
 
         return TokenDto.builder()
                 .grantType(GrantType.BEARER.getType())
@@ -80,23 +75,18 @@ public class TokenManager {
         return new Date(now + refreshTokenValidityInMilliseconds);
     }
 
-    private String createAccessToken(Authentication authentication, Date expireDate) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
+    private String createAccessToken(String username, Date expireDate) {
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .claim("auth", authorities)
                 .setIssuer(issuer)
                 .setExpiration(expireDate)
-                .setSubject(authentication.getName())
+                .setSubject(username)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setHeaderParam(tokenTypeHeaderKey, TokenType.ACCESS.name())
                 .compact();
     }
 
-    private String createRefreshToken(Date expireDate) {
+    private String createRefreshTokenEntity(Date expireDate) {
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(issuer)
@@ -106,20 +96,10 @@ public class TokenManager {
                 .compact();
     }
 
-    public Authentication getAuthentication(String accessToken) {
+    public Authentication authentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
-
-        if (claims.get("auth") == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
-        }
-
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("auth").toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .toList();
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
-        return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
+        return UsernamePasswordAuthenticationToken.authenticated(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
     }
 
     private Claims parseClaims(String accessToken) {
@@ -167,16 +147,16 @@ public class TokenManager {
         }
     }
 
-    public AuthVerifyToken createAuthVerifyToken() {
+    public AuthVerifyToken createAuthVerifyTokenEntity() {
         String key = UUID.randomUUID().toString();
         LocalDateTime now = LocalDateTime.now();
         return new AuthVerifyToken(key, now.plusSeconds(authVerifyTokenValidityInSeconds));
     }
 
-    public RefreshToken createRefreshToken(Authentication authentication, String refreshToken) {
+    public RefreshToken createRefreshTokenEntity(String username, String refreshToken) {
         LocalDateTime now = LocalDateTime.now();
         return RefreshToken.builder()
-                .userEmail(authentication.getName())
+                .userEmail(username)
                 .refreshToken(refreshToken)
                 .expiredAt(now.plusSeconds(refreshTokenValidityInMilliseconds / 1000))
                 .build();

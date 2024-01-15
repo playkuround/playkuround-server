@@ -29,7 +29,7 @@ public class WithMockCustomUserSecurityContextFactory
         userRepository.save(user);
         String roleName = user.getRole().toString();
         List<String> role = Arrays.stream(roleName.split(",")).toList();
-        UserDetailsImpl userDetails = new UserDetailsImpl(user, role, "");
+        UserDetailsImpl userDetails = new UserDetailsImpl(user, "", role);
 
         Collection<? extends GrantedAuthority> authorities = List.of(user.getRole().toString()).stream()
                 .map(SimpleGrantedAuthority::new)

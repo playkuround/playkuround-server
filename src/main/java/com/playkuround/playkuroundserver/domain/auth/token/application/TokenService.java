@@ -7,7 +7,6 @@ import com.playkuround.playkuroundserver.domain.auth.token.domain.RefreshToken;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.AuthVerifyTokenNotFoundException;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +20,10 @@ public class TokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthVerifyTokenRepository authVerifyTokenRepository;
 
-    public void registerRefreshToken(Authentication authentication, String sRefreshToken) {
-        refreshTokenRepository.deleteByUserEmail(authentication.getName());
+    public void registerRefreshToken(String username, String sRefreshToken) {
+        refreshTokenRepository.deleteByUserEmail(username);
 
-        RefreshToken refreshToken = tokenManager.createRefreshToken(authentication, sRefreshToken);
+        RefreshToken refreshToken = tokenManager.createRefreshTokenEntity(username, sRefreshToken);
         refreshTokenRepository.save(refreshToken);
     }
 
@@ -33,7 +32,7 @@ public class TokenService {
     }
 
     public AuthVerifyToken registerAuthVerifyToken() {
-        AuthVerifyToken authVerifyToken = tokenManager.createAuthVerifyToken();
+        AuthVerifyToken authVerifyToken = tokenManager.createAuthVerifyTokenEntity();
         return authVerifyTokenRepository.save(authVerifyToken);
     }
 

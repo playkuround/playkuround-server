@@ -28,6 +28,7 @@ public enum ErrorCode {
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "A004", "만료된 토큰입니다."),
     NOT_ACCESS_TOKEN_TYPE(HttpStatus.UNAUTHORIZED, "A005", "TokenType이 ACCESS가 아닙니다."),
     NOT_REFRESH_TOKEN_TYPE(HttpStatus.UNAUTHORIZED, "A006", "TokenType이 REFRESH가 아닙니다."),
+    FAIL_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "A007", "인증에 실패했습니다."),
 
     // Location
     INVALID_LOCATION_LANDMARK(HttpStatus.BAD_REQUEST, "L001", "현재 위치와 랜드마크 위치가 너무 멉니다."),

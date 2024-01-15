@@ -197,7 +197,7 @@ class UserManagementApiTest {
     void logout() throws Exception {
         // given
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, null);
-        RefreshToken refreshToken = tokenManager.createRefreshToken(authentication, "refreshToken");
+        RefreshToken refreshToken = tokenManager.createRefreshTokenEntity(authentication.getName(), "refreshToken");
         refreshTokenRepository.save(refreshToken);
 
         // when

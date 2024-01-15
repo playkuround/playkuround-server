@@ -13,13 +13,13 @@ public class UserDetailsImpl implements UserDetails {
 
     @Getter
     private final User user;
-    private final List<String> roles;
     private final String password;
+    private final List<String> roles;
 
-    public UserDetailsImpl(User user, List<String> roles, String password) {
+    public UserDetailsImpl(User user, String password, List<String> roles) {
         this.user = user;
-        this.roles = roles;
         this.password = password;
+        this.roles = roles;
     }
 
     @Override

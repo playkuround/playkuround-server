@@ -14,11 +14,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class AttendanceSearchService {
 
     private final AttendanceRepository attendanceRepository;
 
+    @Transactional(readOnly = true)
     public List<LocalDateTime> findAttendanceForMonth(User user) {
         LocalDateTime monthAgo = LocalDate.now().minusMonths(30).atStartOfDay();
         List<Attendance> attendances = attendanceRepository.findByUserAndCreatedAtAfter(user, monthAgo);

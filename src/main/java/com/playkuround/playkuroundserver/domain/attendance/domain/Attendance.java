@@ -23,18 +23,18 @@ public class Attendance extends BaseTimeEntity {
 
     @Latitude
     @Column(nullable = false)
-    private Double latitude;
+    private double latitude;
 
     @Longitude
     @Column(nullable = false)
-    private Double longitude;
+    private double longitude;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    public Attendance(Double latitude, Double longitude, User user) {
+    private Attendance(double latitude, double longitude, User user) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.user = user;

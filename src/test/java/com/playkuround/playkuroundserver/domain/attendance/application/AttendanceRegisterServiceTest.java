@@ -38,29 +38,35 @@ class AttendanceRegisterServiceTest {
     private AttendanceRepository attendanceRepository;
 
     @Test
-    void 첫_출석_시_뱃지와_출석정보가_저장된다() {
+    void 출석_시_뱃지와_출석정보가_저장되고_유저의_출석횟수가_증가한다() {
         // given
-        User user = TestUtil.createUser();
         NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
         newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_1);
+        newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_ARBOR_DAY);
 
         when(attendanceRepository.existsByUserAndCreatedAtAfter(any(User.class), any(LocalDateTime.class)))
                 .thenReturn(false);
-        when(attendanceRepository.save(any())).then(invocation -> invocation.getArgument(0));
+        when(attendanceRepository.save(any())).thenReturn(null);
         when(badgeService.updateNewlyAttendanceBadges(any(User.class)))
                 .thenReturn(newlyRegisteredBadge);
 
         // when
+        User user = TestUtil.createUser();
         Location location = new Location(37.539927, 127.073006);
         AttendanceRegisterResponse result = attendanceRegisterService.registerAttendance(user, location);
 
         // then
-        assertThat(result.getNewBadges()).hasSize(1);
-        assertThat(result.getNewBadges().get(0).getName()).isEqualTo(BadgeType.ATTENDANCE_1.name());
+        assertThat(user.getAttendanceDays()).isEqualTo(1);
+
+        assertThat(result.getNewBadges()).hasSize(2);
+        assertThat(result.getNewBadges()).extracting("name")
+                .containsExactlyInAnyOrder(BadgeType.ATTENDANCE_1.name(), BadgeType.ATTENDANCE_ARBOR_DAY.name());
 
         ArgumentCaptor<Attendance> attendanceArgument = ArgumentCaptor.forClass(Attendance.class);
         verify(attendanceRepository, times(1)).save(attendanceArgument.capture());
         assertThat(attendanceArgument.getValue().getUser()).isEqualTo(user);
+        assertThat(attendanceArgument.getValue().getLatitude()).isEqualTo(location.latitude());
+        assertThat(attendanceArgument.getValue().getLongitude()).isEqualTo(location.longitude());
     }
 
     @Test

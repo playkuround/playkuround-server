@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.beanValidation;
 
 import com.playkuround.playkuroundserver.beanValidation.code.UserConstruct;
+import com.playkuround.playkuroundserver.beanValidation.code.UserConstruct2;
 import com.playkuround.playkuroundserver.beanValidation.code.UserField;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -43,5 +44,22 @@ public class ValidationTest {
 
         em.persist(userField);
         em.getTransaction().commit();
+    }
+
+    @Test
+    @DisplayName("생성자 인수에 @NonNull(lombok)을 붙이면, 검증은 생성자 호출 시점에 수행된다.")
+    void testConstructNonnull() {
+
+        assertThatThrownBy(() -> {
+            new UserConstruct2(null, -1);
+        }).isInstanceOf(NullPointerException.class);
+
+
+        assertThatThrownBy(() -> {
+            UserConstruct2.builder()
+                    .name(null)
+                    .age(-1)
+                    .build();
+        }).isInstanceOf(NullPointerException.class);
     }
 }

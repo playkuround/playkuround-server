@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.global.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidEnum {
 
-    String message() default "Enum 에 없는 값입니다.";
+    String message() default "잘못된 데이터입니다.";
 
     Class<?>[] groups() default {};
 

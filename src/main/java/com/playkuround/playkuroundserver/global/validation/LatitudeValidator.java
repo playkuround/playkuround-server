@@ -11,6 +11,7 @@ public class LatitudeValidator implements ConstraintValidator<Latitude, Double> 
 
     @Override
     public boolean isValid(Double value, ConstraintValidatorContext context) {
+        if (value == null) return false;
         return -90 <= value && value <= 90;
     }
 

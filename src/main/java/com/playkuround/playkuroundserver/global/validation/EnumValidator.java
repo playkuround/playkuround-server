@@ -15,16 +15,13 @@ public class EnumValidator implements ConstraintValidator<ValidEnum, String> {
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         Object[] enumValues = this.annotation.enumClass().getEnumConstants();
-
         if (enumValues != null) {
             for (Object enumValue : enumValues) {
-                // 대소문자 구분하지 않기
-                if (value.equalsIgnoreCase(enumValue.toString())) {
+                if (enumValue.toString().equalsIgnoreCase(value)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 }

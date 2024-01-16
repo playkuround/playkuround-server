@@ -11,6 +11,7 @@ public class LongitudeValidator implements ConstraintValidator<Longitude, Double
 
     @Override
     public boolean isValid(Double value, ConstraintValidatorContext context) {
+        if (value == null) return false;
         return -180 <= value && value <= 180;
     }
 

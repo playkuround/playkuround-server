@@ -3,9 +3,8 @@ package com.playkuround.playkuroundserver.domain.attendance.application;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
-import com.playkuround.playkuroundserver.domain.user.domain.Major;
-import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.global.util.Location;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,15 +36,17 @@ class AttendanceSearchServiceTest {
         // given
         Random random = new Random();
         LocalDateTime now = LocalDateTime.now();
+        User user = TestUtil.createUser();
+        Location location = new Location(37.539927, 127.073006);
         List<Attendance> attendances = new ArrayList<>();
         List<LocalDateTime> expected = new ArrayList<>();
         IntStream.iterate(1, x -> x + 1)
-                .limit(45)
+                .limit(30)
                 .map(x -> random.nextInt(30))
                 .distinct()
                 .sorted()
                 .forEach(x -> {
-                    Attendance attendance = new Attendance(0.0, 0.0, null);
+                    Attendance attendance = Attendance.createAttendance(user, location);
                     ReflectionTestUtils.setField(attendance, "createdAt", now.plusDays(x));
                     attendances.add(attendance);
                     expected.add(attendance.getCreatedAt());
@@ -54,7 +55,6 @@ class AttendanceSearchServiceTest {
                 .thenReturn(attendances);
 
         // when
-        User user = new User("tester@konkuk.ac.kr", "tester", Major.컴퓨터공학부, Role.ROLE_USER);
         List<LocalDateTime> target = attendanceSearchService.findAttendanceForMonth(user);
 
         // then

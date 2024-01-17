@@ -46,6 +46,7 @@ public class UserProfileService {
             return new ArrayList<>();
         }
         user.clearNotification();
+        userRepository.save(user);
         return convertToUserNotificationList(str_notification);
     }
 

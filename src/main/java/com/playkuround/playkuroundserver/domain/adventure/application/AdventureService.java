@@ -12,6 +12,7 @@ import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
 import com.playkuround.playkuroundserver.domain.score.application.TotalScoreService;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
+import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.Location;
 import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdventureService {
 
     private final BadgeService badgeService;
+    private final UserRepository userRepository;
     private final TotalScoreService totalScoreService;
     private final LandmarkRepository landmarkRepository;
     private final AdventureRepository adventureRepository;
@@ -41,6 +43,7 @@ public class AdventureService {
         Long myTotalScore = totalScoreService.saveScore(user, request.getScore());
         user.getHighestScore().updateHighestTotalScore(myTotalScore);
         user.getHighestScore().updateGameHighestScore(scoreType, request.getScore());
+        userRepository.save(user);
 
         // 2. Adventure 저장
         Adventure adventure = new Adventure(user, landmark, scoreType, request.getScore());

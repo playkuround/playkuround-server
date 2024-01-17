@@ -52,9 +52,9 @@ class AttendanceSaveApiTest {
 
     @AfterEach
     void clean() {
-        userRepository.deleteAll();
-        badgeRepository.deleteAll();
         attendanceRepository.deleteAll();
+        badgeRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -84,6 +84,9 @@ class AttendanceSaveApiTest {
         assertThat(attendances.size()).isEqualTo(1);
 
         User user = userRepository.findAll().get(0);
+        System.out.println(user.getAttendanceDays());
+        System.out.println(user.getEmail());
+        System.out.println(user.getNickname());
         assertThat(user.getAttendanceDays()).isEqualTo(1);
     }
 

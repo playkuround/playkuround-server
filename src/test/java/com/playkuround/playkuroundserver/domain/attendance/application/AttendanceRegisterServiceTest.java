@@ -9,6 +9,7 @@ import com.playkuround.playkuroundserver.domain.attendance.exception.InvalidAtte
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
+import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.Location;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,9 @@ class AttendanceRegisterServiceTest {
     @Mock
     private AttendanceRepository attendanceRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     @Test
     void 출석_시_뱃지와_출석정보가_저장되고_유저의_출석횟수가_증가한다() {
         // given
@@ -46,7 +50,8 @@ class AttendanceRegisterServiceTest {
 
         when(attendanceRepository.existsByUserAndCreatedAtAfter(any(User.class), any(LocalDateTime.class)))
                 .thenReturn(false);
-        when(attendanceRepository.save(any())).thenReturn(null);
+        when(attendanceRepository.save(any(Attendance.class))).thenReturn(null);
+        when(userRepository.save(any(User.class))).thenReturn(null);
         when(badgeService.updateNewlyAttendanceBadges(any(User.class)))
                 .thenReturn(newlyRegisteredBadge);
 

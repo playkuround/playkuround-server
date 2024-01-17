@@ -31,12 +31,13 @@ public class WithMockCustomUserSecurityContextFactory
         List<String> role = Arrays.stream(roleName.split(",")).toList();
         UserDetailsImpl userDetails = new UserDetailsImpl(user, "", role);
 
-        Collection<? extends GrantedAuthority> authorities = List.of(user.getRole().toString()).stream()
+        Collection<? extends GrantedAuthority> authorities = role.stream()
                 .map(SimpleGrantedAuthority::new)
                 .toList();
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(userDetails, "", authorities);
+
+        SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(authentication);
         return context;
     }

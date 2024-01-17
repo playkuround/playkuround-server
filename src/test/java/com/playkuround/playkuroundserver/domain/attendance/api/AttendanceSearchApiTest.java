@@ -4,7 +4,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.playkuround.playkuroundserver.domain.attendance.application.AttendanceRegisterService;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
-import com.playkuround.playkuroundserver.domain.user.dao.UserFindDao;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.Location;
@@ -45,20 +44,24 @@ class AttendanceSearchApiTest {
 
     @MockBean
     DateTimeProvider dateTimeProvider;
+
     @SpyBean
     AuditingHandler auditingHandler;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserFindDao userFindDao;
-    @Autowired
-    private AttendanceRepository attendanceRepository;
-    @Autowired
-    private AttendanceRegisterService attendanceRegisterService;
-    @Autowired
-    private BadgeRepository badgeRepository;
+
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AttendanceRepository attendanceRepository;
+
+    @Autowired
+    private AttendanceRegisterService attendanceRegisterService;
+
+    @Autowired
+    private BadgeRepository badgeRepository;
 
     @AfterEach
     void clean() {
@@ -75,7 +78,7 @@ class AttendanceSearchApiTest {
         MockitoAnnotations.openMocks(this);
         auditingHandler.setDateTimeProvider(dateTimeProvider);
 
-        User user = userFindDao.findByEmail("tester@konkuk.ac.kr");
+        User user = userRepository.findAll().get(0);
         Location location = new Location(37.539927, 127.073006);
 
         LocalDateTime todayLocalDate = LocalDateTime.now();

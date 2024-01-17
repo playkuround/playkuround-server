@@ -7,6 +7,7 @@ import com.playkuround.playkuroundserver.domain.attendance.exception.DuplicateAt
 import com.playkuround.playkuroundserver.domain.attendance.exception.InvalidAttendanceLocationException;
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
+import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.Location;
 import com.playkuround.playkuroundserver.global.util.LocationUtils;
@@ -22,13 +23,17 @@ public class AttendanceRegisterService {
 
     private final BadgeService badgeService;
     private final AttendanceRepository attendanceRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public AttendanceRegisterResponse registerAttendance(User user, Location location) {
         validateAttendance(user, location);
+
         Attendance attendance = Attendance.createAttendance(user, location);
         attendanceRepository.save(attendance);
+
         user.increaseAttendanceDay();
+        userRepository.save(user);
 
         NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAttendanceBadges(user);
         return AttendanceRegisterResponse.from(newlyRegisteredBadge);

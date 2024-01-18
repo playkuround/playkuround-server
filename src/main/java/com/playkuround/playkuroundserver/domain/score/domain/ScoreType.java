@@ -5,7 +5,7 @@ import com.playkuround.playkuroundserver.domain.score.exception.ScoreTypeNotMatc
 public enum ScoreType {
 
     ATTENDANCE,
-    QUIZ, TIME, MOON, CARD, CATCH, HONG_BRIDGE, ALL_CLEAR, MICROBE;
+    QUIZ, TIME, MOON, BOOK, CATCH, CUPID, ALL_CLEAR, SURVIVE;
 
     public static ScoreType fromString(String source) {
         try {

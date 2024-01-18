@@ -26,11 +26,11 @@ public class HighestScore {
             case QUIZ -> updateHighestQuizScore(score);
             case TIME -> updateHighestTimeScore(score);
             case MOON -> updateHighestMoonScore(score);
-            case CARD -> updateHighestCardScore(score);
+            case BOOK -> updateHighestCardScore(score);
             case CATCH -> updateHighestCatchScore(score);
-            case HONG_BRIDGE -> updateHighestHongBridgeScore(score);
+            case CUPID -> updateHighestHongBridgeScore(score);
             case ALL_CLEAR -> updateHighestAllClearScore(score);
-            case MICROBE -> updateHighestMicrobeScore(score);
+            case SURVIVE -> updateHighestMicrobeScore(score);
         }
     }
 

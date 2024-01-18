@@ -41,7 +41,7 @@ public enum ErrorCode {
     NOT_KU_EMAIL(HttpStatus.BAD_REQUEST, "E001", "건국대학교 이메일이 아닙니다."),
     EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "E002", "이메일 전송에 실패하였습니다."),
     EXPIRED_AUTH_CODE(HttpStatus.BAD_REQUEST, "E003", "만료된 코드입니다."),
-    SENDING_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "E004", "인증 메일 전송 횟수를 초과하였습니다."),
+    SENDING_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "E004", "인증 메일 전송 횟수를 초과하였습니다."),
     NOT_MATCH_AUTH_CODE(HttpStatus.BAD_REQUEST, "E005", "코드가 일치하지 않습니다."),
     EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "E006", "인증 대기 중인 이메일이 아닙니다."),
 

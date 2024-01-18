@@ -4,7 +4,7 @@ import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
-import com.playkuround.playkuroundserver.domain.badge.dto.request.BadgeFindRequest;
+import com.playkuround.playkuroundserver.domain.badge.dto.response.BadgeFindResponse;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.DateUtils;
@@ -23,9 +23,9 @@ public class BadgeService {
     private final BadgeRepository badgeRepository;
 
     @Transactional(readOnly = true)
-    public List<BadgeFindRequest> findBadgeByEmail(User user) {
+    public List<BadgeFindResponse> findBadgeByEmail(User user) {
         return badgeRepository.findByUser(user).stream()
-                .map(BadgeFindRequest::from)
+                .map(BadgeFindResponse::from)
                 .toList();
     }
 

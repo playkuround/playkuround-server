@@ -20,6 +20,8 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @Schema(externalDocs = @ExternalDocumentation(url = "https://www.notion.so/major-4dd11f19ece5409aacaa21a8ccc28dad?pvs=4"))
 public class UserRegisterRequest {
+
+    @NotBlank(message = "이메일은 필수값입니다.")
     @Email(message = "올바른 이메일 형식이 아닙니다.")
     @Schema(description = "건국대 이메일", example = "tester@konkuk.ac.kr", requiredMode = RequiredMode.REQUIRED)
     private String email;
@@ -30,7 +32,6 @@ public class UserRegisterRequest {
     @Schema(description = "사용할 닉네임", example = "tester", minLength = 2, maxLength = 8)
     private String nickname;
 
-    @NotBlank(message = "학과는 필수값입니다.")
     @ValidEnum(enumClass = Major.class, message = "잘못된 학과명입니다.")
     @Schema(description = "학과. 학과 리스트는 외부 문서 참고", example = "컴퓨터공학부")
     private String major;

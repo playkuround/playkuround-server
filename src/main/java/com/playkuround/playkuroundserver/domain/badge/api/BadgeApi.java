@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.badge.api;
 
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
-import com.playkuround.playkuroundserver.domain.badge.dto.request.BadgeFindRequest;
+import com.playkuround.playkuroundserver.domain.badge.dto.response.BadgeFindResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -25,8 +25,8 @@ public class BadgeApi {
 
     @GetMapping
     @Operation(summary = "뱃지조회", description = "사용자가 획득한 뱃지를 조회합니다.")
-    public ApiResponse<List<BadgeFindRequest>> findBadge(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<BadgeFindRequest> response = badgeService.findBadgeByEmail(userDetails.getUser());
+    public ApiResponse<List<BadgeFindResponse>> findBadge(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<BadgeFindResponse> response = badgeService.findBadgeByEmail(userDetails.getUser());
         return ApiUtils.success(response);
     }
 }

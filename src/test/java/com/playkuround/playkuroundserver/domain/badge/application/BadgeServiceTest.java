@@ -4,7 +4,7 @@ import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.domain.badge.dto.request.BadgeFindRequest;
+import com.playkuround.playkuroundserver.domain.badge.dto.response.BadgeFindResponse;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +35,7 @@ class BadgeServiceTest {
                 .thenReturn(new ArrayList<>());
 
         // when
-        List<BadgeFindRequest> result = badgeService.findBadgeByEmail(user);
+        List<BadgeFindResponse> result = badgeService.findBadgeByEmail(user);
 
         // then
         assertThat(result).isEmpty();
@@ -54,13 +54,13 @@ class BadgeServiceTest {
                 .thenReturn(badges);
 
         // when
-        List<BadgeFindRequest> result = badgeService.findBadgeByEmail(user);
+        List<BadgeFindResponse> result = badgeService.findBadgeByEmail(user);
 
         // then
         assertThat(result).hasSize(3);
 
         List<String> target = result.stream()
-                .map(BadgeFindRequest::getName)
+                .map(BadgeFindResponse::getName)
                 .toList();
         assertThat(target).containsOnly(BadgeType.COLLEGE_OF_ENGINEERING_A.name(),
                 BadgeType.MONTHLY_RANKING_3.name(),

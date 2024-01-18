@@ -92,7 +92,7 @@ class UserManagementApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        UserRegisterResponse response = (UserRegisterResponse) TestUtil.convertjsonstringtoobject(json,
+        UserRegisterResponse response = (UserRegisterResponse) TestUtil.convertFromJsonStringToObject(json,
                 UserRegisterResponse.class);
 
         // then

@@ -11,13 +11,11 @@ import com.playkuround.playkuroundserver.domain.auth.token.domain.AuthVerifyToke
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
-import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +34,8 @@ public class AuthEmailVerifyService {
         validateEmailAndCode(authEmail, code);
         authEmail.changeInvalidate();
 
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (optionalUser.isPresent()) {
+        boolean existsUser = userRepository.existsByEmail(email);
+        if (existsUser) {
             TokenDto tokenDto = userLoginService.login(email);
             return AuthVerifyEmailResponse.fromTokenDto(tokenDto);
         }

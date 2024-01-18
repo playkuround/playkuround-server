@@ -46,7 +46,7 @@ public class AuthEmailVerifyService {
     }
 
     private void validateEmailAndCode(AuthEmail authEmail, String code) {
-        if (!authEmail.getValidate()) {
+        if (!authEmail.isValidate()) {
             throw new AuthEmailNotFoundException();
         }
         if (authEmail.getExpiredAt().isBefore(LocalDateTime.now())) {

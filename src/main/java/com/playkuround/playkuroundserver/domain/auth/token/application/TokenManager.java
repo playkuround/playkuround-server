@@ -109,8 +109,9 @@ public class TokenManager {
                     .build()
                     .parseClaimsJws(accessToken)
                     .getBody();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims();
+        } catch (Exception e) {
+            log.info("Invalid JWT Token", e);
+            throw new InvalidTokenException();
         }
     }
 

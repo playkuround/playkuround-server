@@ -19,8 +19,9 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
                     "FROM Adventure a " +
                     "where a.landmark.id=:landmark " +
                     "GROUP BY a.user.id " +
-                    "ORDER BY SUM(a.score) DESC")
-    List<NicknameAndScore> findUserScoreRankDescByLandmarkId(@Param(value = "landmark") Long landmarkId);
+                    "ORDER BY score DESC, nickname DESC " +
+                    "LIMIT 100")
+    List<NicknameAndScore> findRankTop100DescByLandmarkId(@Param(value = "landmark") Long landmarkId);
 
     @Query(value =
             "SELECT SUM(a.score) as score, RANK() over (order by score desc) as rank " +

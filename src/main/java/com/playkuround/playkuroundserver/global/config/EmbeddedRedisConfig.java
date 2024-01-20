@@ -36,6 +36,7 @@ public class EmbeddedRedisConfig {
         }
 
         redisServer.start();
+        System.out.println("Embedded Redis Started");
     }
 
     private boolean isArmArchitecture() {

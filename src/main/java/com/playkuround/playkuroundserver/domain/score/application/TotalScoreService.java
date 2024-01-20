@@ -1,7 +1,5 @@
 package com.playkuround.playkuroundserver.domain.score.application;
 
-import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
-import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScore;
 import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -12,16 +10,18 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class TotalScoreService {
 
-    private final UserRepository userRepository;
-    private final AdventureRepository adventureRepository;
-    private final RedisTemplate<String, String> redisTemplate;
     private final String redisSetKey = "ranking";
+    private final UserRepository userRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
     public Long incrementTotalScore(User user, Long score) {
@@ -84,20 +84,5 @@ public class TotalScoreService {
         }
 
         return new RankAndScore(myRank + 1, myTotalScore.intValue());
-    }
-
-    @Transactional(readOnly = true)
-    public ScoreRankingResponse getRankTop100ByLandmark(User user, Long landmarkId) {
-        List<NicknameAndScore> nicknameAndScores = adventureRepository.findUserScoreRankDescByLandmarkId(landmarkId);
-
-        ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
-        nicknameAndScores.forEach(nicknameAndScore -> response.addRank(nicknameAndScore.nickname(), nicknameAndScore.score()));
-
-        Optional<RankAndScore> optionalMyScore = adventureRepository.findMyRankByLandmarkId(user, landmarkId);
-        if (optionalMyScore.isPresent()) {
-            RankAndScore myScore = optionalMyScore.get();
-            response.setMyRank(myScore.ranking(), myScore.score());
-        }
-        return response;
     }
 }

@@ -1,23 +1,26 @@
 package com.playkuround.playkuroundserver.domain.score.dto.response;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ScoreRankingResponse {
 
     private MyRank myRank;
-    private List<PresentRankData> rank = new ArrayList<>();
+    private final List<RankList> rank = new ArrayList<>();
 
     public static ScoreRankingResponse createEmptyResponse() {
         return new ScoreRankingResponse();
     }
 
     public void addRank(String nickname, int score) {
-        this.rank.add(new PresentRankData(nickname, score));
+        this.rank.add(new RankList(nickname, score));
     }
 
     public void setMyRank(int ranking, int score) {
@@ -25,14 +28,14 @@ public class ScoreRankingResponse {
     }
 
     @Getter
-    @AllArgsConstructor
-    public static class PresentRankData {
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class RankList {
         private String nickname;
         private int score;
     }
 
     @Getter
-    @AllArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class MyRank {
         private int ranking;
         private int score;

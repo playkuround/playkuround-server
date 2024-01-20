@@ -1,8 +1,8 @@
 package com.playkuround.playkuroundserver.domain.score.application;
 
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
-import com.playkuround.playkuroundserver.domain.adventure.dto.MyScore;
-import com.playkuround.playkuroundserver.domain.adventure.dto.UserScore;
+import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScore;
+import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -37,56 +37,66 @@ public class TotalScoreService {
 
     @Transactional(readOnly = true)
     public ScoreRankingResponse getRankTop100(User user) {
-        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
-        Set<ZSetOperations.TypedTuple<String>> typedTuples = zSetOperations.reverseRangeWithScores(redisSetKey, 0, 99);
+        Set<ZSetOperations.TypedTuple<String>> typedTuples
+                = redisTemplate.opsForZSet().reverseRangeWithScores(redisSetKey, 0, 99);
+        if (typedTuples == null) {
+            return ScoreRankingResponse.createEmptyResponse();
+        }
 
         ScoreRankService scoreRankService = new ScoreRankService(typedTuples);
         Map<String, String> emailBindingNickname = getNicknameBindingEmailMapList(scoreRankService.getRankUserEmails());
         scoreRankService.setEmailBindingNickname(emailBindingNickname);
+
         ScoreRankingResponse response = scoreRankService.createScoreRankingResponse();
 
-        setMyRank(user, response);
+        RankAndScore myRank = getMyRank(user);
+        response.setMyRank(myRank.ranking(), myRank.score());
+
         return response;
     }
 
     private Map<String, String> getNicknameBindingEmailMapList(List<String> emails) {
         List<Map<String, String>> nicknameBindingEmailMapList = userRepository.findNicknameByEmailIn(emails);
-
-        Map<String, String> emailBindingNickname = new HashMap<>();
-        nicknameBindingEmailMapList
-                .forEach(map -> emailBindingNickname.put(map.get("email"), map.get("nickname")));
-        return emailBindingNickname;
+        return nicknameBindingEmailMapList.stream()
+                .collect(HashMap::new, (m, v) -> m.put(v.get("email"), v.get("nickname")), HashMap::putAll);
     }
 
-    private void setMyRank(User user, ScoreRankingResponse response) {
+    private RankAndScore getMyRank(User user) {
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
 
         Double myTotalScore = zSetOperations.score(redisSetKey, user.getEmail());
         if (myTotalScore == null) {
-            response.setMyRank(0, 0);
-            return;
+            return new RankAndScore(0, 0);
         }
 
         Set<String> emailSet = zSetOperations.reverseRangeByScore(redisSetKey, myTotalScore, myTotalScore, 0, 1);
-        int myRank = -1;
-        for (String email : emailSet) {
-            myRank = zSetOperations.reverseRank(redisSetKey, email).intValue();
+        if (emailSet == null) {
+            return new RankAndScore(0, 0);
         }
 
-        response.setMyRank(myRank + 1, myTotalScore.intValue());
+        int myRank = -1;
+        for (String email : emailSet) {
+            Long rank = zSetOperations.reverseRank(redisSetKey, email);
+            if (rank == null) {
+                continue;
+            }
+            myRank = rank.intValue();
+        }
+
+        return new RankAndScore(myRank + 1, myTotalScore.intValue());
     }
 
+    @Transactional(readOnly = true)
     public ScoreRankingResponse getRankTop100ByLandmark(User user, Long landmarkId) {
-        List<UserScore> userScores = adventureRepository.findUserScoreRankDescByLandmarkId(landmarkId);
-        ScoreRankingResponse response = new ScoreRankingResponse();
-        userScores.forEach(userScore -> {
-            response.addRank(userScore.getNickname(), userScore.getScore());
-        });
+        List<NicknameAndScore> nicknameAndScores = adventureRepository.findUserScoreRankDescByLandmarkId(landmarkId);
 
-        Optional<MyScore> optionalMyScore = adventureRepository.findMyRankByLandmarkId(user, landmarkId);
+        ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
+        nicknameAndScores.forEach(nicknameAndScore -> response.addRank(nicknameAndScore.nickname(), nicknameAndScore.score()));
+
+        Optional<RankAndScore> optionalMyScore = adventureRepository.findMyRankByLandmarkId(user, landmarkId);
         if (optionalMyScore.isPresent()) {
-            MyScore myScore = optionalMyScore.get();
-            response.setMyRank(myScore.getRank(), myScore.getScore());
+            RankAndScore myScore = optionalMyScore.get();
+            response.setMyRank(myScore.ranking(), myScore.score());
         }
         return response;
     }

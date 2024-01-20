@@ -1,6 +1,5 @@
 package com.playkuround.playkuroundserver.domain.score.application;
 
-import com.playkuround.playkuroundserver.domain.score.dto.RankData;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import lombok.Setter;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -26,7 +25,7 @@ public class ScoreRankService {
 
     public List<String> getRankUserEmails() {
         return rankDataList.stream()
-                .map(RankData::getEmail)
+                .map(RankData::email)
                 .toList();
     }
 
@@ -37,9 +36,12 @@ public class ScoreRankService {
 
         ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
         rankDataList.forEach(rankData -> {
-            String nickname = emailBindingNickname.get(rankData.getEmail());
-            response.addRank(nickname, rankData.getScore());
+            String nickname = emailBindingNickname.get(rankData.email);
+            response.addRank(nickname, rankData.score);
         });
         return response;
+    }
+
+    record RankData(String email, int score) {
     }
 }

@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.domain.landmark.api;
 
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
+import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -34,7 +36,7 @@ class LandmarkApiTest {
     private LandmarkRepository landmarkRepository;
 
     @AfterEach
-    void tearDown() {
+    void clear() {
         userRepository.deleteAll();
     }
 
@@ -48,9 +50,9 @@ class LandmarkApiTest {
                         .param("longitude", "127.078250")
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.landmarkId").value(19))
-                .andExpect(jsonPath("$.response.name").value("인문학관"))
                 .andExpect(jsonPath("$.response.distance").value(0.0))
+                .andExpect(jsonPath("$.response.landmarkId").value(19))
+                .andExpect(jsonPath("$.response.name").value(LandmarkType.인문학관.name()))
                 .andDo(print());
     }
 
@@ -65,8 +67,8 @@ class LandmarkApiTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response.landmarkId").value(19))
-                .andExpect(jsonPath("$.response.name").value("인문학관"))
-                .andExpect(jsonPath("$.response.distance").value(4))
+                .andExpect(jsonPath("$.response.name").value(LandmarkType.인문학관.name()))
+                .andExpect(jsonPath("$.response.distance").value(4.4130028352636055))
                 .andDo(print());
     }
 
@@ -86,7 +88,9 @@ class LandmarkApiTest {
 
     @Test
     @WithMockCustomUser
-    void 랜드마크에_최고점_유저가_있다면_반환한다() throws Exception {
+    @Transactional
+    @DisplayName("랜드마크에 최고점 유저가 있다면 반환한다")
+    void findHighestUserByLandmark() throws Exception {
         // given
         User user = userRepository.findAll().get(0);
         Landmark landmark = landmarkRepository.findById(1L).get();
@@ -94,21 +98,19 @@ class LandmarkApiTest {
         landmarkRepository.save(landmark);
 
         // expected
-        mockMvc.perform(get("/api/landmarks/1/highest"))
+        mockMvc.perform(get("/api/landmarks/{landmarkId}/highest", 1L))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.nickname").value(user.getNickname()))
                 .andExpect(jsonPath("$.response.score").value(1000))
+                .andExpect(jsonPath("$.response.nickname").value(user.getNickname()))
                 .andDo(print());
-
-        landmark.updateFirstUser(null, 1001);
-        landmarkRepository.save(landmark);
     }
 
     @Test
     @WithMockCustomUser
-    void 랜드마크에_최고점_유저가_없다면_아무것도_반환하지_않는다() throws Exception {
+    @DisplayName("랜드마크에 최고점 유저가 없다면 빈 응답을 반환한다")
+    void findHighestUserByLandmarkEmpty() throws Exception {
         // expected
-        mockMvc.perform(get("/api/landmarks/1/highest"))
+        mockMvc.perform(get("/api/landmarks/{landmarkId}/highest", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response.length()").value(0))
                 .andDo(print());

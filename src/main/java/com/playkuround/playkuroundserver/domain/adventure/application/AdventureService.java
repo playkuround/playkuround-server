@@ -40,7 +40,7 @@ public class AdventureService {
         ScoreType scoreType = ScoreType.fromString(request.getScoreType());
 
         // 1. Total Score 저장 및 최고 점수 갱신
-        Long myTotalScore = totalScoreService.saveScore(user, request.getScore());
+        Long myTotalScore = totalScoreService.incrementTotalScore(user, request.getScore());
         user.getHighestScore().updateHighestTotalScore(myTotalScore);
         user.getHighestScore().updateGameHighestScore(scoreType, request.getScore());
         userRepository.save(user);

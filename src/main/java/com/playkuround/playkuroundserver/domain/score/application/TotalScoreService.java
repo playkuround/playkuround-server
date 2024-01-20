@@ -24,7 +24,7 @@ public class TotalScoreService {
     private final String redisSetKey = "ranking";
 
     @Transactional
-    public Long saveScore(User user, Long score) {
+    public Long incrementTotalScore(User user, Long score) {
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
         zSetOperations.incrementScore(redisSetKey, user.getEmail(), score);
 

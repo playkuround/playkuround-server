@@ -29,6 +29,7 @@ public class ScoreRankingResponse {
 
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor
     public static class RankList {
         private String nickname;
         private int score;
@@ -36,6 +37,7 @@ public class ScoreRankingResponse {
 
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor
     public static class MyRank {
         private int ranking;
         private int score;

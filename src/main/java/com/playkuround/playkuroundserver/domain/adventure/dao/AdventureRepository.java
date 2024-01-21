@@ -15,20 +15,21 @@ import java.util.Optional;
 public interface AdventureRepository extends JpaRepository<Adventure, Long> {
 
     @Query(value =
-            "SELECT SUM(a.score) as score, a.user.nickname as nickname " +
+            "SELECT new com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScore(a.user.nickname, cast(SUM(a.score) as integer)) " +
                     "FROM Adventure a " +
                     "where a.landmark.id=:landmark " +
                     "GROUP BY a.user.id " +
-                    "ORDER BY score DESC, nickname DESC " +
+                    "ORDER BY SUM(a.score) DESC, a.user.nickname DESC " +
                     "LIMIT 100")
     List<NicknameAndScore> findRankTop100DescByLandmarkId(@Param(value = "landmark") Long landmarkId);
 
     @Query(value =
-            "SELECT SUM(a.score) as score, RANK() over (order by score desc) as rank " +
+            "SELECT new com.playkuround.playkuroundserver.domain.score.dto.RankAndScore(cast(user_rank as integer), cast(score as integer)) FROM " +
+                    "(SELECT a.user.id as user_id, (RANK() over (order by SUM(a.score) desc)) as user_rank, SUM(a.score) as score " +
                     "FROM Adventure a " +
                     "where a.landmark.id=:landmark " +
-                    "GROUP BY a.user.id " +
-                    "HAVING a.user.id=:#{#user.id}")
+                    "GROUP BY a.user.id) " +
+                    "where user_id=:#{#user.id}")
     Optional<RankAndScore> findMyRankByLandmarkId(@Param(value = "user") User user, @Param(value = "landmark") Long landmarkId);
 
     @Query("SELECT SUM(a.score) FROM Adventure a WHERE a.user.id=:#{#user.id} AND a.landmark.id=:#{#landmark.id}")

@@ -30,6 +30,9 @@ public class LandmarkRankService {
             RankAndScore myScore = optionalMyScore.get();
             response.setMyRank(myScore.ranking(), myScore.score());
         }
+        else {
+            response.setMyRank(0, 0);
+        }
         return response;
     }
 }

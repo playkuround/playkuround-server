@@ -44,7 +44,8 @@ class LandmarkRankServiceTest {
 
         // then
         assertThat(result.getRank()).isEmpty();
-        assertThat(result.getMyRank()).isNull();
+        assertThat(result.getMyRank().getRanking()).isEqualTo(0);
+        assertThat(result.getMyRank().getScore()).isEqualTo(0);
     }
 
     @Test
@@ -69,7 +70,9 @@ class LandmarkRankServiceTest {
             assertThat(rankList.get(50 - i).getNickname()).isEqualTo("nickname" + i);
             assertThat(rankList.get(50 - i).getScore()).isEqualTo(i);
         }
-        assertThat(result.getMyRank()).isNull();
+
+        assertThat(result.getMyRank().getRanking()).isEqualTo(0);
+        assertThat(result.getMyRank().getScore()).isEqualTo(0);
     }
 
     @Test

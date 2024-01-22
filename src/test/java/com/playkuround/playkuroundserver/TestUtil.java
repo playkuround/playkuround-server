@@ -53,4 +53,7 @@ public class TestUtil {
                 .role(Role.ROLE_USER)
                 .build();
     }
+
+    private TestUtil() {
+    }
 }

@@ -87,8 +87,8 @@ public class LandmarkScoreRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        ScoreRankingResponse response = (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json,
-                ScoreRankingResponse.class);
+        ScoreRankingResponse response =
+                (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(50);
@@ -125,8 +125,8 @@ public class LandmarkScoreRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        ScoreRankingResponse response = (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json,
-                ScoreRankingResponse.class);
+        ScoreRankingResponse response =
+                (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(51);
@@ -173,8 +173,8 @@ public class LandmarkScoreRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        ScoreRankingResponse response = (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json,
-                ScoreRankingResponse.class);
+        ScoreRankingResponse response =
+                (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(100);
@@ -195,5 +195,55 @@ public class LandmarkScoreRankApiTest {
         }
         assertThat(response.getMyRank().getScore()).isEqualTo(62);
         assertThat(response.getMyRank().getRanking()).isEqualTo(40); // 공동등수
+    }
+
+    @Test
+    @WithMockCustomUser(email = "test@konkuk.ac.kr")
+    @DisplayName("점수는 SUM으로 계산된 결과로 비교된다")
+    void getRankTop100ByLandmark_5() throws Exception {
+        // given
+        Landmark landmark = landmarkRepository.findById(1L).get();
+        for (int i = 1; i <= 101; i++) {
+            User user = TestUtil.createUser("user" + i + "@konkuk.ac.kr", "user" + i, Major.건축학부);
+            userRepository.save(user);
+
+            Adventure adventure = new Adventure(user, landmark, ScoreType.CATCH, (long) i);
+            adventureRepository.save(adventure);
+            adventure = new Adventure(user, landmark, ScoreType.BOOK, 1L);
+            adventureRepository.save(adventure);
+        }
+        User me = userRepository.findByEmail("test@konkuk.ac.kr").get();
+        Adventure adventure = new Adventure(me, landmark, ScoreType.CATCH, 62L);
+        adventureRepository.save(adventure);
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/scores/rank/{landmarkId}", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andDo(print())
+                .andReturn();
+        String json = mvcResult.getResponse().getContentAsString();
+        ScoreRankingResponse response =
+                (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
+
+        // then
+        assertThat(response.getRank()).hasSize(100);
+        List<ScoreRankingResponse.RankList> rank = response.getRank();
+        for (int i = 1; i <= 100; i++) {
+            if (i < 42) {
+                assertThat(rank.get(i - 1).getNickname()).isEqualTo("user" + (102 - i));
+                assertThat(rank.get(i - 1).getScore()).isEqualTo(103 - i);
+            }
+            else if (i == 42) { // 랭킹은 점수, 닉네임 내림차순
+                assertThat(rank.get(i - 1).getNickname()).isEqualTo("tester");
+                assertThat(rank.get(i - 1).getScore()).isEqualTo(62);
+            }
+            else {
+                assertThat(rank.get(i - 1).getNickname()).isEqualTo("user" + (103 - i));
+                assertThat(rank.get(i - 1).getScore()).isEqualTo(104 - i);
+            }
+        }
+        assertThat(response.getMyRank().getScore()).isEqualTo(62);
+        assertThat(response.getMyRank().getRanking()).isEqualTo(41); // 공동등수
     }
 }

@@ -41,7 +41,7 @@ public enum BadgeType {
     COLLEGE_OF_BUSINESS_ADMINISTRATION_30("경영대학 30회 이상 탐험"),
     COLLEGE_OF_BUSINESS_ADMINISTRATION_50("경영대학 50회 이상 탐험"),
     COLLEGE_OF_BUSINESS_ADMINISTRATION_70("경영대학 70회 이상 탐험"),
-    COLLEGE_OF_BUSINESS_ADMINISTRATION_100_AND_FIRST_PLACE("경영대학 100회 이상 탐험 및 1등 달성"),
+    COLLEGE_OF_BUSINESS_ADMINISTRATION_100_AND_FIRST_PLACE("경영대학 100회 이상 탐험 및 1등 달성"), // 수동
 
     // 예디대 특별
     COLLEGE_OF_ART_AND_DESIGN_BEFORE_NOON("예술디자인대학 09:00 ~ 11:59 탐험"),
@@ -54,12 +54,12 @@ public enum BadgeType {
     COLLEGE_OF_ENGINEERING_C("공대 C동 10회 이상 탐험"),
 
     // 스토리용
-    THE_DREAM_OF_DUCK("스토리 컷씬 마스터"),
+    THE_DREAM_OF_DUCK("스토리 컷씬 마스터"), // Not implemented yet
 
     // 월간랭킹
-    MONTHLY_RANKING_1("월간 랭킹 1등"),
-    MONTHLY_RANKING_2("월간 랭킹 2등"),
-    MONTHLY_RANKING_3("월간 랭킹 3등"),
+    MONTHLY_RANKING_1("월간 랭킹 1등"), // 수동
+    MONTHLY_RANKING_2("월간 랭킹 2등"), // 수동
+    MONTHLY_RANKING_3("월간 랭킹 3등"), // 수동
 
     ;
 

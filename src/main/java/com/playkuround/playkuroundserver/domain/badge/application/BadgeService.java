@@ -1,17 +1,23 @@
 package com.playkuround.playkuroundserver.domain.badge.application;
 
+import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
+import com.playkuround.playkuroundserver.domain.badge.application.college.CollegeBadge;
+import com.playkuround.playkuroundserver.domain.badge.application.college.CollegeBadgeList;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.domain.badge.dto.response.BadgeFindResponse;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
+import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,6 +27,7 @@ import java.util.stream.Collectors;
 public class BadgeService {
 
     private final BadgeRepository badgeRepository;
+    private final AdventureRepository adventureRepository;
 
     @Transactional(readOnly = true)
     public List<BadgeFindResponse> findBadgeByEmail(User user) {
@@ -104,11 +111,103 @@ public class BadgeService {
 
         NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
 
-        // 1. 대학별뱃지
-        if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_LIBERAL_ARTS)) {
-            return newlyRegisteredBadge;
+        // 대학별
+        List<CollegeBadge> collegeBadges = CollegeBadgeList.getCollegeBadges();
+        collegeBadges.stream()
+                .filter(collegeBadge -> collegeBadge.supports(requestSaveLandmark.getName()))
+                .forEach(collegeBadge -> {
+                    BadgeType badge = collegeBadge.getBadge();
+                    if (!userBadgeSet.contains(badge)) {
+                        newlyRegisteredBadge.addBadge(badge);
+                        badgeRepository.save(Badge.createBadge(user, badge));
+                    }
+                });
+
+        // 경영대 특별
+        if (requestSaveLandmark.getName() == LandmarkType.경영관) {
+            if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_10)) {
+                long count = adventureRepository.countByUserAndLandmark(user, requestSaveLandmark);
+                if (count == 10) {
+                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_10);
+                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_10));
+                }
+            }
+            else if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_30)) {
+                long count = adventureRepository.countByUserAndLandmark(user, requestSaveLandmark);
+                if (count == 30) {
+                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_30);
+                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_30));
+                }
+            }
+            else if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_50)) {
+                long count = adventureRepository.countByUserAndLandmark(user, requestSaveLandmark);
+                if (count == 50) {
+                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_50);
+                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_50));
+                }
+            }
+            else if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_70)) {
+                long count = adventureRepository.countByUserAndLandmark(user, requestSaveLandmark);
+                if (count == 70) {
+                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_70);
+                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_70));
+                }
+            }
         }
 
+        // 예디대 특별
+        if (requestSaveLandmark.getName() == LandmarkType.예디대 || requestSaveLandmark.getName() == LandmarkType.공예관) {
+            if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_ART_AND_DESIGN_BEFORE_NOON)) {
+                LocalTime now = LocalDateTime.now().toLocalTime();
+                if (LocalTime.of(9, 0).isBefore(now) && LocalTime.of(12, 0).isAfter(now)) {
+                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_ART_AND_DESIGN_BEFORE_NOON);
+                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_ART_AND_DESIGN_BEFORE_NOON));
+                }
+            }
+            else if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_ART_AND_DESIGN_AFTER_NOON)) {
+                LocalTime now = LocalDateTime.now().toLocalTime();
+                if (LocalTime.of(12, 0).isBefore(now) && LocalTime.of(18, 0).isAfter(now)) {
+                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_ART_AND_DESIGN_AFTER_NOON);
+                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_ART_AND_DESIGN_AFTER_NOON));
+                }
+            }
+            else if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_ART_AND_DESIGN_NIGHT)) {
+                LocalTime now = LocalDateTime.now().toLocalTime();
+                if (LocalTime.of(4, 0).isBefore(now) || LocalTime.of(23, 0).isAfter(now)) {
+                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_ART_AND_DESIGN_NIGHT);
+                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_ART_AND_DESIGN_NIGHT));
+                }
+            }
+        }
+
+        // 공대 특별
+        if (requestSaveLandmark.getName() == LandmarkType.공학관A) {
+            if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_ENGINEERING_A)) {
+                long count = adventureRepository.countByUserAndLandmark(user, requestSaveLandmark);
+                if (count == 10) {
+                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_ENGINEERING_A);
+                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_ENGINEERING_A));
+                }
+            }
+        }
+        if (requestSaveLandmark.getName() == LandmarkType.공학관B) {
+            if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_ENGINEERING_B)) {
+                long count = adventureRepository.countByUserAndLandmark(user, requestSaveLandmark);
+                if (count == 10) {
+                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_ENGINEERING_B);
+                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_ENGINEERING_B));
+                }
+            }
+        }
+        if (requestSaveLandmark.getName() == LandmarkType.공학관C) {
+            if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_ENGINEERING_C)) {
+                long count = adventureRepository.countByUserAndLandmark(user, requestSaveLandmark);
+                if (count == 10) {
+                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_ENGINEERING_C);
+                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_ENGINEERING_C));
+                }
+            }
+        }
 
         return newlyRegisteredBadge;
     }

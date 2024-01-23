@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.badge.application;
 
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
-import com.playkuround.playkuroundserver.domain.badge.application.college.CollegeBadge;
+import com.playkuround.playkuroundserver.domain.badge.application.art_design.ArtAndDesignBadgeFactory;
 import com.playkuround.playkuroundserver.domain.badge.application.college.CollegeBadgeList;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
@@ -16,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -112,8 +110,7 @@ public class BadgeService {
         NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
 
         // 대학별
-        List<CollegeBadge> collegeBadges = CollegeBadgeList.getCollegeBadges();
-        collegeBadges.stream()
+        CollegeBadgeList.getCollegeBadges().stream()
                 .filter(collegeBadge -> collegeBadge.supports(requestSaveLandmark.getName()))
                 .forEach(collegeBadge -> {
                     BadgeType badge = collegeBadge.getBadge();
@@ -157,26 +154,11 @@ public class BadgeService {
 
         // 예디대 특별
         if (requestSaveLandmark.getName() == LandmarkType.예디대 || requestSaveLandmark.getName() == LandmarkType.공예관) {
-            if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_ART_AND_DESIGN_BEFORE_NOON)) {
-                LocalTime now = LocalDateTime.now().toLocalTime();
-                if (LocalTime.of(9, 0).isBefore(now) && LocalTime.of(12, 0).isAfter(now)) {
-                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_ART_AND_DESIGN_BEFORE_NOON);
-                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_ART_AND_DESIGN_BEFORE_NOON));
-                }
-            }
-            else if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_ART_AND_DESIGN_AFTER_NOON)) {
-                LocalTime now = LocalDateTime.now().toLocalTime();
-                if (LocalTime.of(12, 0).isBefore(now) && LocalTime.of(18, 0).isAfter(now)) {
-                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_ART_AND_DESIGN_AFTER_NOON);
-                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_ART_AND_DESIGN_AFTER_NOON));
-                }
-            }
-            else if (!userBadgeSet.contains(BadgeType.COLLEGE_OF_ART_AND_DESIGN_NIGHT)) {
-                LocalTime now = LocalDateTime.now().toLocalTime();
-                if (LocalTime.of(4, 0).isBefore(now) || LocalTime.of(23, 0).isAfter(now)) {
-                    newlyRegisteredBadge.addBadge(BadgeType.COLLEGE_OF_ART_AND_DESIGN_NIGHT);
-                    badgeRepository.save(Badge.createBadge(user, BadgeType.COLLEGE_OF_ART_AND_DESIGN_NIGHT));
-                }
+            ArtAndDesignBadgeFactory artAndDesignBadgeFactory = new ArtAndDesignBadgeFactory();
+            BadgeType badgeType = artAndDesignBadgeFactory.getBadgeType(userBadgeSet);
+            if (badgeType != null) {
+                newlyRegisteredBadge.addBadge(badgeType);
+                badgeRepository.save(Badge.createBadge(user, badgeType));
             }
         }
 

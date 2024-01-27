@@ -10,7 +10,9 @@ import java.util.Set;
 public class ArtAndDesignBadgeFactory {
 
     private final static List<ArtAndDesignBadge> artAndDesignBadges = List.of(
-            new ArtAndDesignBeforeNoon()
+            new ArtAndDesignBeforeNoon(),
+            new ArtAndDesignNight(),
+            new ArtAndDesignAfterNoon()
     );
 
     public BadgeType getBadgeType(Set<BadgeType> userBadges) {

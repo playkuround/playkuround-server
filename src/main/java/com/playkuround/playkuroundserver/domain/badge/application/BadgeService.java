@@ -1,6 +1,5 @@
 package com.playkuround.playkuroundserver.domain.badge.application;
 
-import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.badge.application.college.CollegeBadgeList;
 import com.playkuround.playkuroundserver.domain.badge.application.college_special_badge.CollegeSpecialBadgeFactory;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 public class BadgeService {
 
     private final BadgeRepository badgeRepository;
-    private final AdventureRepository adventureRepository;
     private final CollegeSpecialBadgeFactory collegeSpecialBadgeFactory;
 
     @Transactional(readOnly = true)
@@ -41,33 +39,30 @@ public class BadgeService {
 
         NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
 
-        if (!userBadgeSet.contains(BadgeType.ATTENDANCE_1)) {
+        if (!userBadgeSet.contains(BadgeType.ATTENDANCE_1) &&
+                isEligibleForAttendanceBadge(user, 1)) {
             badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_1));
             newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_1);
         }
-        else if (!userBadgeSet.contains(BadgeType.ATTENDANCE_5)) {
-            if (isEligibleForAttendanceBadge(user, 5)) {
-                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_5));
-                newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_5);
-            }
+        if (!userBadgeSet.contains(BadgeType.ATTENDANCE_5) &&
+                isEligibleForAttendanceBadge(user, 5)) {
+            badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_5));
+            newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_5);
         }
-        else if (!userBadgeSet.contains(BadgeType.ATTENDANCE_10)) {
-            if (isEligibleForAttendanceBadge(user, 10)) {
-                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_10));
-                newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_10);
-            }
+        if (!userBadgeSet.contains(BadgeType.ATTENDANCE_10) &&
+                isEligibleForAttendanceBadge(user, 10)) {
+            badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_10));
+            newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_10);
         }
-        else if (!userBadgeSet.contains(BadgeType.ATTENDANCE_30)) {
-            if (isEligibleForAttendanceBadge(user, 30)) {
-                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_30));
-                newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_30);
-            }
+        if (!userBadgeSet.contains(BadgeType.ATTENDANCE_30) &&
+                isEligibleForAttendanceBadge(user, 30)) {
+            badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_30));
+            newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_30);
         }
-        else if (!userBadgeSet.contains(BadgeType.ATTENDANCE_100)) {
-            if (isEligibleForAttendanceBadge(user, 100)) {
-                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_100));
-                newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_100);
-            }
+        if (!userBadgeSet.contains(BadgeType.ATTENDANCE_100) &&
+                isEligibleForAttendanceBadge(user, 100)) {
+            badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_100));
+            newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_100);
         }
 
         if (DateUtils.isTodayFoundationDay()) {
@@ -139,8 +134,7 @@ public class BadgeService {
     }
 
     private boolean isEligibleForAttendanceBadge(User user, int requiredAttendanceDays) {
-        return user.getAttendanceDays() == requiredAttendanceDays;
+        return user.getAttendanceDays() >= requiredAttendanceDays;
     }
-
 
 }

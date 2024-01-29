@@ -44,7 +44,7 @@ public enum BadgeType {
     COLLEGE_OF_BUSINESS_ADMINISTRATION_100_AND_FIRST_PLACE("경영대학 100회 이상 탐험 및 1등 달성"), // 수동
 
     // 예디대 특별
-    COLLEGE_OF_ART_AND_DESIGN_BEFORE_NOON("예술디자인대학 09:00 ~ 11:59 탐험"),
+    COLLEGE_OF_ART_AND_DESIGN_BEFORE_NOON("예술디자인대학 09:00 ~ 12:00 탐험"),
     COLLEGE_OF_ART_AND_DESIGN_AFTER_NOON("예술디자인대학 12:00 ~ 18:00 탐험"),
     COLLEGE_OF_ART_AND_DESIGN_NIGHT("예술디자인대학 23:00 ~ 04:00 탐험"),
 

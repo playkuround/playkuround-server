@@ -5,6 +5,7 @@ import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.response.UserGameHighestScoreResponse;
 import com.playkuround.playkuroundserver.domain.user.dto.response.UserNotificationResponse;
 import com.playkuround.playkuroundserver.domain.user.dto.response.UserProfileResponse;
+import com.playkuround.playkuroundserver.global.util.BadWordFilterUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,9 @@ public class UserProfileService {
     @Transactional(readOnly = true)
     public boolean isAvailableNickname(String nickname) {
         if (!nicknamePattern.matcher(nickname).matches()) {
+            return false;
+        }
+        if (BadWordFilterUtils.check(nickname)) {
             return false;
         }
         return userRepository.existsByNickname(nickname);

@@ -49,6 +49,8 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
     implementation 'it.ozimov:embedded-redis:0.7.2'
+
+    implementation 'io.github.vaneproject:badwordfiltering:1.0.0'
 }
 
 tasks.named('test') {

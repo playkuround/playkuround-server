@@ -20,6 +20,7 @@ public enum ErrorCode {
     EMAIL_DUPLICATION(HttpStatus.BAD_REQUEST, "U001", "이미 존재하는 이메일입니다."),
     NICKNAME_DUPLICATION(HttpStatus.BAD_REQUEST, "U002", "이미 존재하는 닉네임입니다."),
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "U003", "존재하지 않는 유저입니다."),
+    NICKNAME_UNAVAILABLE(HttpStatus.BAD_REQUEST, "U004", "사용할 수 없는 닉네임입니다."),
 
     // Authentication
     EMPTY_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "A001", "Authorization Header가 빈 값입니다."),

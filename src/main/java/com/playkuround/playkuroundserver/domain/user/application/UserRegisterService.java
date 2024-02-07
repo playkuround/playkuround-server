@@ -8,6 +8,8 @@ import com.playkuround.playkuroundserver.domain.user.dto.request.UserRegisterReq
 import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicationException;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDuplicationException;
+import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameUnavailableException;
+import com.playkuround.playkuroundserver.global.util.BadWordFilterUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +40,9 @@ public class UserRegisterService {
     private void validateDuplicateNickName(String nickname) {
         if (userRepository.existsByNickname(nickname)) {
             throw new UserNicknameDuplicationException();
+        }
+        if (BadWordFilterUtils.check(nickname)) {
+            throw new UserNicknameUnavailableException();
         }
     }
 

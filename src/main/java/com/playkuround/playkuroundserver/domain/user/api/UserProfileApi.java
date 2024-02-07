@@ -42,9 +42,9 @@ public class UserProfileApi {
 
     @GetMapping("/availability")
     @Operation(summary = "해당 닉네임이 사용 가능한지 체크", description = "사용 가능하다면 true가 반환됩니다.")
-    public ApiResponse<Boolean> nicknameDuplication(@RequestParam("nickname") String nickname) {
-        boolean isDuplicate = userProfileService.isAvailableNickname(nickname);
-        return ApiUtils.success(!isDuplicate);
+    public ApiResponse<Boolean> isAvailableNickname(@RequestParam("nickname") String nickname) {
+        boolean isAvailable = userProfileService.isAvailableNickname(nickname);
+        return ApiUtils.success(isAvailable);
     }
 
     @GetMapping("/notification")

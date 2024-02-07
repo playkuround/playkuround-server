@@ -38,8 +38,8 @@ class UserProfileServiceTest {
     }
 
     @Test
-    @DisplayName("닉네임 사용 가능 테스트 - 중복된 경우 True 리턴")
-    void duplicateNickname() {
+    @DisplayName("닉네임 사용 가능 테스트 - 중복된 닉네임인 경우 false 리턴")
+    void isAvailableNickname_1() {
         // given
         String nickname = "tester";
         when(userRepository.existsByNickname(nickname)).thenReturn(true);
@@ -48,21 +48,22 @@ class UserProfileServiceTest {
         boolean result = userProfileService.isAvailableNickname(nickname);
 
         // then
-        assertThat(result).isTrue();
+        assertThat(result).isFalse();
     }
 
     @Test
-    @DisplayName("닉네임 사용 가능 테스트 - 중복되지 않는 경우 False 리턴")
-    void notDuplicateNickname() {
+    @DisplayName("닉네임 사용 가능 테스트 - 욕설 필터링에 걸리는 닉네임이면 false 리턴")
+    void isAvailableNickname_2() {
         // given
-        String nickname = "tester";
-        when(userRepository.existsByNickname(nickname)).thenReturn(false);
+        String[] badWords = new String[]{"존나", "개새끼", "씨발", "시발"};
+        for (String badWord : badWords) {
+            // when
+            boolean result = userProfileService.isAvailableNickname(badWord);
+            System.out.println(badWord + " : " + result);
 
-        // when
-        boolean result = userProfileService.isAvailableNickname(nickname);
-
-        // then
-        assertThat(result).isFalse();
+            // then
+            assertThat(result).isFalse();
+        }
     }
 
     @Test
@@ -80,6 +81,20 @@ class UserProfileServiceTest {
         assertThat(userProfileService.isAvailableNickname("♥")).isFalse();
         assertThat(userProfileService.isAvailableNickname("  aa")).isFalse();
         assertThat(userProfileService.isAvailableNickname("😄")).isFalse();
+    }
+
+    @Test
+    @DisplayName("닉네임 사용 가능 테스트 - 사용할 수 있는 닉네임이면 true 리턴")
+    void isAvailableNickname_3() {
+        // given
+        String nickname = "tester";
+        when(userRepository.existsByNickname(nickname)).thenReturn(false);
+
+        // when
+        boolean result = userProfileService.isAvailableNickname(nickname);
+
+        // then
+        assertThat(result).isTrue();
     }
 
 }

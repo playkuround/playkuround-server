@@ -29,13 +29,9 @@ public class UserProfileService {
 
     @Transactional(readOnly = true)
     public boolean isAvailableNickname(String nickname) {
-        if (!nicknamePattern.matcher(nickname).matches()) {
-            return false;
-        }
-        if (BadWordFilterUtils.check(nickname)) {
-            return false;
-        }
-        return userRepository.existsByNickname(nickname);
+        return nicknamePattern.matcher(nickname).matches() &&
+                !BadWordFilterUtils.check(nickname) &&
+                !userRepository.existsByNickname(nickname);
     }
 
     @Transactional(readOnly = true)

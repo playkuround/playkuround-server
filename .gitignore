@@ -38,7 +38,7 @@ out/
 
 **/.DS_Store
 
-log/
+logs/
 
 application.yml
 application-test.yml

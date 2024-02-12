@@ -66,11 +66,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<?> handleException(Exception e) {
+        log.error("Exception 발생", e);
         return handleException(e, ErrorCode.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR.getMessage());
     }
 
     private ResponseEntity<?> handleException(Exception e, ErrorCode errorCode, String message) {
-        log.error(message, e);
         return ApiUtils.error(ErrorResponse.of(errorCode, message));
     }
 

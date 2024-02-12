@@ -71,7 +71,7 @@
         <root level="info">
             <appender-ref ref="STDOUT"/>
         </root>
-        <logger name="org.springframework.web" level="warn">
+        <logger name="org.springframework.web" level="info">
             <appender-ref ref="FILE"/>
         </logger>
     </springProfile>

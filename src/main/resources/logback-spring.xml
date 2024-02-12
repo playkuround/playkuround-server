@@ -70,10 +70,11 @@
     <springProfile name="dev">
         <root level="info">
             <appender-ref ref="STDOUT"/>
-        </root>
-        <logger name="org.springframework.web" level="info">
             <appender-ref ref="FILE"/>
-        </logger>
+        </root>
+        <!--        <logger name="org.springframework.web" level="debug">-->
+        <!--            <appender-ref ref="FILE"/>-->
+        <!--        </logger>-->
     </springProfile>
 
     <!--  prod 환경  -->

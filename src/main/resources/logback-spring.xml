@@ -59,6 +59,13 @@
     <!-- =================================================================================================== -->
 
     <!-- spring profile별 로그 설정 -->
+    <!--  test 환경  -->
+    <springProfile name="test">
+        <root level="info">
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </springProfile>
+
     <!--  local 환경  -->
     <springProfile name="local">
         <root level="info">

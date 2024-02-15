@@ -11,14 +11,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/emails")
 @Tag(name = "Auth", description = "인증, 토큰 서비스")
-@Slf4j
 public class AuthEmailApi {
 
     private final AuthEmailSendService authEmailSendService;
@@ -36,10 +34,6 @@ public class AuthEmailApi {
     @Operation(summary = "인증 코드 확인", description = "인증 코드를 확인합니다. 인증 코드는 5분간 유효합니다.")
     public ApiResponse<AuthVerifyEmailResponse> authEmailVerify(@RequestParam("code") String code,
                                                                 @RequestParam("email") String email) {
-        log.debug("log.debug (AttendanceApi)");
-        log.info("log.info (AttendanceApi)");
-        log.warn("log.warn (AttendanceApi)");
-        log.error("log.error (AttendanceApi)");
         AuthVerifyEmailResponse response = authEmailVerifyService.verifyAuthEmail(code, email);
         return ApiUtils.success(response);
     }

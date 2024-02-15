@@ -21,20 +21,6 @@ public class HighestScore {
     private Long highestAllClearScore;
     private Long highestMicrobeScore;
 
-    public static HighestScore createAllZero() {
-        HighestScore highestScore = new HighestScore();
-        highestScore.highestTotalScore = 0L;
-        highestScore.highestQuizScore = 0L;
-        highestScore.highestTimeScore = 0L;
-        highestScore.highestMoonScore = 0L;
-        highestScore.highestCardScore = 0L;
-        highestScore.highestCatchScore = 0L;
-        highestScore.highestHongBridgeScore = 0L;
-        highestScore.highestAllClearScore = 0L;
-        highestScore.highestMicrobeScore = 0L;
-        return highestScore;
-    }
-
     public void updateGameHighestScore(ScoreType scoreType, Long score) {
         switch (scoreType) {
             case QUIZ -> updateHighestQuizScore(score);

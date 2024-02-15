@@ -49,7 +49,6 @@ public class User extends BaseTimeEntity {
         this.major = major;
         this.attendanceDays = 0;
         this.role = role;
-        this.highestScore = HighestScore.createAllZero();
     }
 
     public void increaseAttendanceDay() {
@@ -67,5 +66,9 @@ public class User extends BaseTimeEntity {
         else {
             notification += "@" + name + "#" + description;
         }
+    }
+
+    public void createHighestScore() {
+        this.highestScore = new HighestScore();
     }
 }

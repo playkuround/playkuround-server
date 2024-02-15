@@ -49,6 +49,7 @@ public class User extends BaseTimeEntity {
         this.major = major;
         this.attendanceDays = 0;
         this.role = role;
+        this.highestScore = HighestScore.createAllZero();
     }
 
     public void increaseAttendanceDay() {

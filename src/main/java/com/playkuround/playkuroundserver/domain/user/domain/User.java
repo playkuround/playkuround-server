@@ -51,6 +51,13 @@ public class User extends BaseTimeEntity {
         this.role = role;
     }
 
+    public HighestScore getHighestScore() {
+        if (highestScore == null) {
+            highestScore = new HighestScore();
+        }
+        return highestScore;
+    }
+
     public void increaseAttendanceDay() {
         attendanceDays++;
     }
@@ -66,9 +73,5 @@ public class User extends BaseTimeEntity {
         else {
             notification += "@" + name + "#" + description;
         }
-    }
-
-    public void createHighestScore() {
-        this.highestScore = new HighestScore();
     }
 }

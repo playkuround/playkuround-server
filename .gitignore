@@ -45,3 +45,6 @@ application-test.yml
 application-dev.yml
 application-prob.yml
 application-local.yml
+
+application-dev-log.properties
+application-prod-log.properties

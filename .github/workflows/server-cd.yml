@@ -36,8 +36,12 @@ jobs:
         run: |
           touch src/main/resources/application-dev.yml
           touch src/main/resources/application-test.yml
+          touch src/main/resources/application-dev-log.properties
+          touch src/main/resources/application-prod-log.properties
           echo "${{ secrets.DEV_YML }}" > src/main/resources/application-dev.yml
           echo "${{ secrets.TEST_YML }}" > src/main/resources/application-test.yml
+          echo "${{ secrets.DEV_LOG_PROPERTIES }}" > src/main/resources/application-dev-log.properties
+          echo "${{ secrets.PROD_LOG_PROPERTIES }}" > src/main/resources/application-prod-log.properties
         shell: bash
   
       - name: Grant execute permission for gradlew

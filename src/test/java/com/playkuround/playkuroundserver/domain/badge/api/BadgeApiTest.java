@@ -7,14 +7,19 @@ import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,5 +68,41 @@ class BadgeApiTest {
                 .andExpect(jsonPath("$.response.[?(@.name == '%s')]", "COLLEGE_OF_BUSINESS_ADMINISTRATION_50").exists())
                 .andDo(print())
                 .andReturn();
+    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("오리의 꿈 뱃지 획득 성공")
+    void saveTheDreamOfDuckBadge_1() throws Exception {
+        // expect
+        mockMvc.perform(post("/api/badges/dream-of-duck"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.response").value(true))
+                .andDo(print())
+                .andReturn();
+
+        List<Badge> badges = badgeRepository.findByUser(userRepository.findAll().get(0));
+        assertThat(badges).hasSize(1);
+        assertThat(badges.get(0).getBadgeType()).isEqualTo(BadgeType.THE_DREAM_OF_DUCK);
+    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("오리의 꿈 뱃지 획득 : 이미 가지고 있다면 false가 반환된다")
+    void saveTheDreamOfDuckBadge_2() throws Exception {
+        // given
+        User user = userRepository.findAll().get(0);
+        badgeRepository.save(new Badge(user, BadgeType.THE_DREAM_OF_DUCK));
+
+        // expect
+        mockMvc.perform(post("/api/badges/dream-of-duck"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.response").value(false))
+                .andDo(print())
+                .andReturn();
+
+        List<Badge> badges = badgeRepository.findByUser(userRepository.findAll().get(0));
+        assertThat(badges).hasSize(1);
+        assertThat(badges.get(0).getBadgeType()).isEqualTo(BadgeType.THE_DREAM_OF_DUCK);
     }
 }

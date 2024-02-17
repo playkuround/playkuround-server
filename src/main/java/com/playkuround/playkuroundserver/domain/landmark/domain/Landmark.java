@@ -36,7 +36,6 @@ public class Landmark {
 
     public void updateFirstUser(User user, long score) {
         if (score == 0) return;
-
         if (firstUser == null || this.highestScore < score) {
             this.firstUser = user;
             this.highestScore = score;

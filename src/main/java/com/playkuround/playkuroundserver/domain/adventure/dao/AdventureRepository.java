@@ -33,7 +33,7 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
     Optional<RankAndScore> findMyRankByLandmarkId(@Param(value = "user") User user, @Param(value = "landmark") Long landmarkId);
 
     @Query("SELECT SUM(a.score) FROM Adventure a WHERE a.user.id=:#{#user.id} AND a.landmark.id=:#{#landmark.id}")
-    long sumScoreByUserAndLandmark(@Param(value = "user") User user, @Param(value = "landmark") Landmark landmark);
+    long getSumScoreByUserAndLandmark(@Param(value = "user") User user, @Param(value = "landmark") Landmark landmark);
 
     long countByUserAndLandmark(User user, Landmark requestSaveLandmark);
 }

@@ -2,7 +2,7 @@ package com.playkuround.playkuroundserver.domain.adventure.application;
 
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
-import com.playkuround.playkuroundserver.domain.adventure.dto.request.AdventureSaveRequest;
+import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.adventure.dto.response.AdventureSaveResponse;
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
@@ -31,28 +31,16 @@ public class AdventureService {
     private final AdventureRepository adventureRepository;
 
     @Transactional
-    public AdventureSaveResponse saveAdventure(User user, AdventureSaveRequest request) {
-        Landmark landmark = landmarkRepository.findById(request.getLandmarkId())
-                .orElseThrow(() -> new LandmarkNotFoundException(request.getLandmarkId()));
-        Location location = new Location(request.getLatitude(), request.getLongitude());
-        validateLocation(landmark, location);
+    public AdventureSaveResponse saveAdventure(AdventureSaveDto adventureSaveDto) {
+        Landmark landmark = landmarkRepository.findById(adventureSaveDto.landmarkId())
+                .orElseThrow(() -> new LandmarkNotFoundException(adventureSaveDto.landmarkId()));
+        validateLocation(landmark, adventureSaveDto.requestLocation());
 
-        ScoreType scoreType = ScoreType.fromString(request.getScoreType());
+        User user = adventureSaveDto.user();
 
-        // 1. Total Score 저장 및 최고 점수 갱신
-        Long myTotalScore = totalScoreService.incrementTotalScore(user, request.getScore());
-        user.getHighestScore().updateHighestTotalScore(myTotalScore);
-        user.getHighestScore().updateGameHighestScore(scoreType, request.getScore());
-        userRepository.save(user);
-
-        // 2. Adventure 저장
-        Adventure adventure = new Adventure(user, landmark, scoreType, request.getScore());
-        adventureRepository.save(adventure);
-
-        // 3. 랜드마크 최고 점수 갱신
+        updateUserScore(user, adventureSaveDto.scoreType(), adventureSaveDto.score());
+        saveAdventure(user, landmark, adventureSaveDto.scoreType(), adventureSaveDto.score());
         updateLandmarkHighestScore(user, landmark);
-
-        // 4. 뱃지 저장
         NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAdventureBadges(user, landmark);
 
         return AdventureSaveResponse.from(newlyRegisteredBadge);
@@ -66,8 +54,19 @@ public class AdventureService {
         }
     }
 
+    private void updateUserScore(User user, ScoreType scoreType, long score) {
+        totalScoreService.incrementTotalScore(user, score);
+        user.getHighestScore().updateGameHighestScore(scoreType, score);
+        userRepository.save(user);
+    }
+
+    private void saveAdventure(User user, Landmark landmark, ScoreType scoreType, long score) {
+        Adventure adventure = new Adventure(user, landmark, scoreType, score);
+        adventureRepository.save(adventure);
+    }
+
     private void updateLandmarkHighestScore(User user, Landmark landmark) {
-        long sumScore = adventureRepository.sumScoreByUserAndLandmark(user, landmark);
+        long sumScore = adventureRepository.getSumScoreByUserAndLandmark(user, landmark);
         landmark.updateFirstUser(user, sumScore);
     }
 }

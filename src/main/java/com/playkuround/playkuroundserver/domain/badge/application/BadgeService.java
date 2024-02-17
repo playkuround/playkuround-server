@@ -137,4 +137,13 @@ public class BadgeService {
         return user.getAttendanceDays() >= requiredAttendanceDays;
     }
 
+    @Transactional
+    public boolean saveTheDreamOfDuckBadge(User user) {
+        if (badgeRepository.existsByUserAndBadgeType(user, BadgeType.THE_DREAM_OF_DUCK)) {
+            return false;
+        }
+        Badge badge = Badge.createBadge(user, BadgeType.THE_DREAM_OF_DUCK);
+        badgeRepository.save(badge);
+        return true;
+    }
 }

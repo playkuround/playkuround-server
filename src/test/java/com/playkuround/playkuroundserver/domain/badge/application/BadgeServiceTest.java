@@ -275,6 +275,36 @@ class BadgeServiceTest {
         );
     }
 
+    @Test
+    @DisplayName("The Dream of Duck 뱃지 부여 : 정상 저장되었다면 true를 반환한다.")
+    void saveTheDreamOfDuckBadge_1() {
+        // given
+        User user = TestUtil.createUser();
+        when(badgeRepository.existsByUserAndBadgeType(user, BadgeType.THE_DREAM_OF_DUCK))
+                .thenReturn(false);
+
+        // when
+        boolean result = badgeService.saveTheDreamOfDuckBadge(user);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("The Dream of Duck 뱃지 부여 : 이미 저장된 뱃지였으면 false를 반환한다.")
+    void saveTheDreamOfDuckBadge_2() {
+        // given
+        User user = TestUtil.createUser();
+        when(badgeRepository.existsByUserAndBadgeType(user, BadgeType.THE_DREAM_OF_DUCK))
+                .thenReturn(true);
+
+        // when
+        boolean result = badgeService.saveTheDreamOfDuckBadge(user);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
     private Landmark createLandmark(LandmarkType landmarkType) throws Exception {
         Class<Landmark> landmarkClass = Landmark.class;
         Constructor<Landmark> constructor = landmarkClass.getDeclaredConstructor();

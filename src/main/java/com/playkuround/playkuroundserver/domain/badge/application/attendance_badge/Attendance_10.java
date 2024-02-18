@@ -1,0 +1,23 @@
+package com.playkuround.playkuroundserver.domain.badge.application.attendance_badge;
+
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
+import com.playkuround.playkuroundserver.domain.user.domain.User;
+
+import java.util.Set;
+
+public class Attendance_10 implements AttendanceBadge {
+
+    Attendance_10() {
+    }
+
+    @Override
+    public boolean supports(Set<BadgeType> userBadgeSet, User user) {
+        BadgeType badgeType = getBadgeType();
+        return !userBadgeSet.contains(badgeType) && user.getAttendanceDays() >= 10;
+    }
+
+    @Override
+    public BadgeType getBadgeType() {
+        return BadgeType.ATTENDANCE_10;
+    }
+}

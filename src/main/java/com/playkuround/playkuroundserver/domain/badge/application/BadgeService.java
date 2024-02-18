@@ -1,7 +1,9 @@
 package com.playkuround.playkuroundserver.domain.badge.application;
 
+import com.playkuround.playkuroundserver.domain.badge.application.attendance_badge.AttendanceBadgeList;
 import com.playkuround.playkuroundserver.domain.badge.application.college.CollegeBadgeList;
 import com.playkuround.playkuroundserver.domain.badge.application.college_special_badge.CollegeSpecialBadgeFactory;
+import com.playkuround.playkuroundserver.domain.badge.application.specialday_badge.SpecialDayBadgeList;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
@@ -10,7 +12,6 @@ import com.playkuround.playkuroundserver.domain.badge.dto.response.BadgeFindResp
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.global.util.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,62 +40,23 @@ public class BadgeService {
 
         NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
 
-        if (!userBadgeSet.contains(BadgeType.ATTENDANCE_1) &&
-                isEligibleForAttendanceBadge(user, 1)) {
-            badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_1));
-            newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_1);
-        }
-        if (!userBadgeSet.contains(BadgeType.ATTENDANCE_5) &&
-                isEligibleForAttendanceBadge(user, 5)) {
-            badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_5));
-            newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_5);
-        }
-        if (!userBadgeSet.contains(BadgeType.ATTENDANCE_10) &&
-                isEligibleForAttendanceBadge(user, 10)) {
-            badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_10));
-            newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_10);
-        }
-        if (!userBadgeSet.contains(BadgeType.ATTENDANCE_30) &&
-                isEligibleForAttendanceBadge(user, 30)) {
-            badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_30));
-            newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_30);
-        }
-        if (!userBadgeSet.contains(BadgeType.ATTENDANCE_100) &&
-                isEligibleForAttendanceBadge(user, 100)) {
-            badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_100));
-            newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_100);
-        }
+        // 출석일 기준 뱃지
+        AttendanceBadgeList.getAttendanceBadges().stream()
+                .filter(attendanceBadge -> attendanceBadge.supports(userBadgeSet, user))
+                .forEach(attendanceBadge -> {
+                    BadgeType badgeType = attendanceBadge.getBadgeType();
+                    badgeRepository.save(Badge.createBadge(user, badgeType));
+                    newlyRegisteredBadge.addBadge(badgeType);
+                });
 
-        if (DateUtils.isTodayFoundationDay()) {
-            if (!userBadgeSet.contains(BadgeType.ATTENDANCE_FOUNDATION_DAY)) {
-                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_FOUNDATION_DAY));
-                newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_FOUNDATION_DAY);
-            }
-        }
-        else if (DateUtils.isTodayArborDay()) {
-            if (!userBadgeSet.contains(BadgeType.ATTENDANCE_ARBOR_DAY)) {
-                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_ARBOR_DAY));
-                newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_ARBOR_DAY);
-            }
-        }
-        else if (DateUtils.isTodayChildrenDay()) {
-            if (!userBadgeSet.contains(BadgeType.ATTENDANCE_CHILDREN_DAY)) {
-                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_CHILDREN_DAY));
-                newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_CHILDREN_DAY);
-            }
-        }
-        else if (DateUtils.isTodayWhiteDay()) {
-            if (!userBadgeSet.contains(BadgeType.ATTENDANCE_WHITE_DAY)) {
-                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_WHITE_DAY));
-                newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_WHITE_DAY);
-            }
-        }
-        else if (DateUtils.isTodayDuckDay()) {
-            if (!userBadgeSet.contains(BadgeType.ATTENDANCE_DUCK_DAY)) {
-                badgeRepository.save(Badge.createBadge(user, BadgeType.ATTENDANCE_DUCK_DAY));
-                newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_DUCK_DAY);
-            }
-        }
+        // 기념일 기준 뱃지
+        SpecialDayBadgeList.getSpecialDayBadges().stream()
+                .filter(specialDayBadge -> specialDayBadge.supports(userBadgeSet))
+                .forEach(specialDayBadge -> {
+                    BadgeType badgeType = specialDayBadge.getBadgeType();
+                    badgeRepository.save(Badge.createBadge(user, badgeType));
+                    newlyRegisteredBadge.addBadge(badgeType);
+                });
 
         return newlyRegisteredBadge;
     }
@@ -131,10 +93,6 @@ public class BadgeService {
         return badgeRepository.findByUser(user).stream()
                 .map(Badge::getBadgeType)
                 .collect(Collectors.toSet());
-    }
-
-    private boolean isEligibleForAttendanceBadge(User user, int requiredAttendanceDays) {
-        return user.getAttendanceDays() >= requiredAttendanceDays;
     }
 
     @Transactional

@@ -35,17 +35,11 @@ public class AuthEmailSendService {
     @Transactional
     public AuthEmailSendResponse sendAuthEmail(String target) {
         validateEmailDomain(target);
-        Long sendingCount = validateSendingCount(target);
+        long sendingCount = validateSendingCount(target);
 
-        String title = "[플레이쿠라운드] 회원가입 인증코드입니다.";
-        String code = createCode();
-        String content = createContent(code);
-        Mail mail = new Mail(target, title, content);
-        emailService.sendMessage(mail);
-
-        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
-        AuthEmail authEmail = AuthEmail.createAuthEmail(target, code, expiredAt);
-        authEmailRepository.save(authEmail);
+        String authenticationCode = createCode();
+        LocalDateTime expiredAt = saveAuthEmail(target, authenticationCode);
+        sendEmail(target, authenticationCode);
 
         return new AuthEmailSendResponse(expiredAt, sendingCount + 1);
     }
@@ -57,7 +51,7 @@ public class AuthEmailSendService {
         }
     }
 
-    private Long validateSendingCount(String target) {
+    private long validateSendingCount(String target) {
         LocalDateTime today = LocalDate.now().atStartOfDay();
         Long sendingCount = authEmailRepository.countByTargetAndCreatedAtAfter(target, today);
         if (sendingCount >= maxSendingCount) {
@@ -78,6 +72,20 @@ public class AuthEmailSendService {
         }
 
         return codeBuilder.toString();
+    }
+
+    private LocalDateTime saveAuthEmail(String target, String authenticationCode) {
+        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
+        AuthEmail authEmail = AuthEmail.createAuthEmail(target, authenticationCode, expiredAt);
+        authEmailRepository.save(authEmail);
+        return expiredAt;
+    }
+
+    private void sendEmail(String target, String authenticationCode) {
+        String title = "[플레이쿠라운드] 회원가입 인증코드입니다.";
+        String content = createContent(authenticationCode);
+        Mail mail = new Mail(target, title, content);
+        emailService.sendMessage(mail);
     }
 
     private String createContent(String code) {

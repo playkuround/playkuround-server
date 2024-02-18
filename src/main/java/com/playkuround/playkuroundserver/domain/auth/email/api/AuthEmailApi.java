@@ -31,7 +31,7 @@ public class AuthEmailApi {
     }
 
     @GetMapping
-    @Operation(summary = "인증 코드 확인", description = "인증 코드를 확인합니다. 인증 코드는 5분간 유효합니다.")
+    @Operation(summary = "인증 코드 확인", description = "인증 코드를 확인합니다. 인증 코드는 메일 전송 후 5분간 유효합니다.")
     public ApiResponse<AuthVerifyEmailResponse> authEmailVerify(@RequestParam("code") String code,
                                                                 @RequestParam("email") String email) {
         AuthVerifyEmailResponse response = authEmailVerifyService.verifyAuthEmail(code, email);

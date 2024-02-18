@@ -29,11 +29,8 @@ public class AttendanceRegisterService {
     public AttendanceRegisterResponse registerAttendance(User user, Location location) {
         validateAttendance(user, location);
 
-        Attendance attendance = Attendance.createAttendance(user, location);
-        attendanceRepository.save(attendance);
-
-        user.increaseAttendanceDay();
-        userRepository.save(user);
+        saveAttendance(user, location);
+        updateUserAttendanceDay(user);
 
         NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAttendanceBadges(user);
         return AttendanceRegisterResponse.from(newlyRegisteredBadge);
@@ -57,5 +54,14 @@ public class AttendanceRegisterService {
         }
     }
 
+    private void saveAttendance(User user, Location location) {
+        Attendance attendance = Attendance.createAttendance(user, location);
+        attendanceRepository.save(attendance);
+    }
+
+    private void updateUserAttendanceDay(User user) {
+        user.increaseAttendanceDay();
+        userRepository.save(user);
+    }
 
 }

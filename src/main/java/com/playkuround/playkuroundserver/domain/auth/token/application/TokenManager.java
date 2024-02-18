@@ -96,7 +96,7 @@ public class TokenManager {
                 .compact();
     }
 
-    public Authentication authentication(String accessToken) {
+    public Authentication getAuthenticationFromAccessToken(String accessToken) {
         Claims claims = parseClaims(accessToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
         return UsernamePasswordAuthenticationToken.authenticated(userDetails, userDetails.getPassword(), userDetails.getAuthorities());

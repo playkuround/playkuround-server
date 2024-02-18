@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (accessToken != null) {
             if (isValidateAccessToken(accessToken)) {
                 try {
-                    Authentication authentication = tokenManager.authentication(accessToken);
+                    Authentication authentication = tokenManager.getAuthenticationFromAccessToken(accessToken);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } catch (Exception e) {
                     jwtExceptionHandler(response, ErrorCode.FAIL_AUTHENTICATION);

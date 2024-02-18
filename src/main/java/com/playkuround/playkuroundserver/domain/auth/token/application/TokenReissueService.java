@@ -19,15 +19,19 @@ public class TokenReissueService {
 
     @Transactional
     public TokenReissueResponse reissue(String accessToken, String refreshToken) {
-        Authentication authentication = tokenManager.authentication(accessToken);
-        String username = authentication.getName();
+        String username = getUsernameFromAccessToken(accessToken);
 
         validateRefreshToken(username, refreshToken);
 
-        TokenDto tokenInfo = tokenManager.createTokenDto(username);
-        tokenService.registerRefreshToken(username, tokenInfo.getRefreshToken());
+        TokenDto tokenDto = tokenManager.createTokenDto(username);
+        tokenService.registerRefreshToken(username, tokenDto.getRefreshToken());
 
-        return TokenReissueResponse.from(tokenInfo);
+        return TokenReissueResponse.from(tokenDto);
+    }
+
+    private String getUsernameFromAccessToken(String accessToken) {
+        Authentication authentication = tokenManager.getAuthenticationFromAccessToken(accessToken);
+        return authentication.getName();
     }
 
     private void validateRefreshToken(String userEmail, String refreshToken) {

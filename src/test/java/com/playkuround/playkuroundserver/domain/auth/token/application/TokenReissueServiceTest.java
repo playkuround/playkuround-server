@@ -38,7 +38,7 @@ class TokenReissueServiceTest {
     void reissueSuccess() {
         // given
         Authentication authenticated = UsernamePasswordAuthenticationToken.authenticated("username", null, null);
-        when(tokenManager.authentication("accessToken")).thenReturn(authenticated);
+        when(tokenManager.getAuthenticationFromAccessToken("accessToken")).thenReturn(authenticated);
         when(tokenManager.isValidateToken("refreshToken")).thenReturn(true);
         when(refreshTokenRepository.existsByUserEmail("username")).thenReturn(true);
 
@@ -60,7 +60,7 @@ class TokenReissueServiceTest {
     @DisplayName("토큰 재발급 실패 : 유효하지 않은 refreshToken")
     void reissueFailByInvalidateToken() {
         Authentication authenticated = UsernamePasswordAuthenticationToken.authenticated("username", null, null);
-        when(tokenManager.authentication("accessToken")).thenReturn(authenticated);
+        when(tokenManager.getAuthenticationFromAccessToken("accessToken")).thenReturn(authenticated);
         when(tokenManager.isValidateToken("refreshToken")).thenReturn(false);
 
         // when
@@ -72,7 +72,7 @@ class TokenReissueServiceTest {
     @DisplayName("토큰 재발급 실패 : refreshToken이 저장소에 존재하지 않음")
     void reissueFailByNotFoundRefreshToken() {
         Authentication authenticated = UsernamePasswordAuthenticationToken.authenticated("username", null, null);
-        when(tokenManager.authentication("accessToken")).thenReturn(authenticated);
+        when(tokenManager.getAuthenticationFromAccessToken("accessToken")).thenReturn(authenticated);
         when(tokenManager.isValidateToken("refreshToken")).thenReturn(true);
         when(refreshTokenRepository.existsByUserEmail("username")).thenReturn(false);
 

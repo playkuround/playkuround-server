@@ -53,6 +53,7 @@ public class UserProfileService {
     private List<UserNotificationResponse> convertToUserNotificationList(String str_notification) {
         return Arrays.stream(str_notification.split("@"))
                 .map(notifications -> notifications.split("#"))
+                .filter(nameAndDescription -> nameAndDescription.length == 2)
                 .map(nameAndDescription -> UserNotificationResponse.from(nameAndDescription[0], nameAndDescription[1]))
                 .toList();
     }

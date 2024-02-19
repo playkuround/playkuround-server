@@ -1,8 +1,6 @@
 package com.playkuround.playkuroundserver.domain.user.dto.request;
 
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
-import com.playkuround.playkuroundserver.domain.user.domain.Role;
-import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.validation.ValidEnum;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,23 +27,14 @@ public class UserRegisterRequest {
     @NotBlank(message = "닉네임은 필수값입니다.")
     @Length(min = 2, max = 8, message = "닉네임은 2글자 이상 8글자 이하여야 합니다.")
     @Pattern(regexp = "^[0-9a-zA-Z가-힣]*$", message = "닉네임은 한글, 영어, 숫자만 허용됩니다.")
-    @Schema(description = "사용할 닉네임", example = "tester", minLength = 2, maxLength = 8)
+    @Schema(description = "사용할 닉네임(한글, 영어, 숫자만 허용)", example = "tester", minLength = 2, maxLength = 8)
     private String nickname;
 
     @ValidEnum(enumClass = Major.class, message = "잘못된 학과명입니다.")
-    @Schema(description = "학과. 학과 리스트는 외부 문서 참고", example = "컴퓨터공학부")
+    @Schema(description = "학과. 학과 리스트는 외부 문서 참고", example = "컴퓨터공학부", requiredMode = RequiredMode.REQUIRED)
     private String major;
 
     @NotBlank(message = "인증 토큰은 필수값입니다.")
     @Schema(description = "이메일 인증 완료 시 받았던 인증 토큰", example = "0a72d4d0-bc97-4776-811f-ade033cd0ba3")
     private String authVerifyToken;
-
-    public User toEntity(Role role) {
-        return User.builder()
-                .email(email)
-                .nickname(nickname)
-                .major(Major.valueOf(major))
-                .role(role)
-                .build();
-    }
 }

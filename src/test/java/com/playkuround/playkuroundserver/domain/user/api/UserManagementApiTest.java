@@ -138,7 +138,7 @@ class UserManagementApiTest {
     @DisplayName("회원 등록 실패 - 중복 이메일")
     void userRegisterFailByDuplicateEmail() throws Exception {
         // given
-        User user = new User(email, nickname, major, Role.ROLE_USER);
+        User user = User.create(email, nickname, major, Role.ROLE_USER);
         userRepository.save(user);
         AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
 
@@ -166,7 +166,7 @@ class UserManagementApiTest {
     @DisplayName("회원 등록 실패 - 중복 닉네임")
     void userRegisterFailByDuplicateNickname() throws Exception {
         // given
-        User user = new User(email, nickname, major, Role.ROLE_USER);
+        User user = User.create(email, nickname, major, Role.ROLE_USER);
         userRepository.save(user);
         AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
 

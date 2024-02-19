@@ -28,14 +28,14 @@ public class UserProfileApi {
 
     @GetMapping
     @Operation(summary = "프로필 얻기", description = "로그인 유저의 기본 정보를 얻습니다.")
-    public ApiResponse<UserProfileResponse> userProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ApiResponse<UserProfileResponse> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         UserProfileResponse response = userProfileService.getUserProfile(userDetails.getUser());
         return ApiUtils.success(response);
     }
 
     @GetMapping("/game-score")
     @Operation(summary = "게임별 최고 점수 얻기", description = "로그인 유저의 게임별 최고 점수를 얻습니다. 플레이한적이 없는 게임은 null이 반환됩니다.")
-    public ApiResponse<UserGameHighestScoreResponse> userGameHighestScore(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ApiResponse<UserGameHighestScoreResponse> getUserGameHighestScore(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         UserGameHighestScoreResponse response = userProfileService.getUserGameHighestScore(userDetails.getUser());
         return ApiUtils.success(response);
     }
@@ -48,7 +48,7 @@ public class UserProfileApi {
     }
 
     @GetMapping("/notification")
-    @Operation(summary = "유저 알림 얻기", description = "유저 알림을 얻습니다. 한번 호출된 이후에 저장된 메시지는 삭제됩니다.")
+    @Operation(summary = "유저 알림 얻기", description = "유저 개인 알림을 얻습니다. 저장된 메시지는 (정상적인) 호출 이후 삭제됩니다.")
     public ApiResponse<List<UserNotificationResponse>> getNotification(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<UserNotificationResponse> responses = userProfileService.getNotification(userDetails.getUser());
         return ApiUtils.success(responses);

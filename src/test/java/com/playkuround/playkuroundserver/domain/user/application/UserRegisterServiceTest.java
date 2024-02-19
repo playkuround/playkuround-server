@@ -2,8 +2,9 @@ package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.request.UserRegisterRequest;
+import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicationException;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDuplicationException;
@@ -59,9 +60,8 @@ class UserRegisterServiceTest {
         when(userLoginService.login(email)).thenReturn(tokenDto);
 
         // when
-        UserRegisterRequest registerRequest
-                = new UserRegisterRequest(email, nickname, major, "");
-        UserRegisterResponse result = userRegisterService.registerUser(registerRequest);
+        UserRegisterDto userRegisterDto = new UserRegisterDto(email, nickname, Major.valueOf(major));
+        UserRegisterResponse result = userRegisterService.registerUser(userRegisterDto);
 
         // then
         assertThat(result.getAccessToken()).isEqualTo(tokenDto.getAccessToken());
@@ -76,9 +76,9 @@ class UserRegisterServiceTest {
         when(userRepository.existsByEmail(email)).thenReturn(true);
 
         // expect
-        UserRegisterRequest registerRequest = new UserRegisterRequest(email, nickname, major, "");
+        UserRegisterDto userRegisterDto = new UserRegisterDto(email, nickname, Major.valueOf(major));
         assertThrows(UserEmailDuplicationException.class,
-                () -> userRegisterService.registerUser(registerRequest));
+                () -> userRegisterService.registerUser(userRegisterDto));
     }
 
     @Test
@@ -89,8 +89,8 @@ class UserRegisterServiceTest {
         when(userRepository.existsByNickname(nickname)).thenReturn(true);
 
         // expect
-        UserRegisterRequest registerRequest = new UserRegisterRequest(email, nickname, major, "");
+        UserRegisterDto userRegisterDto = new UserRegisterDto(email, nickname, Major.valueOf(major));
         assertThrows(UserNicknameDuplicationException.class,
-                () -> userRegisterService.registerUser(registerRequest));
+                () -> userRegisterService.registerUser(userRegisterDto));
     }
 }

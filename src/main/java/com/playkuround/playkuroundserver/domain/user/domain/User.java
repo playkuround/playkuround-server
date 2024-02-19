@@ -2,10 +2,9 @@ package com.playkuround.playkuroundserver.domain.user.domain;
 
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-import lombok.*;
-import org.hibernate.validator.constraints.Length;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -18,12 +17,9 @@ public class User extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Email
     private String email;
 
     @Column(nullable = false, unique = true)
-    @Length(min = 2, max = 8)
-    @Pattern(regexp = "^[0-9a-zA-Z가-힣]*$")
     private String nickname;
 
     @Enumerated(EnumType.STRING)
@@ -42,13 +38,15 @@ public class User extends BaseTimeEntity {
 
     private String notification;
 
-    @Builder
-    public User(@NonNull String email, @NonNull String nickname, @NonNull Major major, @NonNull Role role) {
+    private User(String email, String nickname, Major major, Role role) {
         this.email = email;
         this.nickname = nickname;
         this.major = major;
-        this.attendanceDays = 0;
         this.role = role;
+    }
+
+    public static User create(String email, String nickname, Major major, Role role) {
+        return new User(email, nickname, major, role);
     }
 
     public HighestScore getHighestScore() {

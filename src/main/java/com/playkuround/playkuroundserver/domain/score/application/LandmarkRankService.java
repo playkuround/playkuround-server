@@ -20,10 +20,12 @@ public class LandmarkRankService {
 
     @Transactional(readOnly = true)
     public ScoreRankingResponse getRankTop100ByLandmark(User user, Long landmarkId) {
-        List<NicknameAndScore> nicknameAndScores = adventureRepository.findRankTop100DescByLandmarkId(landmarkId);
-
         ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
-        nicknameAndScores.forEach(nicknameAndScore -> response.addRank(nicknameAndScore.nickname(), nicknameAndScore.score()));
+
+        List<NicknameAndScore> nicknameAndScores = adventureRepository.findRankTop100DescByLandmarkId(landmarkId);
+        nicknameAndScores
+                .forEach(nicknameAndScore ->
+                        response.addRank(nicknameAndScore.nickname(), nicknameAndScore.score()));
 
         Optional<RankAndScore> optionalMyScore = adventureRepository.findMyRankByLandmarkId(user, landmarkId);
         if (optionalMyScore.isPresent()) {

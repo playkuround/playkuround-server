@@ -46,12 +46,7 @@ public class TestUtil {
     }
 
     public static User createUser(String email, String nickname, Major major) {
-        return User.builder()
-                .email(email)
-                .nickname(nickname)
-                .major(major)
-                .role(Role.ROLE_USER)
-                .build();
+        return User.create(email, nickname, major, Role.ROLE_USER);
     }
 
     private TestUtil() {

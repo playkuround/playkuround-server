@@ -3,6 +3,8 @@ package com.playkuround.playkuroundserver.domain.user.api;
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
 import com.playkuround.playkuroundserver.domain.user.application.UserLogoutService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
+import com.playkuround.playkuroundserver.domain.user.domain.Major;
+import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.domain.user.dto.request.UserRegisterRequest;
 import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
@@ -29,11 +31,15 @@ public class UserManagementApi {
     @PostMapping("/register")
     @ResponseStatus(value = HttpStatus.CREATED)
     @Operation(summary = "회원가입", description = "신규 회원가입 합니다.")
-    public ApiResponse<UserRegisterResponse> registerUser(@RequestBody @Valid UserRegisterRequest registerRequest) {
-        tokenService.validateAuthVerifyToken(registerRequest.getAuthVerifyToken());
-        UserRegisterResponse registerResponse = userRegisterService.registerUser(registerRequest);
-        tokenService.deleteAuthVerifyToken(registerRequest.getAuthVerifyToken());
-        return ApiUtils.success(registerResponse);
+    public ApiResponse<UserRegisterResponse> registerUser(@RequestBody @Valid UserRegisterRequest request) {
+        tokenService.validateAuthVerifyToken(request.getAuthVerifyToken());
+
+        UserRegisterDto userRegisterDto
+                = new UserRegisterDto(request.getEmail(), request.getNickname(), Major.valueOf(request.getMajor()));
+        UserRegisterResponse response = userRegisterService.registerUser(userRegisterDto);
+
+        tokenService.deleteAuthVerifyToken(request.getAuthVerifyToken());
+        return ApiUtils.success(response);
     }
 
     @PostMapping("/logout")

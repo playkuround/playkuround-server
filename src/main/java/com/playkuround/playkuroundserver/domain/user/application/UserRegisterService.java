@@ -4,7 +4,7 @@ import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.request.UserRegisterRequest;
+import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicationException;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDuplicationException;
@@ -22,11 +22,13 @@ public class UserRegisterService {
     private final UserLoginService userLoginService;
 
     @Transactional
-    public UserRegisterResponse registerUser(UserRegisterRequest registerRequest) {
-        validateDuplicateEmail(registerRequest.getEmail());
-        validateDuplicateNickName(registerRequest.getNickname());
+    public UserRegisterResponse registerUser(UserRegisterDto userRegisterDto) {
+        validateDuplicateEmail(userRegisterDto.email());
+        validateDuplicateNickName(userRegisterDto.nickname());
 
-        User user = userRepository.save(registerRequest.toEntity(Role.ROLE_USER));
+        User user = User.create(userRegisterDto.email(), userRegisterDto.nickname(), userRegisterDto.major(), Role.ROLE_USER);
+        userRepository.save(user);
+
         TokenDto tokenDto = userLoginService.login(user.getEmail());
         return UserRegisterResponse.from(tokenDto);
     }

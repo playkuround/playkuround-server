@@ -20,7 +20,7 @@ public class AttendanceRegisterResponse {
 
     public static AttendanceRegisterResponse from(NewlyRegisteredBadge newlyRegisteredBadge) {
         List<BadgeType> badgeInfoList = newlyRegisteredBadge.getNewlyBadges().stream()
-                .map(badgeInfo -> BadgeType.valueOf(badgeInfo.getName()))
+                .map(badgeInfo -> BadgeType.valueOf(badgeInfo.name()))
                 .toList();
         return new AttendanceRegisterResponse(badgeInfoList);
     }

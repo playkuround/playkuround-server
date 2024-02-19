@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 public class AdventureSaveResponse {
 
-    private List<BadgeInfo> newBadges = new ArrayList<>();
+    private final List<BadgeInfo> newBadges = new ArrayList<>();
 
     private AdventureSaveResponse(List<BadgeType> badgeTypes) {
         badgeTypes.forEach(it -> this.newBadges.add(new BadgeInfo(it.name(), it.getDescription())));
@@ -21,7 +21,7 @@ public class AdventureSaveResponse {
 
     public static AdventureSaveResponse from(NewlyRegisteredBadge newlyRegisteredBadge) {
         List<BadgeType> badgeInfoList = newlyRegisteredBadge.getNewlyBadges().stream()
-                .map(badgeInfo -> BadgeType.valueOf(badgeInfo.getName()))
+                .map(badgeInfo -> BadgeType.valueOf(badgeInfo.name()))
                 .toList();
         return new AdventureSaveResponse(badgeInfoList);
     }

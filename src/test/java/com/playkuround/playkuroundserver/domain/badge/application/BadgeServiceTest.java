@@ -110,7 +110,7 @@ class BadgeServiceTest {
         assertThat(result).hasSize(1);
 
         List<String> target = result.stream()
-                .map(NewlyRegisteredBadge.BadgeInfo::getName)
+                .map(NewlyRegisteredBadge.BadgeInfo::name)
                 .toList();
         assertThat(target).containsOnly(BadgeType.ATTENDANCE_1.name());
     }
@@ -142,7 +142,7 @@ class BadgeServiceTest {
         assertThat(result).hasSize(4);
 
         List<String> target = result.stream()
-                .map(NewlyRegisteredBadge.BadgeInfo::getName)
+                .map(NewlyRegisteredBadge.BadgeInfo::name)
                 .toList();
         assertThat(target).containsOnly(
                 BadgeType.ATTENDANCE_1.name(),
@@ -177,7 +177,7 @@ class BadgeServiceTest {
         assertThat(result).hasSize(2);
 
         List<String> target = result.stream()
-                .map(NewlyRegisteredBadge.BadgeInfo::getName)
+                .map(NewlyRegisteredBadge.BadgeInfo::name)
                 .toList();
         assertThat(target).containsOnly(
                 BadgeType.ATTENDANCE_1.name(),
@@ -216,7 +216,7 @@ class BadgeServiceTest {
         assertThat(result).hasSize(2);
 
         List<String> target = result.stream()
-                .map(NewlyRegisteredBadge.BadgeInfo::getName)
+                .map(NewlyRegisteredBadge.BadgeInfo::name)
                 .toList();
         assertThat(target).containsOnly(
                 BadgeType.ATTENDANCE_5.name(),
@@ -241,7 +241,7 @@ class BadgeServiceTest {
         // then
         assertThat(result).hasSize(2);
         List<String> target = result.stream()
-                .map(NewlyRegisteredBadge.BadgeInfo::getName)
+                .map(NewlyRegisteredBadge.BadgeInfo::name)
                 .toList();
         assertThat(target).containsOnly(
                 BadgeType.COLLEGE_OF_ENGINEERING.name(),
@@ -266,7 +266,7 @@ class BadgeServiceTest {
         // then
         assertThat(result).hasSize(3);
         List<String> target = result.stream()
-                .map(NewlyRegisteredBadge.BadgeInfo::getName)
+                .map(NewlyRegisteredBadge.BadgeInfo::name)
                 .toList();
         assertThat(target).containsOnly(
                 BadgeType.COLLEGE_OF_ENGINEERING.name(),

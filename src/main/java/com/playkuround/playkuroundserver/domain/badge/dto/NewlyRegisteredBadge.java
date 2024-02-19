@@ -1,7 +1,6 @@
 package com.playkuround.playkuroundserver.domain.badge.dto;
 
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -17,10 +16,6 @@ public class NewlyRegisteredBadge {
         newlyBadges.add(badgeInfo);
     }
 
-    @Getter
-    @AllArgsConstructor
-    public static class BadgeInfo {
-        private String name;
-        private String description;
+    public record BadgeInfo(String name, String description) {
     }
 }

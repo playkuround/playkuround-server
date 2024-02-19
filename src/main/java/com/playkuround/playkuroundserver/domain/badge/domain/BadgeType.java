@@ -54,7 +54,7 @@ public enum BadgeType {
     COLLEGE_OF_ENGINEERING_C("공대 C동 10회 이상 탐험"),
 
     // 스토리용
-    THE_DREAM_OF_DUCK("스토리 컷씬 마스터"), // Not implemented yet
+    THE_DREAM_OF_DUCK("스토리 컷씬 마스터"),
 
     // 월간랭킹
     MONTHLY_RANKING_1("월간 랭킹 1등"), // 수동

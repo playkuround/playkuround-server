@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface AuthVerifyTokenRepository extends JpaRepository<AuthVerifyToken, String> {
+public interface AuthVerifyTokenRepository extends JpaRepository<AuthVerifyToken, Long> {
 
     boolean existsByAuthVerifyToken(String authVerifyToken);
 

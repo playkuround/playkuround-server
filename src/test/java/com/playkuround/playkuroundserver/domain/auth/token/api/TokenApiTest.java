@@ -61,7 +61,7 @@ class TokenApiTest {
         userRepository.save(user);
         TokenDto tokenDto = userLoginService.login(user.getEmail());
 
-        TokenReissueRequest tokenReissueRequest = new TokenReissueRequest(tokenDto.getAccessToken(), tokenDto.getRefreshToken());
+        TokenReissueRequest tokenReissueRequest = new TokenReissueRequest(tokenDto.getRefreshToken());
         String request = objectMapper.writeValueAsString(tokenReissueRequest);
 
         // expected
@@ -84,11 +84,7 @@ class TokenApiTest {
     @DisplayName("토큰 재발급 실패 : 유효하지 않은 refreshToken")
     void reissueFailByInvalidateRefreshToken() throws Exception {
         // given
-        User user = TestUtil.createUser();
-        userRepository.save(user);
-        TokenDto tokenDto = userLoginService.login(user.getEmail());
-
-        TokenReissueRequest tokenReissueRequest = new TokenReissueRequest(tokenDto.getAccessToken(), "invalidateRefreshToken");
+        TokenReissueRequest tokenReissueRequest = new TokenReissueRequest("invalidateRefreshToken");
         String request = objectMapper.writeValueAsString(tokenReissueRequest);
 
         // expected
@@ -113,7 +109,7 @@ class TokenApiTest {
         TokenDto tokenDto = userLoginService.login(user.getEmail());
         refreshTokenRepository.deleteAll();
 
-        TokenReissueRequest tokenReissueRequest = new TokenReissueRequest(tokenDto.getAccessToken(), tokenDto.getRefreshToken());
+        TokenReissueRequest tokenReissueRequest = new TokenReissueRequest(tokenDto.getRefreshToken());
         String request = objectMapper.writeValueAsString(tokenReissueRequest);
 
         // expected
@@ -126,55 +122,6 @@ class TokenApiTest {
                 .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_TOKEN.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.INVALID_TOKEN.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.INVALID_TOKEN.getMessage()))
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("토큰 재발급 실패 : accessToken이 유효하지 않음")
-    void reissueFailByInvalidAccessToken() throws Exception {
-        // given
-        User user = TestUtil.createUser();
-        userRepository.save(user);
-        TokenDto tokenDto = userLoginService.login(user.getEmail());
-
-        TokenReissueRequest tokenReissueRequest = new TokenReissueRequest("invalidAccessToken", tokenDto.getRefreshToken());
-        String request = objectMapper.writeValueAsString(tokenReissueRequest);
-
-        // expected
-        mockMvc.perform(post("/api/auth/reissue")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(request)
-                )
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_TOKEN.getStatus().value()))
-                .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.INVALID_TOKEN.getCode()))
-                .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.INVALID_TOKEN.getMessage()))
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("토큰 재발급 실패 : 존재하지 않는 유저")
-    void reissueFailByNotFoundUser() throws Exception {
-        // given
-        User user = TestUtil.createUser();
-        userRepository.save(user);
-        TokenDto tokenDto = userLoginService.login(user.getEmail());
-        userRepository.deleteAll();
-
-        TokenReissueRequest tokenReissueRequest = new TokenReissueRequest(tokenDto.getAccessToken(), tokenDto.getRefreshToken());
-        String request = objectMapper.writeValueAsString(tokenReissueRequest);
-
-        // expected
-        mockMvc.perform(post("/api/auth/reissue")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(request)
-                )
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.USER_NOT_FOUND.getStatus().value()))
-                .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.USER_NOT_FOUND.getCode()))
-                .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.USER_NOT_FOUND.getMessage()))
                 .andDo(print());
     }
 }

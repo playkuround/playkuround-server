@@ -5,7 +5,6 @@ import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.response.TokenReissueResponse;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidRefreshTokenException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,28 +17,16 @@ public class TokenReissueService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
-    public TokenReissueResponse reissue(String accessToken, String refreshToken) {
-        String username = getUsernameFromAccessToken(accessToken);
+    public TokenReissueResponse reissue(String refreshToken) {
+        String username = tokenManager.getUsernameFromToken(refreshToken);
 
-        validateRefreshToken(username, refreshToken);
+        if (!refreshTokenRepository.existsByUserEmail(username)) {
+            throw new InvalidRefreshTokenException();
+        }
 
         TokenDto tokenDto = tokenManager.createTokenDto(username);
         tokenService.registerRefreshToken(username, tokenDto.getRefreshToken());
 
         return TokenReissueResponse.from(tokenDto);
-    }
-
-    private String getUsernameFromAccessToken(String accessToken) {
-        Authentication authentication = tokenManager.getAuthenticationFromAccessToken(accessToken);
-        return authentication.getName();
-    }
-
-    private void validateRefreshToken(String userEmail, String refreshToken) {
-        if (!tokenManager.isValidateToken(refreshToken)) {
-            throw new InvalidRefreshTokenException();
-        }
-        if (!refreshTokenRepository.existsByUserEmail(userEmail)) {
-            throw new InvalidRefreshTokenException();
-        }
     }
 }

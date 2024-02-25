@@ -56,7 +56,7 @@ public class TokenManager {
         Date refreshTokenExpiredAt = createRefreshTokenExpirationTime(now);
 
         String accessToken = createAccessToken(username, accessTokenExpiredAt);
-        String refreshToken = createRefreshTokenEntity(refreshTokenExpiredAt);
+        String refreshToken = createRefreshTokenEntity(username, refreshTokenExpiredAt);
 
         return TokenDto.builder()
                 .grantType(GrantType.BEARER.getType())
@@ -86,11 +86,12 @@ public class TokenManager {
                 .compact();
     }
 
-    private String createRefreshTokenEntity(Date expireDate) {
+    private String createRefreshTokenEntity(String username, Date expireDate) {
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(issuer)
                 .setExpiration(expireDate)
+                .setSubject(username)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setHeaderParam(tokenTypeHeaderKey, TokenType.REFRESH.name())
                 .compact();
@@ -100,6 +101,10 @@ public class TokenManager {
         Claims claims = parseClaims(accessToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
         return UsernamePasswordAuthenticationToken.authenticated(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+    }
+
+    public String getUsernameFromToken(String token) {
+        return parseClaims(token).getSubject();
     }
 
     private Claims parseClaims(String accessToken) {

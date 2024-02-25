@@ -4,14 +4,13 @@ import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenRepos
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.response.TokenReissueResponse;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidRefreshTokenException;
+import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -37,18 +36,17 @@ class TokenReissueServiceTest {
     @DisplayName("토큰 재발급 성공")
     void reissueSuccess() {
         // given
-        Authentication authenticated = UsernamePasswordAuthenticationToken.authenticated("username", null, null);
-        when(tokenManager.getAuthenticationFromAccessToken("accessToken")).thenReturn(authenticated);
-        when(tokenManager.isValidateToken("refreshToken")).thenReturn(true);
+        when(tokenManager.getUsernameFromToken("refreshToken")).thenReturn("username");
         when(refreshTokenRepository.existsByUserEmail("username")).thenReturn(true);
 
-        TokenDto tokenDto = new TokenDto("newGrantType", "newAccessToken", "newRefreshToken", null, null);
+        TokenDto tokenDto = new TokenDto("newGrantType", "newAccessToken", "newRefreshToken",
+                null, null);
         when(tokenManager.createTokenDto("username")).thenReturn(tokenDto);
 
         doNothing().when(tokenService).registerRefreshToken("username", "newRefreshToken");
 
         // when
-        TokenReissueResponse response = tokenReissueService.reissue("accessToken", "refreshToken");
+        TokenReissueResponse response = tokenReissueService.reissue("refreshToken");
 
         // then
         assertThat(response.getAccessToken()).isEqualTo("newAccessToken");
@@ -59,25 +57,21 @@ class TokenReissueServiceTest {
     @Test
     @DisplayName("토큰 재발급 실패 : 유효하지 않은 refreshToken")
     void reissueFailByInvalidateToken() {
-        Authentication authenticated = UsernamePasswordAuthenticationToken.authenticated("username", null, null);
-        when(tokenManager.getAuthenticationFromAccessToken("accessToken")).thenReturn(authenticated);
-        when(tokenManager.isValidateToken("refreshToken")).thenReturn(false);
+        when(tokenManager.getUsernameFromToken("refreshToken")).thenThrow(InvalidTokenException.class);
 
         // when
-        assertThatThrownBy(() -> tokenReissueService.reissue("accessToken", "refreshToken"))
-                .isInstanceOf(InvalidRefreshTokenException.class);
+        assertThatThrownBy(() -> tokenReissueService.reissue("refreshToken"))
+                .isInstanceOf(InvalidTokenException.class);
     }
 
     @Test
     @DisplayName("토큰 재발급 실패 : refreshToken이 저장소에 존재하지 않음")
     void reissueFailByNotFoundRefreshToken() {
-        Authentication authenticated = UsernamePasswordAuthenticationToken.authenticated("username", null, null);
-        when(tokenManager.getAuthenticationFromAccessToken("accessToken")).thenReturn(authenticated);
-        when(tokenManager.isValidateToken("refreshToken")).thenReturn(true);
+        when(tokenManager.getUsernameFromToken("refreshToken")).thenReturn("username");
         when(refreshTokenRepository.existsByUserEmail("username")).thenReturn(false);
 
         // when
-        assertThatThrownBy(() -> tokenReissueService.reissue("accessToken", "refreshToken"))
+        assertThatThrownBy(() -> tokenReissueService.reissue("refreshToken"))
                 .isInstanceOf(InvalidRefreshTokenException.class);
     }
 }

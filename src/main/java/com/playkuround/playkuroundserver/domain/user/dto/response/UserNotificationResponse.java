@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class UserNotificationResponse {
 
-    @Schema(description = "알림 이름", example = "new Badge", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "알림 이름", example = "new_Badge", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
     @Schema(description = "알림 내용", example = "MONTHLY_RANKING_1", requiredMode = Schema.RequiredMode.REQUIRED)

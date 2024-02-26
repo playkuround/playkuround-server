@@ -3,7 +3,6 @@ package com.playkuround.playkuroundserver.global.config;
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
 import com.playkuround.playkuroundserver.global.security.JwtAuthenticationFilter;
 import com.playkuround.playkuroundserver.global.security.UserDetailsServiceImpl;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +16,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -56,18 +54,13 @@ public class WebSecurityConfig {
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui/**"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui.html"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api-docs/**"),
-
-                                checkActPort()
+                                AntPathRequestMatcher.antMatcher("/actu/**")
                         ).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/api/**")).authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(tokenManager), UsernamePasswordAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)
                 .build();
-    }
-
-    private RequestMatcher checkActPort() {
-        return (HttpServletRequest request) -> 8081 == request.getLocalPort();
     }
 
     @Bean

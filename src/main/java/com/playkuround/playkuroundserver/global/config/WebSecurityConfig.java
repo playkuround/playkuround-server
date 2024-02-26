@@ -53,7 +53,8 @@ public class WebSecurityConfig {
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/health"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui/**"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui.html"),
-                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api-docs/**")
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api-docs/**"),
+                                AntPathRequestMatcher.antMatcher("/actu/**")
                         ).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/api/**")).authenticated()
                 )

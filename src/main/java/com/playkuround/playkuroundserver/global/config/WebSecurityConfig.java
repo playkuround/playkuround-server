@@ -39,9 +39,9 @@ public class WebSecurityConfig {
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers(
+                                PathRequest.toH2Console(),
+                                PathRequest.toStaticResources().atCommonLocations(),
                                 AntPathRequestMatcher.antMatcher("/"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/users/register"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/users/login"),
@@ -56,7 +56,10 @@ public class WebSecurityConfig {
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api-docs/**"),
                                 AntPathRequestMatcher.antMatcher("/actu/**")
                         ).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/api/**")).authenticated()
+                        .requestMatchers(
+                                AntPathRequestMatcher.antMatcher("/api/badges/manual")
+                        ).hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(tokenManager), UsernamePasswordAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)

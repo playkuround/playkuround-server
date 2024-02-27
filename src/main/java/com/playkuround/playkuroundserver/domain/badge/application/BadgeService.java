@@ -11,7 +11,9 @@ import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.domain.badge.dto.response.BadgeFindResponse;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
+import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BadgeService {
 
+    private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;
     private final CollegeSpecialBadgeFactory collegeSpecialBadgeFactory;
 
@@ -102,6 +105,20 @@ public class BadgeService {
         }
         Badge badge = Badge.createBadge(user, BadgeType.THE_DREAM_OF_DUCK);
         badgeRepository.save(badge);
+        return true;
+    }
+
+    @Transactional
+    public boolean saveManualBadge(String userEmail, BadgeType badgeType, boolean registerMessage) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+        if (badgeRepository.existsByUserAndBadgeType(user, badgeType)) {
+            return false;
+        }
+        Badge badge = Badge.createBadge(user, badgeType);
+        badgeRepository.save(badge);
+        if (registerMessage) {
+            user.addNewBadgeNotification(badgeType.name());
+        }
         return true;
     }
 }

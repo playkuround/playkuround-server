@@ -64,12 +64,16 @@ public class User extends BaseTimeEntity {
         this.notification = null;
     }
 
-    public void addNotification(String name, String description) {
+    private void addNotification(String name, String description) {
         if (notification == null) {
             notification = name + "#" + description;
         }
         else {
             notification += "@" + name + "#" + description;
         }
+    }
+
+    public void addNewBadgeNotification(String description) {
+        addNotification("new_badge", description);
     }
 }

@@ -9,6 +9,7 @@ import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.domain.badge.dto.response.BadgeFindResponse;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
+import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.DateUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +40,9 @@ class BadgeServiceTest {
 
     @Mock
     private BadgeRepository badgeRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @Mock
     private CollegeSpecialBadgeFactory collegeSpecialBadgeFactory;
@@ -303,6 +307,57 @@ class BadgeServiceTest {
 
         // then
         assertThat(result).isFalse();
+    }
+
+    @Test
+    @DisplayName("뱃지 수동 등록 : 정상 저장되었다면 true를 반환한다.")
+    void saveManualBadge_1() {
+        // given
+        User user = TestUtil.createUser();
+        BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(badgeRepository.existsByUserAndBadgeType(user, badgeType)).thenReturn(false);
+
+        // when
+        boolean result = badgeService.saveManualBadge(user.getEmail(), badgeType, false);
+
+        // then
+        assertThat(result).isTrue();
+        assertThat(user.getNotification()).isNull();
+    }
+
+    @Test
+    @DisplayName("뱃지 수동 등록 : 개인 메시지로 저장")
+    void saveManualBadge_2() {
+        // given
+        User user = TestUtil.createUser();
+        BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(badgeRepository.existsByUserAndBadgeType(user, badgeType)).thenReturn(false);
+
+        // when
+        boolean result = badgeService.saveManualBadge(user.getEmail(), badgeType, true);
+
+        // then
+        assertThat(result).isTrue();
+        assertThat(user.getNotification()).isEqualTo("new_badge#" + badgeType.name());
+    }
+
+    @Test
+    @DisplayName("뱃지 수동 등록 : 이미 가지고 있는 뱃지면 false를 반환한다.")
+    void saveManualBadge_3() {
+        // given
+        User user = TestUtil.createUser();
+        BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(badgeRepository.existsByUserAndBadgeType(user, badgeType)).thenReturn(true);
+
+        // when
+        boolean result = badgeService.saveManualBadge(user.getEmail(), badgeType, true);
+
+        // then
+        assertThat(result).isFalse();
+        assertThat(user.getNotification()).isNull();
     }
 
     private Landmark createLandmark(LandmarkType landmarkType) throws Exception {

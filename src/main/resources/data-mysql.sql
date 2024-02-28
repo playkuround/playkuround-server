@@ -56,11 +56,11 @@ values (27, 37.541114, 127.081743, 45, '창의관', NULL, 0);
 insert into landmark (id, latitude, longitude, recognition_radius, name, user_id, highest_score)
 values (28, 37.542220, 127.080961, 33, '공예관', NULL, 0);
 insert into landmark (id, latitude, longitude, recognition_radius, name, user_id, highest_score)
-values (29, 37.539995, 127.077180, 40, '국제학사', NULL, 0);
+values (29, 37.539995, 127.077180, 40, 'KU기술혁신관', NULL, 0);
 insert into landmark (id, latitude, longitude, recognition_radius, name, user_id, highest_score)
 values (30, 37.539147, 127.078248, 75, '기숙사', NULL, 0);
 insert into landmark (id, latitude, longitude, recognition_radius, name, user_id, highest_score)
-values (31, 37.530744, 127.075539, 44, '일감호', NULL, 0);
+values (31, 37.540796, 127.076495, 50, '일감호', NULL, 0);
 insert into landmark (id, latitude, longitude, recognition_radius, name, user_id, highest_score)
 values (32, 37.541688, 127.077344, 18, '홍예교', NULL, 0);
 insert into landmark (id, latitude, longitude, recognition_radius, name, user_id, highest_score)

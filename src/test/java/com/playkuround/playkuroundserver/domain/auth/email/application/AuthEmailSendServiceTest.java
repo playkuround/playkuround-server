@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -45,12 +47,10 @@ class AuthEmailSendServiceTest {
 
     @Test
     @DisplayName("이메일 정상 정송")
-    void emailCorrect() {
+    void sendAuthEmail_1() {
         // given
         when(authEmailRepository.countByTargetAndCreatedAtAfter(any(String.class), any(LocalDateTime.class)))
                 .thenReturn(0L);
-        doNothing().when(emailService).sendMessage(any(Mail.class));
-        when(authEmailRepository.save(any(AuthEmail.class))).thenReturn(null);
 
         // when
         String target = "test@test.com";
@@ -61,30 +61,29 @@ class AuthEmailSendServiceTest {
 
         ArgumentCaptor<AuthEmail> authEmailArgument = ArgumentCaptor.forClass(AuthEmail.class);
         verify(authEmailRepository, times(1)).save(authEmailArgument.capture());
-        assertThat(authEmailArgument.getValue().getCode()).containsPattern("[0-9a-zA-Z]{6}");
-        assertThat(authEmailArgument.getValue().getTarget()).isEqualTo(target);
+        AuthEmail authEmail = authEmailArgument.getValue();
+        assertThat(authEmail.getTarget()).isEqualTo(target);
+        assertThat(authEmail.getCode()).containsPattern("[0-9a-zA-Z]{6}");
 
         ArgumentCaptor<Mail> mailArgument = ArgumentCaptor.forClass(Mail.class);
         verify(emailService, times(1)).sendMessage(mailArgument.capture());
-        assertThat(mailArgument.getValue().target()).isEqualTo(target);
-        assertThat(mailArgument.getValue().title()).isEqualTo("[플레이쿠라운드] 회원가입 인증코드입니다.");
-        assertThat(mailArgument.getValue().content()).contains("회원가입 인증코드입니다.");
+        Mail mail = mailArgument.getValue();
+        assertThat(mail.target()).isEqualTo(target);
+        assertThat(mail.content()).contains("회원가입 인증코드입니다.");
+        assertThat(mail.title()).isEqualTo("[플레이쿠라운드] 회원가입 인증코드입니다.");
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"notEmail", "id@domain", "id@domain@something"})
     @DisplayName("이메일 도메인이 올바르지 않으면 NotKUEmailException이 발생한다.")
-    void emailWrong() {
-        // expect
-        String[] targets = {"notEmail", "id@domain", "id@domain@something"};
-        for (String target : targets) {
-            assertThatThrownBy(() -> authEmailSendService.sendAuthEmail(target))
-                    .isInstanceOf(NotKUEmailException.class);
-        }
+    void sendAuthEmail_2(String target) {
+        assertThatThrownBy(() -> authEmailSendService.sendAuthEmail(target))
+                .isInstanceOf(NotKUEmailException.class);
     }
 
     @Test
     @DisplayName("하루 최대 전송횟수 이상은 메일을 보낼 수 없다.")
-    void test() {
+    void sendAuthEmail_3() {
         // given
         when(authEmailRepository.countByTargetAndCreatedAtAfter(any(String.class), any(LocalDateTime.class)))
                 .thenReturn(3L);

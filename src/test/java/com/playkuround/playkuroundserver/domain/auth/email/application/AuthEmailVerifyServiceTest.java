@@ -55,21 +55,21 @@ class AuthEmailVerifyServiceTest {
         String code = "123456";
         LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
         AuthEmail authEmail = AuthEmail.createAuthEmail(target, code, expiredAt);
-        TokenDto tokenDto = new TokenDto("Bearer", "accessToken", "refreshToken", null, null);
-
         when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(target))
                 .thenReturn(Optional.of(authEmail));
         when(userRepository.existsByEmail(target)).thenReturn(true);
+
+        TokenDto tokenDto = new TokenDto("Bearer", "accessToken", "refreshToken", null, null);
         when(userLoginService.login(target)).thenReturn(tokenDto);
 
         // when
         AuthVerifyEmailResponse response = authEmailVerifyService.verifyAuthEmail(code, target);
 
         // then
+        assertThat(response.getAuthVerifyToken()).isNull();
         assertThat(response.getGrantType()).isEqualTo(tokenDto.getGrantType());
         assertThat(response.getAccessToken()).isEqualTo(tokenDto.getAccessToken());
         assertThat(response.getRefreshToken()).isEqualTo(tokenDto.getRefreshToken());
-        assertThat(response.getAuthVerifyToken()).isNull();
     }
 
     @Test
@@ -82,11 +82,11 @@ class AuthEmailVerifyServiceTest {
         String authVerify = "authVerifyToken";
         LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
         AuthEmail authEmail = AuthEmail.createAuthEmail(target, code, expiredAt);
-        AuthVerifyToken authVerifyToken = new AuthVerifyToken(authVerify, null);
-
         when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(target))
                 .thenReturn(Optional.of(authEmail));
         when(userRepository.existsByEmail(target)).thenReturn(false);
+
+        AuthVerifyToken authVerifyToken = new AuthVerifyToken(authVerify, null);
         when(tokenService.registerAuthVerifyToken()).thenReturn(authVerifyToken);
 
         // when
@@ -139,7 +139,7 @@ class AuthEmailVerifyServiceTest {
     }
 
     @Test
-    @DisplayName("authEmail의 code가 이 만료되면 NotMatchAuthCodeException 발생")
+    @DisplayName("authEmail의 code가 일치하지 않으면 NotMatchAuthCodeException 발생")
     void authEmailCodeNotEquals() {
         // given
         String code = "code";

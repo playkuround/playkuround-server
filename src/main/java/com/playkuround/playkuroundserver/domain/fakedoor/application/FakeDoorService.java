@@ -13,7 +13,7 @@ public class FakeDoorService {
 
     private final FakeDoorRepository fakeDoorRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void saveFakeDoor(User user) {
         FakeDoor fakeDoor = new FakeDoor(user);
         fakeDoorRepository.save(fakeDoor);

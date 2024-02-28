@@ -37,21 +37,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = {"/data-mysql.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class AdventureApiTest {
 
-    private final String redisSetKey = "ranking";
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private ObjectMapper objectMapper;
+
     @Autowired
     private BadgeRepository badgeRepository;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private AdventureRepository adventureRepository;
+
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+
     @Autowired
     private LandmarkRepository landmarkRepository;
+
+    private final String redisSetKey = "ranking";
 
     @AfterEach
     void clean() {
@@ -80,8 +87,9 @@ class AdventureApiTest {
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.response.newBadges[?(@.name == '%s')]", BadgeType.COLLEGE_OF_VETERINARY_MEDICINE.name()).exists())
-                .andExpect(jsonPath("$.response.newBadges[?(@.description == '%s')]", BadgeType.COLLEGE_OF_VETERINARY_MEDICINE.getDescription()).exists())
+                .andExpect(jsonPath("$.response.newBadges.size()").value(1))
+                .andExpect(jsonPath("$.response.newBadges[0].name").value(BadgeType.COLLEGE_OF_VETERINARY_MEDICINE.name()))
+                .andExpect(jsonPath("$.response.newBadges[0].description").value(BadgeType.COLLEGE_OF_VETERINARY_MEDICINE.getDescription()))
                 .andDo(print());
 
         // Total Score 저장 및 최고 점수 갱신
@@ -95,8 +103,8 @@ class AdventureApiTest {
         List<Adventure> adventures = adventureRepository.findAll();
         assertThat(adventures).hasSize(1);
         Adventure adventure = adventures.get(0);
-        assertThat(adventure.getScoreType()).isEqualTo(ScoreType.BOOK);
         assertThat(adventure.getScore()).isEqualTo(100L);
+        assertThat(adventure.getScoreType()).isEqualTo(ScoreType.BOOK);
         assertThat(adventure.getUser().getId()).isEqualTo(user.getId());
         assertThat(adventure.getLandmark().getId()).isEqualTo(landmark.getId());
 
@@ -104,7 +112,6 @@ class AdventureApiTest {
         Landmark updatedLandmark = landmarkRepository.findById(landmark.getId()).get();
         assertThat(updatedLandmark.getHighestScore()).isEqualTo(100L);
         assertThat(updatedLandmark.getFirstUser().getId()).isEqualTo(user.getId());
-        assertThat(updatedLandmark.getHighestScore()).isEqualTo(100L);
     }
 
     @Test
@@ -125,8 +132,8 @@ class AdventureApiTest {
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_VALUE.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.NOT_FOUND.getCode()))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_VALUE.getStatus().value()))
                 .andDo(print());
     }
 
@@ -148,9 +155,9 @@ class AdventureApiTest {
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_LOCATION_LANDMARK.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.INVALID_LOCATION_LANDMARK.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.INVALID_LOCATION_LANDMARK.getMessage()))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_LOCATION_LANDMARK.getStatus().value()))
                 .andDo(print());
     }
 }

@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,17 +35,18 @@ class TokenReissueServiceTest {
     @DisplayName("토큰 재발급 성공")
     void reissueSuccess() {
         // given
-        when(tokenManager.getUsernameFromToken("refreshToken")).thenReturn("username");
-        when(refreshTokenRepository.existsByUserEmail("username")).thenReturn(true);
+        String refreshToken = "refreshToken";
+        String username = "username";
+        when(tokenManager.getUsernameFromToken(refreshToken)).thenReturn(username);
+        when(refreshTokenRepository.existsByUserEmail(username)).thenReturn(true);
 
-        TokenDto tokenDto = new TokenDto("newGrantType", "newAccessToken", "newRefreshToken",
-                null, null);
-        when(tokenManager.createTokenDto("username")).thenReturn(tokenDto);
-
-        doNothing().when(tokenService).registerRefreshToken("username", "newRefreshToken");
+        TokenDto tokenDto =
+                new TokenDto("newGrantType", "newAccessToken", "newRefreshToken",
+                        null, null);
+        when(tokenManager.createTokenDto(username)).thenReturn(tokenDto);
 
         // when
-        TokenReissueResponse response = tokenReissueService.reissue("refreshToken");
+        TokenReissueResponse response = tokenReissueService.reissue(refreshToken);
 
         // then
         assertThat(response.getAccessToken()).isEqualTo("newAccessToken");
@@ -57,21 +57,26 @@ class TokenReissueServiceTest {
     @Test
     @DisplayName("토큰 재발급 실패 : 유효하지 않은 refreshToken")
     void reissueFailByInvalidateToken() {
-        when(tokenManager.getUsernameFromToken("refreshToken")).thenThrow(InvalidTokenException.class);
+        // given
+        String refreshToken = "refreshToken";
+        when(tokenManager.getUsernameFromToken(refreshToken))
+                .thenThrow(InvalidTokenException.class);
 
         // when
-        assertThatThrownBy(() -> tokenReissueService.reissue("refreshToken"))
+        assertThatThrownBy(() -> tokenReissueService.reissue(refreshToken))
                 .isInstanceOf(InvalidTokenException.class);
     }
 
     @Test
     @DisplayName("토큰 재발급 실패 : refreshToken이 저장소에 존재하지 않음")
     void reissueFailByNotFoundRefreshToken() {
-        when(tokenManager.getUsernameFromToken("refreshToken")).thenReturn("username");
-        when(refreshTokenRepository.existsByUserEmail("username")).thenReturn(false);
+        String refreshToken = "refreshToken";
+        String username = "username";
+        when(tokenManager.getUsernameFromToken(refreshToken)).thenReturn(username);
+        when(refreshTokenRepository.existsByUserEmail(username)).thenReturn(false);
 
         // when
-        assertThatThrownBy(() -> tokenReissueService.reissue("refreshToken"))
+        assertThatThrownBy(() -> tokenReissueService.reissue(refreshToken))
                 .isInstanceOf(InvalidRefreshTokenException.class);
     }
 }

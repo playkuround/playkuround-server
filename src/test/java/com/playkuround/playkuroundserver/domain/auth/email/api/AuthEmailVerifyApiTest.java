@@ -1,6 +1,6 @@
 package com.playkuround.playkuroundserver.domain.auth.email.api;
 
-import com.playkuround.playkuroundserver.TestUtil;
+import com.jayway.jsonpath.JsonPath;
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
 import com.playkuround.playkuroundserver.domain.auth.token.dao.AuthVerifyTokenRepository;
@@ -108,7 +108,7 @@ class AuthEmailVerifyApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        String authVerifyEmail = (String) TestUtil.getJsonValue(json, "authVerifyToken");
+        String authVerifyEmail = JsonPath.parse(json).read("$.response.authVerifyToken");
 
         List<AuthEmail> authEmails = authEmailRepository.findAll();
         assertThat(authEmails.size()).isEqualTo(1);

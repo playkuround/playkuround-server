@@ -10,7 +10,6 @@ import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class TestUtil {
@@ -25,20 +24,6 @@ public class TestUtil {
         Map<String, Object> apiResponse = mapper.readValue(json, new TypeReference<>() {
         });
         return mapper.convertValue(apiResponse.get("response"), objectClass);
-    }
-
-    public static Object getJsonValue(String json, String target) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        JavaTimeModule module = new JavaTimeModule();
-        mapper.registerModule(module);
-
-        Map<String, Object> apiResponse = mapper.readValue(json, new TypeReference<>() {
-        });
-        LinkedHashMap<String, Object> response = (LinkedHashMap) apiResponse.get("response");
-        return response.get(target);
     }
 
     public static User createUser() {

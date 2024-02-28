@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.auth.email.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.playkuround.playkuroundserver.TestUtil;
+import com.jayway.jsonpath.JsonPath;
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
 import com.playkuround.playkuroundserver.domain.auth.email.dto.request.AuthEmailSendRequest;
@@ -11,6 +11,9 @@ import com.playkuround.playkuroundserver.infra.email.EmailService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -78,35 +82,36 @@ class AuthEmailSendApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        String expireAt = (String) TestUtil.getJsonValue(json, "expireAt");
+        String expireAt = JsonPath.parse(json).read("$.response.expireAt");
 
         List<AuthEmail> authEmails = authEmailRepository.findAll();
-        assertThat(authEmails.size()).isEqualTo(1);
-        assertThat(authEmails.get(0).getTarget()).isEqualTo(email);
-        assertThat(authEmails.get(0).getCode()).containsPattern("[A-Za-z0-9]*");
-        String entityExpiredAt = authEmails.get(0).getExpiredAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        assertThat(authEmails).hasSize(1);
+
+        AuthEmail authEmail = authEmails.get(0);
+        assertThat(authEmail.getTarget()).isEqualTo(email);
+        assertThat(authEmail.getCode()).containsPattern("[A-Za-z0-9]*");
+
+        String entityExpiredAt = authEmail.getExpiredAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         assertThat(entityExpiredAt).isEqualTo(expireAt);
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"test@wrongDomain", "notDomain", "test@test@konkuk.ac.kr", "@"})
+    @NullAndEmptySource
     @DisplayName("전송 실패 : 잘못된 이메일 도메인")
-    void failSendAuthEmailByWrongDomain() throws Exception {
+    void failSendAuthEmailByWrongDomain(String email) throws Exception {
         // given
-        String[] emails = {"test@wrongDomain", "notDomain", null, "test@test@konkuk.ac.kr", "@"};
+        AuthEmailSendRequest attendanceRegisterRequest = new AuthEmailSendRequest(email);
+        String request = objectMapper.writeValueAsString(attendanceRegisterRequest);
 
-        for (String email : emails) {
-            AuthEmailSendRequest attendanceRegisterRequest = new AuthEmailSendRequest(email);
-            String request = objectMapper.writeValueAsString(attendanceRegisterRequest);
-
-            // expected
-            mockMvc.perform(post("/api/auth/emails")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(request)
-                    )
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.isSuccess").value(false))
-                    .andDo(print());
-        }
+        // expected
+        mockMvc.perform(post("/api/auth/emails")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.isSuccess").value(false))
+                .andDo(print());
     }
 
     @Test
@@ -114,8 +119,9 @@ class AuthEmailSendApiTest {
     void failSendAuthEmailByLimitExceed() throws Exception {
         // given
         String email = "test@konkuk.ac.kr";
+        LocalDateTime sendingDateTime = LocalDate.now().plusDays(1).atStartOfDay();
         for (int i = 0; i < 5; i++) {
-            authEmailRepository.save(AuthEmail.createAuthEmail(email, "code", LocalDateTime.now().plusDays(1)));
+            authEmailRepository.save(AuthEmail.createAuthEmail(email, "code", sendingDateTime));
         }
 
         AuthEmailSendRequest attendanceRegisterRequest = new AuthEmailSendRequest(email);
@@ -128,9 +134,9 @@ class AuthEmailSendApiTest {
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.SENDING_LIMIT_EXCEEDED.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.SENDING_LIMIT_EXCEEDED.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.SENDING_LIMIT_EXCEEDED.getMessage()))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.SENDING_LIMIT_EXCEEDED.getStatus().value()))
                 .andDo(print());
     }
 

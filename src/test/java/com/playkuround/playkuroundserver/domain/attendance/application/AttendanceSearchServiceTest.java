@@ -5,6 +5,7 @@ import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceReposit
 import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.Location;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,12 +33,14 @@ class AttendanceSearchServiceTest {
     private AttendanceRepository attendanceRepository;
 
     @Test
-    void 한달동안의_출석정보가_정렬되어_반환된다() {
+    @DisplayName("한달동안의 출석정보가 정렬되어 반환된다")
+    void findAttendanceForMonth_1() {
         // given
         Random random = new Random();
         LocalDateTime now = LocalDateTime.now();
         User user = TestUtil.createUser();
         Location location = new Location(37.539927, 127.073006);
+
         List<Attendance> attendances = new ArrayList<>();
         List<LocalDateTime> expected = new ArrayList<>();
         IntStream.iterate(1, x -> x + 1)
@@ -48,6 +51,7 @@ class AttendanceSearchServiceTest {
                 .forEach(x -> {
                     Attendance attendance = Attendance.createAttendance(user, location);
                     ReflectionTestUtils.setField(attendance, "createdAt", now.plusDays(x));
+
                     attendances.add(attendance);
                     expected.add(attendance.getCreatedAt());
                 });
@@ -55,23 +59,24 @@ class AttendanceSearchServiceTest {
                 .thenReturn(attendances);
 
         // when
-        List<LocalDateTime> target = attendanceSearchService.findAttendanceForMonth(user);
+        List<LocalDateTime> result = attendanceSearchService.findAttendanceForMonth(user);
 
         // then
-        assertThat(target).isEqualTo(expected);
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test
-    void 출석정보가_없으면_빈리스트가_반환된다() {
+    @DisplayName("출석정보가 없으면 빈리스트가 반환된다")
+    void findAttendanceForMonth_2() {
         // given
         when(attendanceRepository.findByUserAndCreatedAtAfter(any(User.class), any(LocalDateTime.class)))
                 .thenReturn(new ArrayList<>());
 
         // when
         User user = TestUtil.createUser();
-        List<LocalDateTime> target = attendanceSearchService.findAttendanceForMonth(user);
+        List<LocalDateTime> result = attendanceSearchService.findAttendanceForMonth(user);
 
         // then
-        assertThat(target).isEmpty();
+        assertThat(result).isEmpty();
     }
 }

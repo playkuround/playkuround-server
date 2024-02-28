@@ -12,6 +12,7 @@ import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.Location;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -42,16 +43,15 @@ class AttendanceRegisterServiceTest {
     private UserRepository userRepository;
 
     @Test
-    void 출석_시_뱃지와_출석정보가_저장되고_유저의_출석횟수가_증가한다() {
+    @DisplayName("출석 시 뱃지와 출석정보가 저장되고 유저의 출석횟수가 증가한다")
+    void registerAttendance_1() {
         // given
+        when(attendanceRepository.existsByUserAndCreatedAtAfter(any(User.class), any(LocalDateTime.class)))
+                .thenReturn(false);
+
         NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
         newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_1);
         newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_ARBOR_DAY);
-
-        when(attendanceRepository.existsByUserAndCreatedAtAfter(any(User.class), any(LocalDateTime.class)))
-                .thenReturn(false);
-        when(attendanceRepository.save(any(Attendance.class))).thenReturn(null);
-        when(userRepository.save(any(User.class))).thenReturn(null);
         when(badgeService.updateNewlyAttendanceBadges(any(User.class)))
                 .thenReturn(newlyRegisteredBadge);
 
@@ -62,20 +62,21 @@ class AttendanceRegisterServiceTest {
 
         // then
         assertThat(user.getAttendanceDays()).isEqualTo(1);
-
         assertThat(result.getNewBadges()).hasSize(2);
         assertThat(result.getNewBadges()).extracting("name")
                 .containsExactlyInAnyOrder(BadgeType.ATTENDANCE_1.name(), BadgeType.ATTENDANCE_ARBOR_DAY.name());
 
         ArgumentCaptor<Attendance> attendanceArgument = ArgumentCaptor.forClass(Attendance.class);
         verify(attendanceRepository, times(1)).save(attendanceArgument.capture());
-        assertThat(attendanceArgument.getValue().getUser()).isEqualTo(user);
-        assertThat(attendanceArgument.getValue().getLatitude()).isEqualTo(location.latitude());
-        assertThat(attendanceArgument.getValue().getLongitude()).isEqualTo(location.longitude());
+        Attendance attendance = attendanceArgument.getValue();
+        assertThat(attendance.getUser()).isEqualTo(user);
+        assertThat(attendance.getLatitude()).isEqualTo(location.latitude());
+        assertThat(attendance.getLongitude()).isEqualTo(location.longitude());
     }
 
     @Test
-    void 출석_범위에_벗어나면_에러가_발생한다() {
+    @DisplayName("출석 범위에 벗어나면 에러가 발생한다")
+    void registerAttendance_2() {
         // expect
         User user = TestUtil.createUser();
         Location location = new Location(0.0, 0.0);
@@ -84,7 +85,8 @@ class AttendanceRegisterServiceTest {
     }
 
     @Test
-    void 출석은_하루에_한번만_가능하다() {
+    @DisplayName("출석은 하루에 한번만 가능하다")
+    void registerAttendance_3() {
         // given
         when(attendanceRepository.existsByUserAndCreatedAtAfter(any(User.class), any(LocalDateTime.class)))
                 .thenReturn(true);

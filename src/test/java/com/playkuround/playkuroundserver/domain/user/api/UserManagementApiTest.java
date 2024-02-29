@@ -23,8 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -60,8 +58,8 @@ class UserManagementApiTest {
     private TokenManager tokenManager;
 
     private final String nickname = "tester";
-    private final String email = "tester@konkuk.ac.kr";
     private final Major major = Major.컴퓨터공학부;
+    private final String email = "tester@konkuk.ac.kr";
 
     @AfterEach
     void afterEach() {
@@ -82,7 +80,8 @@ class UserManagementApiTest {
 
         MvcResult mvcResult = mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
+                        .content(request)
+                )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.response.grantType").value(GrantType.BEARER.getType()))
                 .andExpect(jsonPath("$.response.accessToken").exists())
@@ -105,8 +104,8 @@ class UserManagementApiTest {
 
         User user = users.get(0);
         assertThat(user.getEmail()).isEqualTo(email);
-        assertThat(user.getNickname()).isEqualTo(nickname);
         assertThat(user.getMajor()).isEqualTo(major);
+        assertThat(user.getNickname()).isEqualTo(nickname);
         assertThat(user.getRole()).isEqualTo(Role.ROLE_USER);
         assertThat(user.getAttendanceDays()).isEqualTo(0);
     }
@@ -122,12 +121,13 @@ class UserManagementApiTest {
         // expect
         mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
+                        .content(request)
+                )
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_TOKEN.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.INVALID_TOKEN.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.INVALID_TOKEN.getMessage()))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_TOKEN.getStatus().value()))
                 .andDo(print());
         List<User> users = userRepository.findAll();
         assertThat(users).hasSize(0);
@@ -149,14 +149,14 @@ class UserManagementApiTest {
         // expect
         mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
+                        .content(request)
+                )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.EMAIL_DUPLICATION.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.EMAIL_DUPLICATION.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.EMAIL_DUPLICATION.getMessage()))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.EMAIL_DUPLICATION.getStatus().value()))
                 .andDo(print());
-
         List<User> users = userRepository.findAll();
         assertThat(users).hasSize(1);
     }
@@ -177,12 +177,13 @@ class UserManagementApiTest {
         // expect
         mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
+                        .content(request)
+                )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.NICKNAME_DUPLICATION.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.NICKNAME_DUPLICATION.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.NICKNAME_DUPLICATION.getMessage()))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.NICKNAME_DUPLICATION.getStatus().value()))
                 .andDo(print());
         List<User> users = userRepository.findAll();
         assertThat(users).hasSize(1);
@@ -193,8 +194,7 @@ class UserManagementApiTest {
     @DisplayName("로그아웃 - 리프레시 토큰 삭제")
     void logout() throws Exception {
         // given
-        Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, null);
-        RefreshToken refreshToken = tokenManager.createRefreshTokenEntity(authentication.getName(), "refreshToken");
+        RefreshToken refreshToken = tokenManager.createRefreshTokenEntity(email, "refreshToken");
         refreshTokenRepository.save(refreshToken);
 
         // when
@@ -205,6 +205,6 @@ class UserManagementApiTest {
 
         // then
         Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByUserEmail(email);
-        assertThat(optionalRefreshToken.isPresent()).isEqualTo(false);
+        assertThat(optionalRefreshToken).isEmpty();
     }
 }

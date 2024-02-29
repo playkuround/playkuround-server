@@ -9,6 +9,7 @@ import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterRe
 import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicationException;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDuplicationException;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserRegisterServiceTest {
+
     @InjectMocks
     private UserRegisterService userRegisterService;
 
@@ -34,63 +36,72 @@ class UserRegisterServiceTest {
     @Mock
     private UserLoginService userLoginService;
 
-    private final String email = "tester@konkuk.ac.kr";
     private final String nickname = "tester";
     private final String major = "컴퓨터공학부";
+    private final String email = "tester@konkuk.ac.kr";
 
-    @Test
-    @DisplayName("회원가입 성공")
-    void signupSuccess() {
-        // given
-        TokenDto tokenDto = TokenDto.builder()
-                .accessToken("accessToken")
-                .refreshToken("refreshToken")
-                .grantType("Bearer")
-                .accessTokenExpiredAt(new Date())
-                .refreshTokenExpiredAt(new Date())
-                .build();
-        when(userRepository.existsByEmail(email)).thenReturn(false);
-        when(userRepository.existsByNickname(nickname)).thenReturn(false);
-        when(userRepository.save(any(User.class)))
-                .then(invocation -> {
-                    User savedUser = invocation.getArgument(0);
-                    ReflectionTestUtils.setField(savedUser, "id", 1L);
-                    return savedUser;
-                });
-        when(userLoginService.login(email)).thenReturn(tokenDto);
+    @Nested
+    @DisplayName("회원가입")
+    class signup {
 
-        // when
-        UserRegisterDto userRegisterDto = new UserRegisterDto(email, nickname, Major.valueOf(major));
-        UserRegisterResponse result = userRegisterService.registerUser(userRegisterDto);
+        @Test
+        @DisplayName("정상적으로 성공")
+        void success_1() {
+            // given
+            TokenDto tokenDto = TokenDto.builder()
+                    .grantType("Bearer")
+                    .accessToken("accessToken")
+                    .refreshToken("refreshToken")
+                    .accessTokenExpiredAt(new Date())
+                    .refreshTokenExpiredAt(new Date())
+                    .build();
+            when(userRepository.existsByEmail(email))
+                    .thenReturn(false);
+            when(userRepository.existsByNickname(nickname))
+                    .thenReturn(false);
+            when(userRepository.save(any(User.class)))
+                    .then(invocation -> {
+                        User savedUser = invocation.getArgument(0);
+                        ReflectionTestUtils.setField(savedUser, "id", 1L);
+                        return savedUser;
+                    });
+            when(userLoginService.login(email))
+                    .thenReturn(tokenDto);
 
-        // then
-        assertThat(result.getAccessToken()).isEqualTo(tokenDto.getAccessToken());
-        assertThat(result.getRefreshToken()).isEqualTo(tokenDto.getRefreshToken());
-        assertThat(result.getGrantType()).isEqualTo(tokenDto.getGrantType());
+            // when
+            UserRegisterDto userRegisterDto = new UserRegisterDto(email, nickname, Major.valueOf(major));
+            UserRegisterResponse result = userRegisterService.registerUser(userRegisterDto);
+
+            // then
+            assertThat(result.getGrantType()).isEqualTo(tokenDto.getGrantType());
+            assertThat(result.getAccessToken()).isEqualTo(tokenDto.getAccessToken());
+            assertThat(result.getRefreshToken()).isEqualTo(tokenDto.getRefreshToken());
+        }
+
+        @Test
+        @DisplayName("이미 존재하는 이메일이면 에러가 발생한다.")
+        void fail_1() {
+            // given
+            when(userRepository.existsByEmail(email)).thenReturn(true);
+
+            // expect
+            UserRegisterDto userRegisterDto = new UserRegisterDto(email, nickname, Major.valueOf(major));
+            assertThrows(UserEmailDuplicationException.class,
+                    () -> userRegisterService.registerUser(userRegisterDto));
+        }
+
+        @Test
+        @DisplayName("이미 존재하는 닉네임이면 에러가 발생한다.")
+        void signupFailByExistsNickname() {
+            // given
+            when(userRepository.existsByEmail(email)).thenReturn(false);
+            when(userRepository.existsByNickname(nickname)).thenReturn(true);
+
+            // expect
+            UserRegisterDto userRegisterDto = new UserRegisterDto(email, nickname, Major.valueOf(major));
+            assertThrows(UserNicknameDuplicationException.class,
+                    () -> userRegisterService.registerUser(userRegisterDto));
+        }
     }
 
-    @Test
-    @DisplayName("회원가입 실패 - 이미 존재하는 이메일")
-    void signupFailByExistsEmail() {
-        // given
-        when(userRepository.existsByEmail(email)).thenReturn(true);
-
-        // expect
-        UserRegisterDto userRegisterDto = new UserRegisterDto(email, nickname, Major.valueOf(major));
-        assertThrows(UserEmailDuplicationException.class,
-                () -> userRegisterService.registerUser(userRegisterDto));
-    }
-
-    @Test
-    @DisplayName("회원가입 실패 - 이미 존재하는 닉네임")
-    void signupFailByExistsNickname() {
-        // given
-        when(userRepository.existsByEmail(email)).thenReturn(false);
-        when(userRepository.existsByNickname(nickname)).thenReturn(true);
-
-        // expect
-        UserRegisterDto userRegisterDto = new UserRegisterDto(email, nickname, Major.valueOf(major));
-        assertThrows(UserNicknameDuplicationException.class,
-                () -> userRegisterService.registerUser(userRegisterDto));
-    }
 }

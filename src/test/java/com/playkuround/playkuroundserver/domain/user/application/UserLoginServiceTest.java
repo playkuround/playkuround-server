@@ -15,7 +15,6 @@ import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,23 +38,24 @@ class UserLoginServiceTest {
         // given
         String email = "tester@konkuk.ac.kr";
         TokenDto tokenDto = TokenDto.builder()
+                .grantType("Bearer")
                 .accessToken("accessToken")
                 .refreshToken("refreshToken")
-                .grantType("Bearer")
                 .accessTokenExpiredAt(new Date())
                 .refreshTokenExpiredAt(new Date())
                 .build();
-        when(tokenManager.createTokenDto(any(String.class))).thenReturn(tokenDto);
-        when(userRepository.existsByEmail(email)).thenReturn(true);
-        doNothing().when(tokenService).registerRefreshToken(any(String.class), any(String.class));
+        when(tokenManager.createTokenDto(any(String.class)))
+                .thenReturn(tokenDto);
+        when(userRepository.existsByEmail(email))
+                .thenReturn(true);
 
         // when
         TokenDto response = userLoginService.login(email);
 
         // then
+        assertThat(response.getGrantType()).isEqualTo(tokenDto.getGrantType());
         assertThat(response.getAccessToken()).isEqualTo(tokenDto.getAccessToken());
         assertThat(response.getRefreshToken()).isEqualTo(tokenDto.getRefreshToken());
-        assertThat(response.getGrantType()).isEqualTo(tokenDto.getGrantType());
     }
 
 }

@@ -12,7 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class UserLogoutServiceTest {
@@ -28,7 +29,6 @@ class UserLogoutServiceTest {
     void logoutSuccess() {
         // given
         User user = TestUtil.createUser();
-        doNothing().when(tokenService).deleteRefreshTokenByUser(user);
 
         // when
         userLogoutService.logout(user);

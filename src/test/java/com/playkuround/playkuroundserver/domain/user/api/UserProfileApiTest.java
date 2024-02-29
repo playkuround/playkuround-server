@@ -41,10 +41,10 @@ class UserProfileApiTest {
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))
-                .andExpect(jsonPath("$.response.email").value("tester@konkuk.ac.kr"))
-                .andExpect(jsonPath("$.response.nickname").value("tester"))
-                .andExpect(jsonPath("$.response.major").value(Major.컴퓨터공학부.name()))
                 .andExpect(jsonPath("$.response.highestScore").isEmpty())
+                .andExpect(jsonPath("$.response.major").value(Major.컴퓨터공학부.name()))
+                .andExpect(jsonPath("$.response.nickname").value("tester"))
+                .andExpect(jsonPath("$.response.email").value("tester@konkuk.ac.kr"))
                 .andDo(print());
     }
 
@@ -57,7 +57,8 @@ class UserProfileApiTest {
 
         // expected
         mockMvc.perform(get("/api/users/availability")
-                        .param("nickname", "tester"))
+                        .param("nickname", "tester")
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))
                 .andExpect(jsonPath("$.response").value(false))
@@ -73,7 +74,8 @@ class UserProfileApiTest {
 
         // expected
         mockMvc.perform(get("/api/users/availability")
-                        .param("nickname", "tester12"))
+                        .param("nickname", "tester12")
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))
                 .andExpect(jsonPath("$.response").value(true))

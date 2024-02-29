@@ -57,8 +57,8 @@ class LandmarkScoreServiceTest {
         LandmarkHighestScoreUser result = landmarkScoreService.findHighestScoreUserByLandmark(1L);
 
         // then
-        assertThat(result.getScore()).isEqualTo(null);
-        assertThat(result.getNickname()).isEqualTo(null);
+        assertThat(result.getScore()).isNull();
+        assertThat(result.getNickname()).isNull();
     }
 
 }

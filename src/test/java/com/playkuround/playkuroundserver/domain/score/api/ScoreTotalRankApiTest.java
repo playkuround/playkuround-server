@@ -76,8 +76,7 @@ class ScoreTotalRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        ScoreRankingResponse response = (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json,
-                ScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(50);
@@ -111,8 +110,7 @@ class ScoreTotalRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        ScoreRankingResponse response = (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json,
-                ScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(51);
@@ -156,8 +154,7 @@ class ScoreTotalRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        ScoreRankingResponse response = (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json,
-                ScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(100);
@@ -195,8 +192,7 @@ class ScoreTotalRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        ScoreRankingResponse response = (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json,
-                ScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(100);

@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class TestUtil {
-    public static <T> Object convertFromJsonStringToObject(String json, Class<T> objectClass) throws IOException {
+    public static <T> T convertFromJsonStringToObject(String json, Class<T> objectClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

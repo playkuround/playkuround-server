@@ -85,8 +85,7 @@ public class LandmarkScoreRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        ScoreRankingResponse response =
-                (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(50);
@@ -123,8 +122,7 @@ public class LandmarkScoreRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        ScoreRankingResponse response =
-                (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(51);
@@ -171,8 +169,7 @@ public class LandmarkScoreRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        ScoreRankingResponse response =
-                (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(100);
@@ -221,8 +218,7 @@ public class LandmarkScoreRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        ScoreRankingResponse response =
-                (ScoreRankingResponse) TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(100);

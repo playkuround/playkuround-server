@@ -7,7 +7,6 @@ import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,10 +32,8 @@ class CollegeBadgeTest {
                 Map.entry(LandmarkType.교육과학관, BadgeType.COLLEGE_OF_EDUCATION)
         );
 
-        LandmarkType[] landmarkTypes = LandmarkType.values();
-
-        List<CollegeBadge> collegeBadges = CollegeBadgeList.getCollegeBadges();
-        for (LandmarkType landmarkType : landmarkTypes) {
+        // 공학관 A, B, C를 제외한 랜드마크 테스트
+        for (LandmarkType landmarkType : LandmarkType.values()) {
             if (landmarkType == LandmarkType.공학관A ||
                     landmarkType == LandmarkType.공학관B ||
                     landmarkType == LandmarkType.공학관C) {
@@ -44,14 +41,14 @@ class CollegeBadgeTest {
             }
 
             int flag = 0;
-
-            for (CollegeBadge collegeBadge : collegeBadges) {
+            for (CollegeBadge collegeBadge : CollegeBadgeList.getCollegeBadges()) {
                 if (collegeBadge.supports(landmarkType)) {
                     BadgeType badge = collegeBadge.getBadge();
                     assertThat(badge).isEqualTo(map.get(landmarkType));
                     flag++;
                 }
             }
+
             if (flag == 0) {
                 assertThat(map.get(landmarkType)).isNull();
             }
@@ -64,7 +61,7 @@ class CollegeBadgeTest {
         int a = 0, b = 0, c = 0;
         BadgeType[] badgeTypes = new BadgeType[6];
 
-        for (CollegeBadge collegeBadge : collegeBadges) {
+        for (CollegeBadge collegeBadge : CollegeBadgeList.getCollegeBadges()) {
             if (collegeBadge.supports(LandmarkType.공학관A)) {
                 badgeTypes[a] = collegeBadge.getBadge();
                 a++;
@@ -78,14 +75,18 @@ class CollegeBadgeTest {
                 c++;
             }
         }
-        for (int i = 0; i < 3; i++) {
-            boolean result = (badgeTypes[i * 2] == BadgeType.COLLEGE_OF_ENGINEERING &&
-                    badgeTypes[i * 2 + 1] == BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY) ||
-                    (badgeTypes[i * 2] == BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY &&
-                            badgeTypes[i * 2 + 1] == BadgeType.COLLEGE_OF_ENGINEERING);
-            assertThat(result).isTrue();
-        }
+        assertThat(a).isEqualTo(2);
+        assertThat(b).isEqualTo(2);
+        assertThat(c).isEqualTo(2);
 
+        for (int i = 0; i < 3; i++) {
+            boolean case1 = badgeTypes[i * 2] == BadgeType.COLLEGE_OF_ENGINEERING &&
+                    badgeTypes[i * 2 + 1] == BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY;
+            boolean case2 = badgeTypes[i * 2] == BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY &&
+                    badgeTypes[i * 2 + 1] == BadgeType.COLLEGE_OF_ENGINEERING;
+
+            assertThat(case1 | case2).isTrue();
+        }
     }
 
 }

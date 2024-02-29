@@ -110,10 +110,12 @@ public class BadgeService {
 
     @Transactional
     public boolean saveManualBadge(String userEmail, BadgeType badgeType, boolean registerMessage) {
-        User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(UserNotFoundException::new);
         if (badgeRepository.existsByUserAndBadgeType(user, badgeType)) {
             return false;
         }
+
         Badge badge = Badge.createBadge(user, badgeType);
         badgeRepository.save(badge);
         if (registerMessage) {

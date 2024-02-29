@@ -49,7 +49,6 @@ class LandmarkScoreServiceTest {
     @DisplayName("해당 랜드마크를 탐험한 유저가 없다면 빈 응답을 반환")
     void findHighestScoreUserByLandmarkEmpty() {
         // given
-        User user = TestUtil.createUser();
         Landmark mockLandmark = mock(Landmark.class);
         when(mockLandmark.getFirstUser()).thenReturn(null);
         when(landmarkRepository.findById(1L)).thenReturn(Optional.of(mockLandmark));

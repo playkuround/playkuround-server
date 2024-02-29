@@ -32,11 +32,11 @@ class LandmarkFindNearServiceTest {
     void findNearestLandmark() {
         // given
         Landmark mockLandmark1 = mock(Landmark.class);
+        when(mockLandmark1.getId()).thenReturn(1L);
         when(mockLandmark1.getLatitude()).thenReturn(37.539927);
+        when(mockLandmark1.getName()).thenReturn(LandmarkType.중문);
         when(mockLandmark1.getLongitude()).thenReturn(127.073006);
         when(mockLandmark1.getRecognitionRadius()).thenReturn(20);
-        when(mockLandmark1.getId()).thenReturn(1L);
-        when(mockLandmark1.getName()).thenReturn(LandmarkType.중문);
 
         Landmark mockLandmark2 = mock(Landmark.class);
         when(mockLandmark2.getLatitude()).thenReturn(37.0);
@@ -44,7 +44,6 @@ class LandmarkFindNearServiceTest {
         when(mockLandmark2.getRecognitionRadius()).thenReturn(20);
 
         List<Landmark> landmarks = List.of(mockLandmark1, mockLandmark2);
-
         when(landmarkRepository.findAll()).thenReturn(landmarks);
 
         // when
@@ -71,7 +70,6 @@ class LandmarkFindNearServiceTest {
         when(mockLandmark2.getRecognitionRadius()).thenReturn(3);
 
         List<Landmark> landmarks = List.of(mockLandmark1, mockLandmark2);
-
         when(landmarkRepository.findAll()).thenReturn(landmarks);
 
         // when
@@ -83,6 +81,5 @@ class LandmarkFindNearServiceTest {
         assertThat(response.getDistance()).isNull();
         assertThat(response.getLandmarkId()).isNull();
     }
-
 
 }

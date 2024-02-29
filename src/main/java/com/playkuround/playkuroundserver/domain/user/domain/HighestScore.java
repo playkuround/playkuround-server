@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 public class HighestScore {
 
     private Long highestTotalScore;
+    private Long highestTotalRank;
+
     private Long highestQuizScore;
     private Long highestTimeScore;
     private Long highestMoonScore;
@@ -31,12 +33,6 @@ public class HighestScore {
             case CUPID -> updateHighestHongBridgeScore(score);
             case ALL_CLEAR -> updateHighestAllClearScore(score);
             case SURVIVE -> updateHighestMicrobeScore(score);
-        }
-    }
-
-    public void updateHighestTotalScore(Long highestTotalScore) {
-        if (this.highestTotalScore == null || this.highestTotalScore < highestTotalScore) {
-            this.highestTotalScore = highestTotalScore;
         }
     }
 

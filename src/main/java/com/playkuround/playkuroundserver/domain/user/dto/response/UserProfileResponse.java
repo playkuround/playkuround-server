@@ -24,6 +24,9 @@ public class UserProfileResponse {
     @Schema(description = "자신의 토탈 스코어 최고점(점수가 없다면 null 리턴)", example = "1500", requiredMode = RequiredMode.REQUIRED)
     private Long highestScore;
 
+    @Schema(description = "자신의 토탈 등수 최고점(등수가 없다면 null 리턴)", example = "13", requiredMode = RequiredMode.REQUIRED)
+    private Long highestRank;
+
     @Schema(description = "출석한 횟수", example = "28", requiredMode = RequiredMode.REQUIRED)
     private int attendanceDays;
 
@@ -34,6 +37,7 @@ public class UserProfileResponse {
                 .major(user.getMajor().name())
                 .attendanceDays(user.getAttendanceDays())
                 .highestScore(user.getHighestScore() == null ? null : user.getHighestScore().getHighestTotalScore())
+                .highestRank(user.getHighestScore() == null ? null : user.getHighestScore().getHighestTotalRank())
                 .build();
     }
 }

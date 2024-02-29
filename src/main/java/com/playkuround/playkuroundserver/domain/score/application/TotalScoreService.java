@@ -32,7 +32,6 @@ public class TotalScoreService {
         if (myTotalScore == null) {
             return score; // 발생하지 않음
         }
-        user.getHighestScore().updateHighestTotalScore(myTotalScore.longValue());
         return myTotalScore.longValue();
     }
 

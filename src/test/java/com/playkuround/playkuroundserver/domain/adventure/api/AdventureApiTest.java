@@ -96,7 +96,6 @@ class AdventureApiTest {
         List<User> users = userRepository.findAll();
         assertThat(users).hasSize(1);
         User user = users.get(0);
-        assertThat(user.getHighestScore().getHighestTotalScore()).isEqualTo(100L);
         assertThat(user.getHighestScore().getHighestCardScore()).isEqualTo(100L);
 
         // adventure 저장

@@ -26,6 +26,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.auditing.DateTimeProvider;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -63,11 +65,16 @@ class AttendanceApiTest {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
+    private final String redisSetKey = "ranking";
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
     @AfterEach
     void clean() {
         attendanceRepository.deleteAll();
         badgeRepository.deleteAll();
         userRepository.deleteAll();
+        redisTemplate.delete(redisSetKey);
     }
 
     @Nested
@@ -105,6 +112,10 @@ class AttendanceApiTest {
             List<Attendance> attendances = attendanceRepository.findAll();
             assertThat(attendances.size()).isEqualTo(1);
             assertThat(attendances.get(0).getUser().getId()).isEqualTo(user.getId());
+
+            ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+            Double myTotalScore = zSetOperations.score(redisSetKey, user.getEmail());
+            assertThat(myTotalScore).isEqualTo(10.0);
         }
 
         @Test

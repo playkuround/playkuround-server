@@ -9,6 +9,7 @@ import com.playkuround.playkuroundserver.domain.attendance.exception.InvalidAtte
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
+import com.playkuround.playkuroundserver.domain.score.application.TotalScoreService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.Location;
@@ -41,6 +42,9 @@ class AttendanceRegisterServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private TotalScoreService totalScoreService;
 
     @Test
     @DisplayName("출석 시 뱃지와 출석정보가 저장되고 유저의 출석횟수가 증가한다")

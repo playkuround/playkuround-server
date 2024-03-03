@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -38,10 +36,6 @@ public class TokenService {
 
     @Transactional(readOnly = true)
     public void validateAuthVerifyToken(String authVerifyToken) {
-        // TODO: 테스트용 코드, 추후 삭제
-        if (Objects.equals(authVerifyToken, "testToken")) {
-            return;
-        }
         if (!authVerifyTokenRepository.existsByAuthVerifyToken(authVerifyToken)) {
             throw new AuthVerifyTokenNotFoundException();
         }

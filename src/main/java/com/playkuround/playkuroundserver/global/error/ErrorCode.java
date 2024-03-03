@@ -25,8 +25,8 @@ public enum ErrorCode {
     // Authentication
     EMPTY_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "A001", "Authorization Header가 빈 값입니다."),
     NOT_BEARER_GRANT_TYPE(HttpStatus.UNAUTHORIZED, "A002", "인증 타입이 Bearer 타입이 아닙니다."),
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A003", "유효하지 않은 토큰입니다."),
-    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "A004", "만료된 토큰입니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A003", "자동 로그아웃 되었습니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "A004", "자동 로그아웃 되었습니다."),
     NOT_ACCESS_TOKEN_TYPE(HttpStatus.UNAUTHORIZED, "A005", "TokenType이 ACCESS가 아닙니다."),
     NOT_REFRESH_TOKEN_TYPE(HttpStatus.UNAUTHORIZED, "A006", "TokenType이 REFRESH가 아닙니다."),
     FAIL_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "A007", "인증에 실패했습니다."),

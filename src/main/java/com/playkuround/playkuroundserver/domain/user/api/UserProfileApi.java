@@ -1,5 +1,6 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
+import com.playkuround.playkuroundserver.domain.common.AppVersion;
 import com.playkuround.playkuroundserver.domain.user.application.UserProfileService;
 import com.playkuround.playkuroundserver.domain.user.dto.response.UserGameHighestScoreResponse;
 import com.playkuround.playkuroundserver.domain.user.dto.response.UserNotificationResponse;
@@ -11,10 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -49,9 +47,21 @@ public class UserProfileApi {
 
     @GetMapping("/notification")
     @Operation(summary = "유저 알림 얻기", description = "유저 개인 알림을 얻습니다. 저장된 메시지는 (정상적인) 호출 이후 삭제됩니다.")
-    public ApiResponse<List<UserNotificationResponse>> getNotification(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ApiResponse<List<UserNotificationResponse>> getNotification(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                       @RequestParam("version") String appVersion) {
+        if (!AppVersion.isCurrentVersion(appVersion)) {
+            UserNotificationResponse notificationResponse = UserNotificationResponse.from("update", "application is must update");
+            return ApiUtils.success(List.of(notificationResponse));
+        }
         List<UserNotificationResponse> responses = userProfileService.getNotification(userDetails.getUser());
         return ApiUtils.success(responses);
+    }
+
+    @PostMapping("/app-version")
+    @Operation(summary = "앱 버전 올리기(관리자모드)", description = "앱 버전을 올립니다. 이전버전 사용자에게 공지 메시지를 보냅니다.")
+    public ApiResponse<Void> getNotification(@RequestParam("version") String appVersion) {
+        AppVersion.changeAppVersion(appVersion);
+        return ApiUtils.success(null);
     }
 
 }

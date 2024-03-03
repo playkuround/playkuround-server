@@ -1,5 +1,6 @@
 package com.playkuround.playkuroundserver.domain.fakedoor.domain;
 
+import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FakeDoor {
+public class FakeDoor extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

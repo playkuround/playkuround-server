@@ -34,10 +34,12 @@ jobs:
         
       - name: injection application.yml
         run: |
+          touch src/main/resources/application-prod.yml
           touch src/main/resources/application-dev.yml
           touch src/main/resources/application-test.yml
-          touch src/main/resources/application-dev-log.properties
           touch src/main/resources/application-prod-log.properties
+          touch src/main/resources/application-dev-log.properties
+          echo "${{ secrets.PROD_YML }}" > src/main/resources/application-prod.yml
           echo "${{ secrets.DEV_YML }}" > src/main/resources/application-dev.yml
           echo "${{ secrets.TEST_YML }}" > src/main/resources/application-test.yml
           echo "${{ secrets.DEV_LOG_PROPERTIES }}" > src/main/resources/application-dev-log.properties
@@ -82,4 +84,4 @@ jobs:
 
             echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
 
-            sudo nohup java -jar -Dspring.profiles.active="dev" $SOURCE_DIR/$FILE_NAME 1>$SOURCE_DIR/stdout.out 2>$SOURCE_DIR/stderr.out 2>&1 &
+            sudo nohup java -jar -Dspring.profiles.active="prod" $SOURCE_DIR/$FILE_NAME 1>$SOURCE_DIR/stdout.out 2>$SOURCE_DIR/stderr.out 2>&1 &

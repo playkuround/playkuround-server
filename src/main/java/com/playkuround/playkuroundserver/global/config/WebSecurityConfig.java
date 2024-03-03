@@ -40,7 +40,7 @@ public class WebSecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
-                                PathRequest.toH2Console(),
+                                //PathRequest.toH2Console(),
                                 PathRequest.toStaticResources().atCommonLocations(),
                                 AntPathRequestMatcher.antMatcher("/"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/users/register"),

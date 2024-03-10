@@ -65,8 +65,15 @@ public class UserProfileApi {
 
     @PostMapping("/app-version")
     @Operation(summary = "앱 버전 올리기(관리자모드)", description = "앱 버전을 올립니다. 이전버전 사용자에게 공지 메시지를 보냅니다.")
-    public ApiResponse<Void> getNotification(@RequestParam("version") String appVersion) {
+    public ApiResponse<Void> updateAppVersion(@RequestParam("version") String appVersion) {
         AppVersion.changeAppVersion(appVersion);
+        return ApiUtils.success(null);
+    }
+
+    @PostMapping("/system-available")
+    @Operation(summary = "시스템 점검 유무 변경하기(관리자모드)", description = "시스템 점검 유무를 변경합니다.")
+    public ApiResponse<Void> changeSystemAvailable(@RequestParam("available") boolean appVersion) {
+        SystemCheck.changeSystemAvailable(appVersion);
         return ApiUtils.success(null);
     }
 

@@ -45,9 +45,7 @@ public class TotalScoreService {
 
         ScoreRankService scoreRankService = new ScoreRankService(typedTuples);
         Map<String, String> emailBindingNickname = getNicknameBindingEmailMapList(scoreRankService.getRankUserEmails());
-        scoreRankService.setEmailBindingNickname(emailBindingNickname);
-
-        ScoreRankingResponse response = scoreRankService.createScoreRankingResponse();
+        ScoreRankingResponse response = scoreRankService.createScoreRankingResponse(emailBindingNickname);
 
         RankAndScore myRank = getMyRank(user);
         response.setMyRank(myRank.ranking(), myRank.score());

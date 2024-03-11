@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.user.dto.response;
+package com.playkuround.playkuroundserver.domain.user.api.response;
 
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;

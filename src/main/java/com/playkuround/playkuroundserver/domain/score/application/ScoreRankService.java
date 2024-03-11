@@ -1,10 +1,8 @@
 package com.playkuround.playkuroundserver.domain.score.application;
 
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
-import lombok.Setter;
 import org.springframework.data.redis.core.ZSetOperations;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,15 +10,12 @@ import java.util.Set;
 class ScoreRankService {
 
     private final List<RankData> rankDataList;
-    @Setter
-    private Map<String, String> emailBindingNickname;
 
     public ScoreRankService(Set<ZSetOperations.TypedTuple<String>> typedTuples) {
-        this.rankDataList = new ArrayList<>();
-        for (ZSetOperations.TypedTuple<String> typedTuple : typedTuples) {
-            RankData rankData = new RankData(typedTuple.getValue(), typedTuple.getScore().intValue());
-            rankDataList.add(rankData);
-        }
+        this.rankDataList = typedTuples.stream()
+                .filter(typedTuple -> typedTuple.getValue() != null && typedTuple.getScore() != null)
+                .map(typedTuple -> new RankData(typedTuple.getValue(), typedTuple.getScore().intValue()))
+                .toList();
     }
 
     public List<String> getRankUserEmails() {
@@ -29,14 +24,13 @@ class ScoreRankService {
                 .toList();
     }
 
-    public ScoreRankingResponse createScoreRankingResponse() {
-        if (emailBindingNickname == null) {
-            throw new IllegalArgumentException("emailBindingNickname must not be null");
-        }
-
+    public ScoreRankingResponse createScoreRankingResponse(Map<String, String> emailBindingNickname) {
         ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
         rankDataList.forEach(rankData -> {
             String nickname = emailBindingNickname.get(rankData.email);
+            if (nickname == null) {
+                throw new IllegalArgumentException("rank nickname is null");
+            }
             response.addRank(nickname, rankData.score);
         });
         return response;

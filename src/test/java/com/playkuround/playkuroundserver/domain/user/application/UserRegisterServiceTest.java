@@ -5,7 +5,6 @@ import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
-import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicationException;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDuplicationException;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameUnavailableException;
@@ -73,7 +72,7 @@ class UserRegisterServiceTest {
 
             // when
             UserRegisterDto userRegisterDto = new UserRegisterDto(email, nickname, Major.valueOf(major));
-            UserRegisterResponse result = userRegisterService.registerUser(userRegisterDto);
+            TokenDto result = userRegisterService.registerUser(userRegisterDto);
 
             // then
             assertThat(result.getGrantType()).isEqualTo(tokenDto.getGrantType());

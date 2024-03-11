@@ -1,5 +1,6 @@
-package com.playkuround.playkuroundserver.domain.user.dto.response;
+package com.playkuround.playkuroundserver.domain.user.api.response;
 
+import com.playkuround.playkuroundserver.domain.user.dto.UserNotification;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,12 +17,14 @@ public class UserNotificationResponse {
     @Schema(description = "알림 내용", example = "MONTHLY_RANKING_1", requiredMode = Schema.RequiredMode.REQUIRED)
     private String description;
 
-    public static UserNotificationResponse of(String name, String notification) {
-        return new UserNotificationResponse(name, notification);
-    }
-
     public static List<UserNotificationResponse> from(NotificationEnum notificationEnum) {
         return List.of(new UserNotificationResponse(notificationEnum.name, notificationEnum.description));
+    }
+
+    public static List<UserNotificationResponse> from(List<UserNotification> notificationList) {
+        return notificationList.stream()
+                .map(notification -> new UserNotificationResponse(notification.name(), notification.description()))
+                .toList();
     }
 
     public enum NotificationEnum {

@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.user.dto.request;
+package com.playkuround.playkuroundserver.domain.user.api.request;
 
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.global.validation.ValidEnum;

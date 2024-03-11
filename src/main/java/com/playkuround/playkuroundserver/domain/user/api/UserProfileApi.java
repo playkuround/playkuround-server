@@ -2,10 +2,12 @@ package com.playkuround.playkuroundserver.domain.user.api;
 
 import com.playkuround.playkuroundserver.domain.common.AppVersion;
 import com.playkuround.playkuroundserver.domain.common.SystemCheck;
+import com.playkuround.playkuroundserver.domain.user.api.response.UserGameHighestScoreResponse;
+import com.playkuround.playkuroundserver.domain.user.api.response.UserNotificationResponse;
+import com.playkuround.playkuroundserver.domain.user.api.response.UserProfileResponse;
 import com.playkuround.playkuroundserver.domain.user.application.UserProfileService;
-import com.playkuround.playkuroundserver.domain.user.dto.response.UserGameHighestScoreResponse;
-import com.playkuround.playkuroundserver.domain.user.dto.response.UserNotificationResponse;
-import com.playkuround.playkuroundserver.domain.user.dto.response.UserProfileResponse;
+import com.playkuround.playkuroundserver.domain.user.domain.HighestScore;
+import com.playkuround.playkuroundserver.domain.user.dto.UserNotification;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -31,15 +33,14 @@ public class UserProfileApi {
     @GetMapping
     @Operation(summary = "프로필 얻기", description = "로그인 유저의 기본 정보를 얻습니다.")
     public ApiResponse<UserProfileResponse> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        UserProfileResponse response = userProfileService.getUserProfile(userDetails.getUser());
-        return ApiUtils.success(response);
+        return ApiUtils.success(UserProfileResponse.from(userDetails.getUser()));
     }
 
     @GetMapping("/game-score")
     @Operation(summary = "게임별 최고 점수 얻기", description = "로그인 유저의 게임별 최고 점수를 얻습니다. 플레이한적이 없는 게임은 null이 반환됩니다.")
     public ApiResponse<UserGameHighestScoreResponse> getUserGameHighestScore(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        UserGameHighestScoreResponse response = userProfileService.getUserGameHighestScore(userDetails.getUser());
-        return ApiUtils.success(response);
+        HighestScore userGameHighestScore = userProfileService.getUserGameHighestScore(userDetails.getUser());
+        return ApiUtils.success(UserGameHighestScoreResponse.from(userGameHighestScore));
     }
 
     @GetMapping("/availability")
@@ -61,7 +62,8 @@ public class UserProfileApi {
             response = UserNotificationResponse.from(UserNotificationResponse.NotificationEnum.UPDATE);
         }
         else {
-            response = userProfileService.getNotification(userDetails.getUser());
+            List<UserNotification> notificationList = userProfileService.getNotification(userDetails.getUser());
+            response = UserNotificationResponse.from(notificationList);
         }
         return ApiUtils.success(response);
     }

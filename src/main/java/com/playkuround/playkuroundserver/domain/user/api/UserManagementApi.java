@@ -1,12 +1,13 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
+import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.user.api.request.UserRegisterRequest;
+import com.playkuround.playkuroundserver.domain.user.api.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.domain.user.application.UserLogoutService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
-import com.playkuround.playkuroundserver.domain.user.dto.request.UserRegisterRequest;
-import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -36,10 +37,10 @@ public class UserManagementApi {
 
         UserRegisterDto userRegisterDto
                 = new UserRegisterDto(request.getEmail(), request.getNickname(), Major.valueOf(request.getMajor()));
-        UserRegisterResponse response = userRegisterService.registerUser(userRegisterDto);
+        TokenDto tokenDto = userRegisterService.registerUser(userRegisterDto);
 
         tokenService.deleteAuthVerifyToken(request.getAuthVerifyToken());
-        return ApiUtils.success(response);
+        return ApiUtils.success(UserRegisterResponse.from(tokenDto));
     }
 
     @PostMapping("/logout")

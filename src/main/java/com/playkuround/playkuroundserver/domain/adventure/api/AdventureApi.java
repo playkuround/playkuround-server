@@ -1,9 +1,10 @@
 package com.playkuround.playkuroundserver.domain.adventure.api;
 
+import com.playkuround.playkuroundserver.domain.adventure.api.request.AdventureSaveRequest;
+import com.playkuround.playkuroundserver.domain.adventure.api.response.AdventureSaveResponse;
 import com.playkuround.playkuroundserver.domain.adventure.application.AdventureService;
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
-import com.playkuround.playkuroundserver.domain.adventure.dto.request.AdventureSaveRequest;
-import com.playkuround.playkuroundserver.domain.adventure.dto.response.AdventureSaveResponse;
+import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
@@ -35,8 +36,8 @@ public class AdventureApi {
         Location location = new Location(request.getLatitude(), request.getLongitude());
         AdventureSaveDto adventureSaveDto
                 = new AdventureSaveDto(userDetails.getUser(), request.getLandmarkId(), location, request.getScore(), scoreType);
-        AdventureSaveResponse response = adventureService.saveAdventure(adventureSaveDto);
-        return ApiUtils.success(response);
+        NewlyRegisteredBadge newlyRegisteredBadge = adventureService.saveAdventure(adventureSaveDto);
+        return ApiUtils.success(AdventureSaveResponse.from(newlyRegisteredBadge));
     }
 
 }

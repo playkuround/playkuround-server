@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.adventure.dto.request;
+package com.playkuround.playkuroundserver.domain.adventure.api.request;
 
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
 import com.playkuround.playkuroundserver.global.validation.Latitude;

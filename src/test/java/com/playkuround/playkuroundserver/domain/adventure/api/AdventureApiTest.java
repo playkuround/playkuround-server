@@ -1,9 +1,9 @@
 package com.playkuround.playkuroundserver.domain.adventure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.playkuround.playkuroundserver.domain.adventure.api.request.AdventureSaveRequest;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
-import com.playkuround.playkuroundserver.domain.adventure.dto.request.AdventureSaveRequest;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;

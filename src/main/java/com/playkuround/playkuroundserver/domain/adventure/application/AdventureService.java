@@ -3,7 +3,6 @@ package com.playkuround.playkuroundserver.domain.adventure.application;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
-import com.playkuround.playkuroundserver.domain.adventure.dto.response.AdventureSaveResponse;
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
@@ -31,7 +30,7 @@ public class AdventureService {
     private final AdventureRepository adventureRepository;
 
     @Transactional
-    public AdventureSaveResponse saveAdventure(AdventureSaveDto adventureSaveDto) {
+    public NewlyRegisteredBadge saveAdventure(AdventureSaveDto adventureSaveDto) {
         Landmark landmark = landmarkRepository.findById(adventureSaveDto.landmarkId())
                 .orElseThrow(() -> new LandmarkNotFoundException(adventureSaveDto.landmarkId()));
         validateLocation(landmark, adventureSaveDto.requestLocation());
@@ -41,9 +40,7 @@ public class AdventureService {
         updateUserScore(user, adventureSaveDto.scoreType(), adventureSaveDto.score());
         saveAdventure(user, landmark, adventureSaveDto.scoreType(), adventureSaveDto.score());
         updateLandmarkHighestScore(user, landmark);
-        NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAdventureBadges(user, landmark);
-
-        return AdventureSaveResponse.from(newlyRegisteredBadge);
+        return badgeService.updateNewlyAdventureBadges(user, landmark);
     }
 
     private void validateLocation(Landmark landmark, Location location) {

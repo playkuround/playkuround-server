@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.adventure.dto.response;
+package com.playkuround.playkuroundserver.domain.adventure.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
@@ -7,23 +7,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class AdventureSaveResponse {
 
-    private final List<BadgeInfo> newBadges = new ArrayList<>();
+    private final List<BadgeInfo> newBadges;
 
-    private AdventureSaveResponse(List<BadgeType> badgeTypes) {
-        badgeTypes.forEach(it -> this.newBadges.add(new BadgeInfo(it.name(), it.getDescription())));
+    private AdventureSaveResponse(NewlyRegisteredBadge newlyRegisteredBadge) {
+        this.newBadges = newlyRegisteredBadge.getNewlyBadges().stream()
+                .map(badgeInfo -> BadgeType.valueOf(badgeInfo.name()))
+                .map(it -> new BadgeInfo(it.name(), it.getDescription()))
+                .toList();
     }
 
     public static AdventureSaveResponse from(NewlyRegisteredBadge newlyRegisteredBadge) {
-        List<BadgeType> badgeInfoList = newlyRegisteredBadge.getNewlyBadges().stream()
-                .map(badgeInfo -> BadgeType.valueOf(badgeInfo.name()))
-                .toList();
-        return new AdventureSaveResponse(badgeInfoList);
+        return new AdventureSaveResponse(newlyRegisteredBadge);
     }
 
     @Getter

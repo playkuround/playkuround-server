@@ -6,6 +6,8 @@ import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.request.ManualBadgeSaveRequest;
+import com.playkuround.playkuroundserver.domain.common.AppVersion;
+import com.playkuround.playkuroundserver.domain.common.SystemCheck;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.Role;
@@ -15,6 +17,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,6 +57,44 @@ class AdminApiTest {
     }
 
     @Nested
+    @DisplayName("앱 버전 올리기")
+    class updateAppVersion {
+
+        @ParameterizedTest
+        @ValueSource(strings = {"1.0.0", "1.0.1", "1.1.0", "2.0.0"})
+        @WithMockCustomUser(role = Role.ROLE_ADMIN)
+        @DisplayName("앱 버전을 업데이트합니다.")
+        void success_1(String version) throws Exception {
+            // expect
+            mockMvc.perform(post("/api/admin/app-version")
+                            .queryParam("version", version))
+                    .andExpect(status().isOk())
+                    .andDo(print());
+
+            assertThat(AppVersion.isCurrentVersion(version)).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("시스템 점검 유무 변경하기")
+    class changeSystemAvailable {
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        @WithMockCustomUser(role = Role.ROLE_ADMIN)
+        @DisplayName("시스템 변경 유무를 변경합니다.")
+        void success_1(boolean available) throws Exception {
+            // expect
+            mockMvc.perform(post("/api/admin/system-available")
+                            .queryParam("available", String.valueOf(available)))
+                    .andExpect(status().isOk())
+                    .andDo(print());
+
+            assertThat(SystemCheck.isSystemAvailable()).isEqualTo(available);
+        }
+    }
+
+    @Nested
     @DisplayName("뱃지 수동 등록")
     class saveManualBadge {
 
@@ -69,7 +111,7 @@ class AdminApiTest {
             String request = objectMapper.writeValueAsString(manualBadgeSaveRequest);
 
             // expect
-            mockMvc.perform(post("/api/badges/manual")
+            mockMvc.perform(post("/api/admin/badges/manual")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(request)
                     )

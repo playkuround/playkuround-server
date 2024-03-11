@@ -2,10 +2,10 @@ package com.playkuround.playkuroundserver.domain.attendance.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+import com.playkuround.playkuroundserver.domain.attendance.api.request.AttendanceRegisterRequest;
 import com.playkuround.playkuroundserver.domain.attendance.application.AttendanceRegisterService;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
-import com.playkuround.playkuroundserver.domain.attendance.dto.request.AttendanceRegisterRequest;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;

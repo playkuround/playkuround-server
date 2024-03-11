@@ -3,7 +3,6 @@ package com.playkuround.playkuroundserver.domain.attendance.application;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
-import com.playkuround.playkuroundserver.domain.attendance.dto.response.AttendanceRegisterResponse;
 import com.playkuround.playkuroundserver.domain.attendance.exception.DuplicateAttendanceException;
 import com.playkuround.playkuroundserver.domain.attendance.exception.InvalidAttendanceLocationException;
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
@@ -24,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -62,12 +61,11 @@ class AttendanceRegisterServiceTest {
         // when
         User user = TestUtil.createUser();
         Location location = new Location(37.539927, 127.073006);
-        AttendanceRegisterResponse result = attendanceRegisterService.registerAttendance(user, location);
+        NewlyRegisteredBadge result = attendanceRegisterService.registerAttendance(user, location);
 
         // then
         assertThat(user.getAttendanceDays()).isEqualTo(1);
-        assertThat(result.getNewBadges()).hasSize(2);
-        assertThat(result.getNewBadges()).extracting("name")
+        assertThat(result.getNewlyBadges()).extracting("name")
                 .containsExactlyInAnyOrder(BadgeType.ATTENDANCE_1.name(), BadgeType.ATTENDANCE_ARBOR_DAY.name());
 
         ArgumentCaptor<Attendance> attendanceArgument = ArgumentCaptor.forClass(Attendance.class);
@@ -84,8 +82,8 @@ class AttendanceRegisterServiceTest {
         // expect
         User user = TestUtil.createUser();
         Location location = new Location(0.0, 0.0);
-        assertThrows(InvalidAttendanceLocationException.class,
-                () -> attendanceRegisterService.registerAttendance(user, location));
+        assertThatThrownBy(() -> attendanceRegisterService.registerAttendance(user, location))
+                .isInstanceOf(InvalidAttendanceLocationException.class);
     }
 
     @Test
@@ -98,8 +96,8 @@ class AttendanceRegisterServiceTest {
         // expect
         User user = TestUtil.createUser();
         Location location = new Location(37.539927, 127.073006);
-        assertThrows(DuplicateAttendanceException.class,
-                () -> attendanceRegisterService.registerAttendance(user, location));
+        assertThatThrownBy(() -> attendanceRegisterService.registerAttendance(user, location))
+                .isInstanceOf(DuplicateAttendanceException.class);
     }
 
 }

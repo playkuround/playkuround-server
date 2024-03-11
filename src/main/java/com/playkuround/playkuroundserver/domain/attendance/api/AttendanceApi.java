@@ -1,10 +1,11 @@
 package com.playkuround.playkuroundserver.domain.attendance.api;
 
+import com.playkuround.playkuroundserver.domain.attendance.api.request.AttendanceRegisterRequest;
+import com.playkuround.playkuroundserver.domain.attendance.api.response.AttendanceRegisterResponse;
+import com.playkuround.playkuroundserver.domain.attendance.api.response.AttendanceSearchResponse;
 import com.playkuround.playkuroundserver.domain.attendance.application.AttendanceRegisterService;
 import com.playkuround.playkuroundserver.domain.attendance.application.AttendanceSearchService;
-import com.playkuround.playkuroundserver.domain.attendance.dto.request.AttendanceRegisterRequest;
-import com.playkuround.playkuroundserver.domain.attendance.dto.response.AttendanceRegisterResponse;
-import com.playkuround.playkuroundserver.domain.attendance.dto.response.AttendanceSearchResponse;
+import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -34,16 +35,15 @@ public class AttendanceApi {
     public ApiResponse<AttendanceRegisterResponse> attendanceRegister(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                       @Valid @RequestBody AttendanceRegisterRequest registerRequest) {
         Location location = new Location(registerRequest.getLatitude(), registerRequest.getLongitude());
-        AttendanceRegisterResponse response = attendanceRegisterService.registerAttendance(userDetails.getUser(), location);
-        return ApiUtils.success(response);
+        NewlyRegisteredBadge newlyRegisteredBadge = attendanceRegisterService.registerAttendance(userDetails.getUser(), location);
+        return ApiUtils.success(AttendanceRegisterResponse.from(newlyRegisteredBadge));
     }
 
     @GetMapping
     @Operation(summary = "출석 조회하기", description = "30일 간의 출석 기록을 반환합니다. 가장 최신 기록이 배열의 마지막에 위치합니다.")
     public ApiResponse<AttendanceSearchResponse> attendanceSearch(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<LocalDateTime> attendances = attendanceSearchService.findAttendanceForMonth(userDetails.getUser());
-        AttendanceSearchResponse response = new AttendanceSearchResponse(attendances);
-        return ApiUtils.success(response);
+        List<LocalDateTime> attendanceDateTime = attendanceSearchService.findAttendanceForMonth(userDetails.getUser());
+        return ApiUtils.success(AttendanceSearchResponse.from(attendanceDateTime));
     }
 
 }

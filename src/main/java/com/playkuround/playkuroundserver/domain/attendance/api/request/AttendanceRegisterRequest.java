@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.attendance.dto.request;
+package com.playkuround.playkuroundserver.domain.attendance.api.request;
 
 import com.playkuround.playkuroundserver.global.validation.Latitude;
 import com.playkuround.playkuroundserver.global.validation.Longitude;

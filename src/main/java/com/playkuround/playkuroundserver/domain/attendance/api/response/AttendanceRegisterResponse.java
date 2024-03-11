@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.attendance.dto.response;
+package com.playkuround.playkuroundserver.domain.attendance.api.response;
 
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
@@ -6,23 +6,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class AttendanceRegisterResponse {
 
-    private final List<BadgeInfo> newBadges = new ArrayList<>();
+    private final List<BadgeInfo> newBadges;
 
-    private AttendanceRegisterResponse(List<BadgeType> badgeTypes) {
-        badgeTypes.forEach(it -> this.newBadges.add(new BadgeInfo(it.name(), it.getDescription())));
+    private AttendanceRegisterResponse(NewlyRegisteredBadge newlyRegisteredBadge) {
+        this.newBadges = newlyRegisteredBadge.getNewlyBadges().stream()
+                .map(badgeInfo -> BadgeType.valueOf(badgeInfo.name()))
+                .map(it -> new BadgeInfo(it.name(), it.getDescription()))
+                .toList();
     }
 
     public static AttendanceRegisterResponse from(NewlyRegisteredBadge newlyRegisteredBadge) {
-        List<BadgeType> badgeInfoList = newlyRegisteredBadge.getNewlyBadges().stream()
-                .map(badgeInfo -> BadgeType.valueOf(badgeInfo.name()))
-                .toList();
-        return new AttendanceRegisterResponse(badgeInfoList);
+        return new AttendanceRegisterResponse(newlyRegisteredBadge);
     }
 
     @Getter

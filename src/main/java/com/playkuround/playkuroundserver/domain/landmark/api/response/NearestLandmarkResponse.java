@@ -1,7 +1,7 @@
-package com.playkuround.playkuroundserver.domain.landmark.dto.response;
+package com.playkuround.playkuroundserver.domain.landmark.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
+import com.playkuround.playkuroundserver.domain.landmark.dto.NearestLandmark;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,15 +20,16 @@ public class NearestLandmarkResponse {
     @Schema(description = "랜드마크 ID", example = "4", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long landmarkId;
 
-    public static NearestLandmarkResponse createEmptyResponse() {
-        return new NearestLandmarkResponse();
+    private NearestLandmarkResponse(String name, Double distance, Long landmarkId) {
+        this.name = name;
+        this.distance = distance;
+        this.landmarkId = landmarkId;
     }
 
-    public void update(Landmark landmark, double distance) {
-        if (landmarkId == null || this.distance > distance) {
-            this.distance = distance;
-            this.landmarkId = landmark.getId();
-            this.name = landmark.getName().name();
+    public static NearestLandmarkResponse from(NearestLandmark nearestLandmark) {
+        if (nearestLandmark.isHasResult()) {
+            return new NearestLandmarkResponse(nearestLandmark.getName(), nearestLandmark.getDistance(), nearestLandmark.getLandmarkId());
         }
+        return new NearestLandmarkResponse();
     }
 }

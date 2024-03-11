@@ -3,7 +3,7 @@ package com.playkuround.playkuroundserver.domain.landmark.application;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
-import com.playkuround.playkuroundserver.domain.landmark.dto.response.NearestLandmarkResponse;
+import com.playkuround.playkuroundserver.domain.landmark.dto.NearestLandmark;
 import com.playkuround.playkuroundserver.global.util.Location;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,15 +48,16 @@ class LandmarkFindNearServiceTest {
 
         // when
         Location location = new Location(37.539927, 127.073006);
-        NearestLandmarkResponse response = landmarkFindNearService.findNearestLandmark(location);
+        NearestLandmark nearestLandmark = landmarkFindNearService.findNearestLandmark(location);
 
         // then
-        assertThat(response.getLandmarkId()).isEqualTo(1L);
-        assertThat(response.getName()).isEqualTo(LandmarkType.중문.name());
+        assertThat(nearestLandmark.isHasResult()).isTrue();
+        assertThat(nearestLandmark.getLandmarkId()).isEqualTo(1L);
+        assertThat(nearestLandmark.getName()).isEqualTo(LandmarkType.중문.name());
     }
 
     @Test
-    @DisplayName("인식 반경에 랜드마크가 없다면 빈 응답을 반환")
+    @DisplayName("인식 반경에 랜드마크가 없다면 결과 데이터가 없다.")
     void findNearestLandmarkEmpty() {
         // given
         Landmark mockLandmark1 = mock(Landmark.class);
@@ -74,12 +75,10 @@ class LandmarkFindNearServiceTest {
 
         // when
         Location location = new Location(37.539, 127.0736);
-        NearestLandmarkResponse response = landmarkFindNearService.findNearestLandmark(location);
+        NearestLandmark nearestLandmark = landmarkFindNearService.findNearestLandmark(location);
 
         // then
-        assertThat(response.getName()).isNull();
-        assertThat(response.getDistance()).isNull();
-        assertThat(response.getLandmarkId()).isNull();
+        assertThat(nearestLandmark.isHasResult()).isFalse();
     }
 
 }

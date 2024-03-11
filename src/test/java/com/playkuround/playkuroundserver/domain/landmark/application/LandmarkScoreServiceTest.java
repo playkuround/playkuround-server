@@ -3,7 +3,7 @@ package com.playkuround.playkuroundserver.domain.landmark.application;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
-import com.playkuround.playkuroundserver.domain.landmark.dto.response.LandmarkHighestScoreUser;
+import com.playkuround.playkuroundserver.domain.landmark.dto.LandmarkHighestScoreUser;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,6 +41,7 @@ class LandmarkScoreServiceTest {
         LandmarkHighestScoreUser result = landmarkScoreService.findHighestScoreUserByLandmark(1L);
 
         // then
+        assertThat(result.isHasResult()).isTrue();
         assertThat(result.getScore()).isEqualTo(1234L);
         assertThat(result.getNickname()).isEqualTo(user.getNickname());
     }
@@ -57,8 +58,7 @@ class LandmarkScoreServiceTest {
         LandmarkHighestScoreUser result = landmarkScoreService.findHighestScoreUserByLandmark(1L);
 
         // then
-        assertThat(result.getScore()).isNull();
-        assertThat(result.getNickname()).isNull();
+        assertThat(result.isHasResult()).isFalse();
     }
 
 }

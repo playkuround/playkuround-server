@@ -2,7 +2,7 @@ package com.playkuround.playkuroundserver.domain.landmark.application;
 
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
-import com.playkuround.playkuroundserver.domain.landmark.dto.response.LandmarkHighestScoreUser;
+import com.playkuround.playkuroundserver.domain.landmark.dto.LandmarkHighestScoreUser;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +22,8 @@ public class LandmarkScoreService {
 
         User firstUser = landmark.getFirstUser();
         if (firstUser == null) {
-            return LandmarkHighestScoreUser.createEmptyResponse();
+            return LandmarkHighestScoreUser.createEmpty();
         }
-        else {
-            return new LandmarkHighestScoreUser(firstUser.getNickname(), landmark.getHighestScore());
-        }
+        return LandmarkHighestScoreUser.of(firstUser.getNickname(), landmark.getHighestScore());
     }
 }

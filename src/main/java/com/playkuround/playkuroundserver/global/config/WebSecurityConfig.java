@@ -52,9 +52,7 @@ public class WebSecurityConfig {
                                 AntPathRequestMatcher.antMatcher("/actu/**")
                         ).permitAll()
                         .requestMatchers(
-                                AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/badges/manual"),
-                                AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/users/app-version"),
-                                AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/users/system-available")
+                                AntPathRequestMatcher.antMatcher("/api/admin/**")
                         ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

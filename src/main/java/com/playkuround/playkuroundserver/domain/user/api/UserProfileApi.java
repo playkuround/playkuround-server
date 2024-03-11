@@ -13,7 +13,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -61,20 +64,6 @@ public class UserProfileApi {
             response = userProfileService.getNotification(userDetails.getUser());
         }
         return ApiUtils.success(response);
-    }
-
-    @PostMapping("/app-version")
-    @Operation(summary = "앱 버전 올리기(관리자모드)", description = "앱 버전을 올립니다. 이전버전 사용자에게 공지 메시지를 보냅니다.")
-    public ApiResponse<Void> updateAppVersion(@RequestParam("version") String appVersion) {
-        AppVersion.changeAppVersion(appVersion);
-        return ApiUtils.success(null);
-    }
-
-    @PostMapping("/system-available")
-    @Operation(summary = "시스템 점검 유무 변경하기(관리자모드)", description = "시스템 점검 유무를 변경합니다.")
-    public ApiResponse<Void> changeSystemAvailable(@RequestParam("available") boolean appVersion) {
-        SystemCheck.changeSystemAvailable(appVersion);
-        return ApiUtils.success(null);
     }
 
 }

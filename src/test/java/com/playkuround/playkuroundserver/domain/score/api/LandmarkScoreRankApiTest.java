@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @SpringBootTest(properties = "spring.profiles.active=test")
-public class LandmarkScoreRankApiTest {
+class LandmarkScoreRankApiTest {
 
     @Autowired
     private MockMvc mockMvc;

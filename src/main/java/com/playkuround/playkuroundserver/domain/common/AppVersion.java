@@ -5,7 +5,7 @@ public abstract class AppVersion {
     private AppVersion() {
     }
 
-    private static String CURRENT_VERSION = "2.0.0";
+    private static String CURRENT_VERSION = "2.0.2";
 
     public static boolean isCurrentVersion(String version) {
         return CURRENT_VERSION.equals(version);

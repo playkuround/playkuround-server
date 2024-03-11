@@ -1,7 +1,9 @@
-package com.playkuround.playkuroundserver.domain.auth.email.dto.response;
+package com.playkuround.playkuroundserver.domain.auth.email.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthVerifyEmailResult;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthVerifyTokenResult;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.TokenDtoResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
@@ -33,11 +35,13 @@ public class AuthVerifyEmailResponse {
         this.refreshToken = refreshToken;
     }
 
-    public static AuthVerifyEmailResponse createByAuthVerifyToken(String authVerifyToken) {
-        return new AuthVerifyEmailResponse(authVerifyToken);
-    }
-
-    public static AuthVerifyEmailResponse fromTokenDto(TokenDto tokenDto) {
-        return new AuthVerifyEmailResponse(tokenDto.getGrantType(), tokenDto.getAccessToken(), tokenDto.getRefreshToken());
+    public static AuthVerifyEmailResponse from(AuthVerifyEmailResult result) {
+        if (result instanceof TokenDtoResult tokenDtoResult) {
+            return new AuthVerifyEmailResponse(tokenDtoResult.grantType(), tokenDtoResult.accessToken(), tokenDtoResult.refreshToken());
+        }
+        if (result instanceof AuthVerifyTokenResult authVerifyTokenResult) {
+            return new AuthVerifyEmailResponse(authVerifyTokenResult.authVerifyToken());
+        }
+        throw new IllegalArgumentException("Unknown AuthVerifyEmailResult type: " + result.getClass().getName());
     }
 }

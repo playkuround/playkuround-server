@@ -2,7 +2,9 @@ package com.playkuround.playkuroundserver.domain.auth.email.application;
 
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
-import com.playkuround.playkuroundserver.domain.auth.email.dto.response.AuthVerifyEmailResponse;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthVerifyEmailResult;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthVerifyTokenResult;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.TokenDtoResult;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.AuthCodeExpiredException;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.AuthEmailNotFoundException;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.NotMatchAuthCodeException;
@@ -27,7 +29,7 @@ public class AuthEmailVerifyService {
     private final AuthEmailRepository authEmailRepository;
 
     @Transactional
-    public AuthVerifyEmailResponse verifyAuthEmail(String code, String email) {
+    public AuthVerifyEmailResult verifyAuthEmail(String code, String email) {
         AuthEmail authEmail = authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(email)
                 .orElseThrow(AuthEmailNotFoundException::new);
 
@@ -37,11 +39,11 @@ public class AuthEmailVerifyService {
         boolean existsUser = userRepository.existsByEmail(email);
         if (existsUser) {
             TokenDto tokenDto = userLoginService.login(email);
-            return AuthVerifyEmailResponse.fromTokenDto(tokenDto);
+            return new TokenDtoResult(tokenDto);
         }
         else {
             AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
-            return AuthVerifyEmailResponse.createByAuthVerifyToken(authVerifyToken.getAuthVerifyToken());
+            return new AuthVerifyTokenResult(authVerifyToken.getAuthVerifyToken());
         }
     }
 

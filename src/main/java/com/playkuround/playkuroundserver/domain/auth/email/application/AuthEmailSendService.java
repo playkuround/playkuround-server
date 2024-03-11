@@ -2,7 +2,7 @@ package com.playkuround.playkuroundserver.domain.auth.email.application;
 
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
-import com.playkuround.playkuroundserver.domain.auth.email.dto.response.AuthEmailSendResponse;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthEmailInfo;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.NotKUEmailException;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.SendingLimitExceededException;
 import com.playkuround.playkuroundserver.infra.email.EmailService;
@@ -33,7 +33,7 @@ public class AuthEmailSendService {
     private Long codeLength;
 
     @Transactional
-    public AuthEmailSendResponse sendAuthEmail(String target) {
+    public AuthEmailInfo sendAuthEmail(String target) {
         validateEmailDomain(target);
         long sendingCount = validateSendingCount(target);
 
@@ -41,7 +41,7 @@ public class AuthEmailSendService {
         LocalDateTime expiredAt = saveAuthEmail(target, authenticationCode);
         sendEmail(target, authenticationCode);
 
-        return new AuthEmailSendResponse(expiredAt, sendingCount + 1);
+        return new AuthEmailInfo(expiredAt, sendingCount + 1);
     }
 
     private void validateEmailDomain(String target) {

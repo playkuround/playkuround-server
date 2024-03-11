@@ -2,9 +2,9 @@ package com.playkuround.playkuroundserver.domain.auth.email.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+import com.playkuround.playkuroundserver.domain.auth.email.api.request.AuthEmailSendRequest;
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
-import com.playkuround.playkuroundserver.domain.auth.email.dto.request.AuthEmailSendRequest;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import com.playkuround.playkuroundserver.infra.email.EmailService;

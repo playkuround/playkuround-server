@@ -2,7 +2,7 @@ package com.playkuround.playkuroundserver.domain.auth.email.application;
 
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
-import com.playkuround.playkuroundserver.domain.auth.email.dto.response.AuthEmailSendResponse;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthEmailInfo;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.NotKUEmailException;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.SendingLimitExceededException;
 import com.playkuround.playkuroundserver.infra.email.EmailService;
@@ -54,10 +54,10 @@ class AuthEmailSendServiceTest {
 
         // when
         String target = "test@test.com";
-        AuthEmailSendResponse response = authEmailSendService.sendAuthEmail(target);
+        AuthEmailInfo result = authEmailSendService.sendAuthEmail(target);
 
         // then
-        assertThat(response.getSendingCount()).isEqualTo(1L);
+        assertThat(result.sendingCount()).isEqualTo(1L);
 
         ArgumentCaptor<AuthEmail> authEmailArgument = ArgumentCaptor.forClass(AuthEmail.class);
         verify(authEmailRepository, times(1)).save(authEmailArgument.capture());

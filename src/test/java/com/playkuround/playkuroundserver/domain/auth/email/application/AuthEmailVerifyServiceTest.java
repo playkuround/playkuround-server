@@ -3,7 +3,9 @@ package com.playkuround.playkuroundserver.domain.auth.email.application;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
-import com.playkuround.playkuroundserver.domain.auth.email.dto.response.AuthVerifyEmailResponse;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthVerifyEmailResult;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthVerifyTokenResult;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.TokenDtoResult;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.AuthCodeExpiredException;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.AuthEmailNotFoundException;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.NotMatchAuthCodeException;
@@ -63,13 +65,14 @@ class AuthEmailVerifyServiceTest {
         when(userLoginService.login(target)).thenReturn(tokenDto);
 
         // when
-        AuthVerifyEmailResponse response = authEmailVerifyService.verifyAuthEmail(code, target);
+        AuthVerifyEmailResult result = authEmailVerifyService.verifyAuthEmail(code, target);
 
         // then
-        assertThat(response.getAuthVerifyToken()).isNull();
-        assertThat(response.getGrantType()).isEqualTo(tokenDto.getGrantType());
-        assertThat(response.getAccessToken()).isEqualTo(tokenDto.getAccessToken());
-        assertThat(response.getRefreshToken()).isEqualTo(tokenDto.getRefreshToken());
+        assertThat(result).isInstanceOf(TokenDtoResult.class);
+        TokenDtoResult tokenDtoResult = (TokenDtoResult) result;
+        assertThat(tokenDtoResult.grantType()).isEqualTo(tokenDto.getGrantType());
+        assertThat(tokenDtoResult.accessToken()).isEqualTo(tokenDto.getAccessToken());
+        assertThat(tokenDtoResult.refreshToken()).isEqualTo(tokenDto.getRefreshToken());
     }
 
     @Test
@@ -90,13 +93,12 @@ class AuthEmailVerifyServiceTest {
         when(tokenService.registerAuthVerifyToken()).thenReturn(authVerifyToken);
 
         // when
-        AuthVerifyEmailResponse response = authEmailVerifyService.verifyAuthEmail(code, target);
+        AuthVerifyEmailResult result = authEmailVerifyService.verifyAuthEmail(code, target);
 
         // then
-        assertThat(response.getGrantType()).isNull();
-        assertThat(response.getAccessToken()).isNull();
-        assertThat(response.getRefreshToken()).isNull();
-        assertThat(response.getAuthVerifyToken()).isEqualTo(authVerify);
+        assertThat(result).isInstanceOf(AuthVerifyTokenResult.class);
+        AuthVerifyTokenResult authVerifyTokenResult = (AuthVerifyTokenResult) result;
+        assertThat(authVerifyTokenResult.authVerifyToken()).isEqualTo(authVerify);
     }
 
     @Test

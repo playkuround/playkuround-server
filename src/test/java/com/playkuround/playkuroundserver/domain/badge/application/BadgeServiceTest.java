@@ -6,7 +6,6 @@ import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
-import com.playkuround.playkuroundserver.domain.badge.dto.response.BadgeFindResponse;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -62,11 +61,10 @@ class BadgeServiceTest {
         void success_1() {
             // given
             User user = TestUtil.createUser();
-            when(badgeRepository.findByUser(user))
-                    .thenReturn(new ArrayList<>());
+            when(badgeRepository.findByUser(user)).thenReturn(new ArrayList<>());
 
             // when
-            List<BadgeFindResponse> result = badgeService.findBadgeByEmail(user);
+            List<Badge> result = badgeService.findBadgeByEmail(user);
 
             // then
             assertThat(result).isEmpty();
@@ -82,23 +80,19 @@ class BadgeServiceTest {
                     new Badge(user, BadgeType.MONTHLY_RANKING_3),
                     new Badge(user, BadgeType.COLLEGE_OF_ENGINEERING_A)
             );
-            when(badgeRepository.findByUser(user))
-                    .thenReturn(badges);
+            when(badgeRepository.findByUser(user)).thenReturn(badges);
 
             // when
-            List<BadgeFindResponse> result = badgeService.findBadgeByEmail(user);
+            List<Badge> result = badgeService.findBadgeByEmail(user);
 
             // then
             assertThat(result).hasSize(3);
-
-            List<String> target = result.stream()
-                    .map(BadgeFindResponse::getName)
-                    .toList();
-            assertThat(target).containsOnly(
-                    BadgeType.ATTENDANCE_1.name(),
-                    BadgeType.MONTHLY_RANKING_3.name(),
-                    BadgeType.COLLEGE_OF_ENGINEERING_A.name()
-            );
+            assertThat(result).extracting("badgeType")
+                    .containsOnly(
+                            BadgeType.ATTENDANCE_1,
+                            BadgeType.MONTHLY_RANKING_3,
+                            BadgeType.COLLEGE_OF_ENGINEERING_A
+                    );
         }
     }
 

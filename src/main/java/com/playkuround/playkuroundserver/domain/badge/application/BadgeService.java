@@ -8,7 +8,6 @@ import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
-import com.playkuround.playkuroundserver.domain.badge.dto.response.BadgeFindResponse;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -31,10 +30,8 @@ public class BadgeService {
     private final CollegeSpecialBadgeFactory collegeSpecialBadgeFactory;
 
     @Transactional(readOnly = true)
-    public List<BadgeFindResponse> findBadgeByEmail(User user) {
-        return badgeRepository.findByUser(user).stream()
-                .map(BadgeFindResponse::from)
-                .toList();
+    public List<Badge> findBadgeByEmail(User user) {
+        return badgeRepository.findByUser(user);
     }
 
     @Transactional

@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.badge.dto.request;
+package com.playkuround.playkuroundserver.domain.user.api.request;
 
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.global.validation.ValidEnum;

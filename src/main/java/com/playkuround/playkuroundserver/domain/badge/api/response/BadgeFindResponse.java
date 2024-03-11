@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.badge.dto.response;
+package com.playkuround.playkuroundserver.domain.badge.api.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;

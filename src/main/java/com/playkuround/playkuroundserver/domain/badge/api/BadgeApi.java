@@ -1,8 +1,8 @@
 package com.playkuround.playkuroundserver.domain.badge.api;
 
+import com.playkuround.playkuroundserver.domain.badge.api.response.BadgeFindResponse;
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
-import com.playkuround.playkuroundserver.domain.badge.dto.response.BadgeFindResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;

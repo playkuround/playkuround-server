@@ -2,9 +2,9 @@ package com.playkuround.playkuroundserver.domain.user.api;
 
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.domain.badge.dto.request.ManualBadgeSaveRequest;
 import com.playkuround.playkuroundserver.domain.common.AppVersion;
 import com.playkuround.playkuroundserver.domain.common.SystemCheck;
+import com.playkuround.playkuroundserver.domain.user.api.request.ManualBadgeSaveRequest;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;

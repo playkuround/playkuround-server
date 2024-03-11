@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.auth.token.dto.response;
+package com.playkuround.playkuroundserver.domain.auth.token.api.response;
 
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import io.swagger.v3.oas.annotations.media.Schema;

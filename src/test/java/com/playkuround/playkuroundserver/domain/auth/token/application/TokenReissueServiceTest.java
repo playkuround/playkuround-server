@@ -2,7 +2,6 @@ package com.playkuround.playkuroundserver.domain.auth.token.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenRepository;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
-import com.playkuround.playkuroundserver.domain.auth.token.dto.response.TokenReissueResponse;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidRefreshTokenException;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
 import org.junit.jupiter.api.DisplayName;
@@ -46,12 +45,12 @@ class TokenReissueServiceTest {
         when(tokenManager.createTokenDto(username)).thenReturn(tokenDto);
 
         // when
-        TokenReissueResponse response = tokenReissueService.reissue(refreshToken);
+        TokenDto result = tokenReissueService.reissue(refreshToken);
 
         // then
-        assertThat(response.getAccessToken()).isEqualTo("newAccessToken");
-        assertThat(response.getRefreshToken()).isEqualTo("newRefreshToken");
-        assertThat(response.getGrantType()).isEqualTo("newGrantType");
+        assertThat(result.getGrantType()).isEqualTo("newGrantType");
+        assertThat(result.getAccessToken()).isEqualTo("newAccessToken");
+        assertThat(result.getRefreshToken()).isEqualTo("newRefreshToken");
     }
 
     @Test

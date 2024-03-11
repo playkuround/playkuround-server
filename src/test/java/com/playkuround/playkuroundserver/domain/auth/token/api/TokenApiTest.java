@@ -2,11 +2,11 @@ package com.playkuround.playkuroundserver.domain.auth.token.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playkuround.playkuroundserver.TestUtil;
+import com.playkuround.playkuroundserver.domain.auth.token.api.request.TokenReissueRequest;
 import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenRepository;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.GrantType;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.RefreshToken;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
-import com.playkuround.playkuroundserver.domain.auth.token.dto.request.TokenReissueRequest;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;

@@ -2,7 +2,6 @@ package com.playkuround.playkuroundserver.domain.auth.token.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenRepository;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
-import com.playkuround.playkuroundserver.domain.auth.token.dto.response.TokenReissueResponse;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidRefreshTokenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,7 @@ public class TokenReissueService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
-    public TokenReissueResponse reissue(String refreshToken) {
+    public TokenDto reissue(String refreshToken) {
         String username = tokenManager.getUsernameFromToken(refreshToken);
 
         if (!refreshTokenRepository.existsByUserEmail(username)) {
@@ -26,7 +25,6 @@ public class TokenReissueService {
 
         TokenDto tokenDto = tokenManager.createTokenDto(username);
         tokenService.registerRefreshToken(username, tokenDto.getRefreshToken());
-
-        return TokenReissueResponse.from(tokenDto);
+        return tokenDto;
     }
 }

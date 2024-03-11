@@ -1,8 +1,9 @@
 package com.playkuround.playkuroundserver.domain.auth.token.api;
 
+import com.playkuround.playkuroundserver.domain.auth.token.api.request.TokenReissueRequest;
+import com.playkuround.playkuroundserver.domain.auth.token.api.response.TokenReissueResponse;
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenReissueService;
-import com.playkuround.playkuroundserver.domain.auth.token.dto.request.TokenReissueRequest;
-import com.playkuround.playkuroundserver.domain.auth.token.dto.response.TokenReissueResponse;
+import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,8 +26,8 @@ public class TokenApi {
     @PostMapping("reissue")
     @Operation(summary = "access token 재발급", description = "access token과 refresh token을 재발급받습니다.")
     public ApiResponse<TokenReissueResponse> accessTokenReissue(@RequestBody @Valid TokenReissueRequest request) {
-        TokenReissueResponse response = tokenReissueService.reissue(request.getRefreshToken());
-        return ApiUtils.success(response);
+        TokenDto tokenDto = tokenReissueService.reissue(request.getRefreshToken());
+        return ApiUtils.success(TokenReissueResponse.from(tokenDto));
     }
 
 }

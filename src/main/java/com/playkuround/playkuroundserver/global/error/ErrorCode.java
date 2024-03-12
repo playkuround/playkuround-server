@@ -20,14 +20,16 @@ public enum ErrorCode {
     EMAIL_DUPLICATION(HttpStatus.BAD_REQUEST, "U001", "이미 존재하는 이메일입니다."),
     NICKNAME_DUPLICATION(HttpStatus.BAD_REQUEST, "U002", "이미 존재하는 닉네임입니다."),
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "U003", "존재하지 않는 유저입니다."),
+    NICKNAME_UNAVAILABLE(HttpStatus.BAD_REQUEST, "U004", "사용할 수 없는 닉네임입니다."),
 
     // Authentication
     EMPTY_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "A001", "Authorization Header가 빈 값입니다."),
     NOT_BEARER_GRANT_TYPE(HttpStatus.UNAUTHORIZED, "A002", "인증 타입이 Bearer 타입이 아닙니다."),
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A003", "유효하지 않은 토큰입니다."),
-    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "A004", "만료된 토큰입니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A003", "자동 로그아웃 되었습니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "A004", "자동 로그아웃 되었습니다."),
     NOT_ACCESS_TOKEN_TYPE(HttpStatus.UNAUTHORIZED, "A005", "TokenType이 ACCESS가 아닙니다."),
     NOT_REFRESH_TOKEN_TYPE(HttpStatus.UNAUTHORIZED, "A006", "TokenType이 REFRESH가 아닙니다."),
+    FAIL_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "A007", "인증에 실패했습니다."),
 
     // Location
     INVALID_LOCATION_LANDMARK(HttpStatus.BAD_REQUEST, "L001", "현재 위치와 랜드마크 위치가 너무 멉니다."),
@@ -40,7 +42,7 @@ public enum ErrorCode {
     NOT_KU_EMAIL(HttpStatus.BAD_REQUEST, "E001", "건국대학교 이메일이 아닙니다."),
     EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "E002", "이메일 전송에 실패하였습니다."),
     EXPIRED_AUTH_CODE(HttpStatus.BAD_REQUEST, "E003", "만료된 코드입니다."),
-    SENDING_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "E004", "인증 메일 전송 횟수를 초과하였습니다."),
+    SENDING_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "E004", "인증 메일 전송 횟수를 초과하였습니다."),
     NOT_MATCH_AUTH_CODE(HttpStatus.BAD_REQUEST, "E005", "코드가 일치하지 않습니다."),
     EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "E006", "인증 대기 중인 이메일이 아닙니다."),
 

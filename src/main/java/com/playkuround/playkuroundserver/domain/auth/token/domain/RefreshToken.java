@@ -1,31 +1,37 @@
 package com.playkuround.playkuroundserver.domain.auth.token.domain;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.TimeToLive;
+import lombok.NoArgsConstructor;
 
-import java.util.concurrent.TimeUnit;
+import java.time.LocalDateTime;
 
-@RedisHash(value = "refreshToken")
+@Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RefreshToken {
 
     @Id
-    private final String userEmail;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private final String refreshToken;
+    @Column(nullable = false)
+    private String userEmail;
 
-    @TimeToLive(unit = TimeUnit.MILLISECONDS)
-    private final Long timeToLive;
+    @Column(nullable = false)
+    private String refreshToken;
+
+    @Column(nullable = false)
+    private LocalDateTime expiredAt;
 
     @Builder
-    public RefreshToken(@NotNull String userEmail, @NotNull String refreshToken, @NotNull Long timeToLive) {
+    public RefreshToken(@NotNull String userEmail, @NotNull String refreshToken, @NotNull LocalDateTime expiredAt) {
         this.userEmail = userEmail;
         this.refreshToken = refreshToken;
-        this.timeToLive = timeToLive;
+        this.expiredAt = expiredAt;
     }
 
 }

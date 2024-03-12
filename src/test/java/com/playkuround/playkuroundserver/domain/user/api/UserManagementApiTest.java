@@ -1,11 +1,5 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
@@ -14,17 +8,14 @@ import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenRepos
 import com.playkuround.playkuroundserver.domain.auth.token.domain.AuthVerifyToken;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.GrantType;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.RefreshToken;
+import com.playkuround.playkuroundserver.domain.user.api.request.UserRegisterRequest;
+import com.playkuround.playkuroundserver.domain.user.api.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.request.UserRegisterRequest;
-import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterResponse;
 import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,15 +23,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-@SpringBootTest
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@SpringBootTest(properties = "spring.profiles.active=test")
 class UserManagementApiTest {
 
     @Autowired
@@ -62,8 +58,8 @@ class UserManagementApiTest {
     private TokenManager tokenManager;
 
     private final String nickname = "tester";
-    private final String email = "tester@konkuk.ac.kr";
     private final Major major = Major.컴퓨터공학부;
+    private final String email = "tester@konkuk.ac.kr";
 
     @AfterEach
     void afterEach() {
@@ -84,7 +80,8 @@ class UserManagementApiTest {
 
         MvcResult mvcResult = mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
+                        .content(request)
+                )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.response.grantType").value(GrantType.BEARER.getType()))
                 .andExpect(jsonPath("$.response.accessToken").exists())
@@ -92,13 +89,12 @@ class UserManagementApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        UserRegisterResponse response = (UserRegisterResponse) TestUtil.convertjsonstringtoobject(json,
-                UserRegisterResponse.class);
+        UserRegisterResponse response = TestUtil.convertFromJsonStringToObject(json, UserRegisterResponse.class);
 
         // then
         assertThat(tokenManager.isValidateToken(response.getAccessToken())).isTrue();
 
-        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findById(email);
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByUserEmail(email);
         assertThat(optionalRefreshToken).isPresent();
         RefreshToken refreshToken = optionalRefreshToken.get();
         assertThat(response.getRefreshToken()).isEqualTo(refreshToken.getRefreshToken());
@@ -108,11 +104,10 @@ class UserManagementApiTest {
 
         User user = users.get(0);
         assertThat(user.getEmail()).isEqualTo(email);
-        assertThat(user.getNickname()).isEqualTo(nickname);
         assertThat(user.getMajor()).isEqualTo(major);
+        assertThat(user.getNickname()).isEqualTo(nickname);
         assertThat(user.getRole()).isEqualTo(Role.ROLE_USER);
-        assertThat(user.getConsecutiveAttendanceDays()).isEqualTo(0);
-        assertThat(user.getLastAttendanceDate().toLocalDate()).isEqualTo(LocalDate.now().minusDays(1));
+        assertThat(user.getAttendanceDays()).isEqualTo(0);
     }
 
     @Test
@@ -126,12 +121,13 @@ class UserManagementApiTest {
         // expect
         mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
+                        .content(request)
+                )
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_TOKEN.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.INVALID_TOKEN.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.INVALID_TOKEN.getMessage()))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_TOKEN.getStatus().value()))
                 .andDo(print());
         List<User> users = userRepository.findAll();
         assertThat(users).hasSize(0);
@@ -141,7 +137,7 @@ class UserManagementApiTest {
     @DisplayName("회원 등록 실패 - 중복 이메일")
     void userRegisterFailByDuplicateEmail() throws Exception {
         // given
-        User user = new User(email, nickname, major, Role.ROLE_USER);
+        User user = User.create(email, nickname, major, Role.ROLE_USER);
         userRepository.save(user);
         AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
 
@@ -153,14 +149,14 @@ class UserManagementApiTest {
         // expect
         mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
+                        .content(request)
+                )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.EMAIL_DUPLICATION.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.EMAIL_DUPLICATION.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.EMAIL_DUPLICATION.getMessage()))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.EMAIL_DUPLICATION.getStatus().value()))
                 .andDo(print());
-
         List<User> users = userRepository.findAll();
         assertThat(users).hasSize(1);
     }
@@ -169,7 +165,7 @@ class UserManagementApiTest {
     @DisplayName("회원 등록 실패 - 중복 닉네임")
     void userRegisterFailByDuplicateNickname() throws Exception {
         // given
-        User user = new User(email, nickname, major, Role.ROLE_USER);
+        User user = User.create(email, nickname, major, Role.ROLE_USER);
         userRepository.save(user);
         AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
 
@@ -181,12 +177,13 @@ class UserManagementApiTest {
         // expect
         mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
+                        .content(request)
+                )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
-                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.NICKNAME_DUPLICATION.getStatus().value()))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.NICKNAME_DUPLICATION.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.NICKNAME_DUPLICATION.getMessage()))
+                .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.NICKNAME_DUPLICATION.getStatus().value()))
                 .andDo(print());
         List<User> users = userRepository.findAll();
         assertThat(users).hasSize(1);
@@ -197,8 +194,7 @@ class UserManagementApiTest {
     @DisplayName("로그아웃 - 리프레시 토큰 삭제")
     void logout() throws Exception {
         // given
-        Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, null);
-        RefreshToken refreshToken = tokenManager.createRefreshToken(authentication, "refreshToken");
+        RefreshToken refreshToken = tokenManager.createRefreshTokenEntity(email, "refreshToken");
         refreshTokenRepository.save(refreshToken);
 
         // when
@@ -208,7 +204,7 @@ class UserManagementApiTest {
                 .andDo(print());
 
         // then
-        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findById(email);
-        assertThat(optionalRefreshToken.isPresent()).isEqualTo(false);
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByUserEmail(email);
+        assertThat(optionalRefreshToken).isEmpty();
     }
 }

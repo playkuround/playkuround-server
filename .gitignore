@@ -38,9 +38,13 @@ out/
 
 **/.DS_Store
 
-log/
+logs/
 
 application.yml
 application-test.yml
 application-dev.yml
-application-prob.yml
+application-prod.yml
+application-local.yml
+
+application-dev-log.properties
+application-prod-log.properties

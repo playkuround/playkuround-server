@@ -7,49 +7,43 @@ import com.playkuround.playkuroundserver.domain.auth.token.domain.RefreshToken;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.AuthVerifyTokenNotFoundException;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class TokenService {
+
     private final TokenManager tokenManager;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthVerifyTokenRepository authVerifyTokenRepository;
 
-    public void registerRefreshToken(Authentication authentication, String sRefreshToken) {
-        refreshTokenRepository.deleteById(authentication.getName());
+    public void registerRefreshToken(String username, String sRefreshToken) {
+        refreshTokenRepository.deleteByUserEmail(username);
 
-        RefreshToken refreshToken = tokenManager.createRefreshToken(authentication, sRefreshToken);
+        RefreshToken refreshToken = tokenManager.createRefreshTokenEntity(username, sRefreshToken);
         refreshTokenRepository.save(refreshToken);
     }
 
     public void deleteRefreshTokenByUser(User user) {
-        refreshTokenRepository.deleteById(user.getEmail());
+        refreshTokenRepository.deleteByUserEmail(user.getEmail());
     }
 
     public AuthVerifyToken registerAuthVerifyToken() {
-        AuthVerifyToken authVerifyToken = tokenManager.createAuthVerifyToken();
+        AuthVerifyToken authVerifyToken = tokenManager.createAuthVerifyTokenEntity();
         return authVerifyTokenRepository.save(authVerifyToken);
     }
 
     @Transactional(readOnly = true)
     public void validateAuthVerifyToken(String authVerifyToken) {
-        // TODO: 테스트용 코드, 추후 삭제
-        if (Objects.equals(authVerifyToken, "testToken")) {
-            return;
-        }
-        if (!authVerifyTokenRepository.existsById(authVerifyToken)) {
+        if (!authVerifyTokenRepository.existsByAuthVerifyToken(authVerifyToken)) {
             throw new AuthVerifyTokenNotFoundException();
         }
     }
 
     public void deleteAuthVerifyToken(String authVerifyToken) {
-        authVerifyTokenRepository.findById(authVerifyToken)
+        authVerifyTokenRepository.findByAuthVerifyToken(authVerifyToken)
                 .ifPresent(authVerifyTokenRepository::delete);
     }
 }

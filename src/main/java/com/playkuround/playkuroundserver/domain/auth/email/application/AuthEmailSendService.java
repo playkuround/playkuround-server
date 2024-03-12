@@ -2,18 +2,19 @@ package com.playkuround.playkuroundserver.domain.auth.email.application;
 
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
-import com.playkuround.playkuroundserver.domain.auth.email.dto.request.AuthEmailSendRequest;
-import com.playkuround.playkuroundserver.domain.auth.email.dto.response.AuthEmailSendResponse;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthEmailInfo;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.NotKUEmailException;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.SendingLimitExceededException;
 import com.playkuround.playkuroundserver.infra.email.EmailService;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Random;
+import com.playkuround.playkuroundserver.infra.email.Mail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -32,21 +33,15 @@ public class AuthEmailSendService {
     private Long codeLength;
 
     @Transactional
-    public AuthEmailSendResponse sendAuthEmail(AuthEmailSendRequest requestDto) {
-        String target = requestDto.getTarget();
+    public AuthEmailInfo sendAuthEmail(String target) {
         validateEmailDomain(target);
-        Long sendingCount = validateSendingCount(target);
+        long sendingCount = validateSendingCount(target);
 
-        String title = "[플레이쿠라운드] 회원가입 인증코드입니다.";
-        String code = createCode();
-        String content = createContent(code);
-        emailService.sendMessage(target, title, content);
+        String authenticationCode = createCode();
+        LocalDateTime expiredAt = saveAuthEmail(target, authenticationCode);
+        sendEmail(target, authenticationCode);
 
-        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
-        AuthEmail authEmail = AuthEmail.createAuthEmail(target, code, expiredAt);
-        authEmailRepository.save(authEmail);
-
-        return new AuthEmailSendResponse(expiredAt, sendingCount + 1);
+        return new AuthEmailInfo(expiredAt, sendingCount + 1);
     }
 
     private void validateEmailDomain(String target) {
@@ -56,7 +51,7 @@ public class AuthEmailSendService {
         }
     }
 
-    private Long validateSendingCount(String target) {
+    private long validateSendingCount(String target) {
         LocalDateTime today = LocalDate.now().atStartOfDay();
         Long sendingCount = authEmailRepository.countByTargetAndCreatedAtAfter(target, today);
         if (sendingCount >= maxSendingCount) {
@@ -79,8 +74,22 @@ public class AuthEmailSendService {
         return codeBuilder.toString();
     }
 
+    private LocalDateTime saveAuthEmail(String target, String authenticationCode) {
+        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
+        AuthEmail authEmail = AuthEmail.createAuthEmail(target, authenticationCode, expiredAt);
+        authEmailRepository.save(authEmail);
+        return expiredAt;
+    }
+
+    private void sendEmail(String target, String authenticationCode) {
+        String title = "[플레이쿠라운드] 회원가입 인증코드입니다.";
+        String content = createContent(authenticationCode);
+        Mail mail = new Mail(target, title, content);
+        emailService.sendMessage(mail);
+    }
+
     private String createContent(String code) {
-        String content = "<div>" +
+        return "<div>" +
                 "<h2>안녕하세요, 플레이쿠라운드입니다.</h1>" +
                 "<div font-family:verdana'>" +
                 "<p>아래 인증코드를 회원가입 창으로 돌아가 입력해주세요.<p>" +
@@ -94,7 +103,5 @@ public class AuthEmailSendService {
                 "</div>" +
                 "<br>" +
                 "</div>";
-
-        return content;
     }
 }

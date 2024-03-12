@@ -6,25 +6,24 @@ import com.playkuround.playkuroundserver.domain.auth.token.domain.RefreshToken;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -35,14 +34,14 @@ public class TokenManager {
     private final String tokenTypeHeaderKey;
     private final Long accessTokenValidityInMilliseconds;
     private final Long refreshTokenValidityInMilliseconds;
-    private final Integer authVerifyTokenValidityInSeconds;
+    private final Long authVerifyTokenValidityInSeconds;
     private final UserDetailsService userDetailsService;
 
     public TokenManager(@Value("${token.secret}") String secretKey,
                         @Value("${token.issuer}") String issuer,
                         @Value("${token.access-token-expiration-seconds}") Long accessTokenExpirationSeconds,
                         @Value("${token.refresh-token-expiration-seconds}") Long refreshTokenExpirationSeconds,
-                        @Value("${token.authverify-token-expiration-seconds}") Integer authVerifyTokenExpirationSeconds,
+                        @Value("${token.authverify-token-expiration-seconds}") Long authVerifyTokenExpirationSeconds,
                         UserDetailsService userDetailsService) {
         this.accessTokenValidityInMilliseconds = accessTokenExpirationSeconds * 1000;
         this.refreshTokenValidityInMilliseconds = refreshTokenExpirationSeconds * 1000;
@@ -54,13 +53,13 @@ public class TokenManager {
         this.userDetailsService = userDetailsService;
     }
 
-    public TokenDto createTokenDto(Authentication authentication) {
+    public TokenDto createTokenDto(String username) {
         long now = new Date().getTime();
         Date accessTokenExpiredAt = createAccessTokenExpirationTime(now);
         Date refreshTokenExpiredAt = createRefreshTokenExpirationTime(now);
 
-        String accessToken = createAccessToken(authentication, accessTokenExpiredAt);
-        String refreshToken = createRefreshToken(refreshTokenExpiredAt);
+        String accessToken = createAccessToken(username, accessTokenExpiredAt);
+        String refreshToken = createRefreshTokenEntity(username, refreshTokenExpiredAt);
 
         return TokenDto.builder()
                 .grantType(GrantType.BEARER.getType())
@@ -79,46 +78,36 @@ public class TokenManager {
         return new Date(now + refreshTokenValidityInMilliseconds);
     }
 
-    private String createAccessToken(Authentication authentication, Date expireDate) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
+    private String createAccessToken(String username, Date expireDate) {
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .claim("auth", authorities)
                 .setIssuer(issuer)
                 .setExpiration(expireDate)
-                .setSubject(authentication.getName())
+                .setSubject(username)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setHeaderParam(tokenTypeHeaderKey, TokenType.ACCESS.name())
                 .compact();
     }
 
-    private String createRefreshToken(Date expireDate) {
+    private String createRefreshTokenEntity(String username, Date expireDate) {
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(issuer)
                 .setExpiration(expireDate)
+                .setSubject(username)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setHeaderParam(tokenTypeHeaderKey, TokenType.REFRESH.name())
                 .compact();
     }
 
-    public Authentication getAuthentication(String accessToken) {
+    public Authentication getAuthenticationFromAccessToken(String accessToken) {
         Claims claims = parseClaims(accessToken);
-
-        if (claims.get("auth") == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
-        }
-
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("auth").toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .toList();
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
-        return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
+        return UsernamePasswordAuthenticationToken.authenticated(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+    }
+
+    public String getUsernameFromToken(String token) {
+        return parseClaims(token).getSubject();
     }
 
     private Claims parseClaims(String accessToken) {
@@ -128,8 +117,9 @@ public class TokenManager {
                     .build()
                     .parseClaimsJws(accessToken)
                     .getBody();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims();
+        } catch (Exception e) {
+            log.info("Invalid JWT Token", e);
+            throw new InvalidTokenException();
         }
     }
 
@@ -140,16 +130,9 @@ public class TokenManager {
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
-        } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
-        } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
-        } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     public String getTokenType(String token) {
@@ -161,21 +144,22 @@ public class TokenManager {
                     .getHeader()
                     .get(tokenTypeHeaderKey);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new InvalidTokenException();
         }
     }
 
-    public AuthVerifyToken createAuthVerifyToken() {
+    public AuthVerifyToken createAuthVerifyTokenEntity() {
         String key = UUID.randomUUID().toString();
-        return new AuthVerifyToken(key, authVerifyTokenValidityInSeconds);
+        LocalDateTime now = LocalDateTime.now();
+        return new AuthVerifyToken(key, now.plusSeconds(authVerifyTokenValidityInSeconds));
     }
 
-    public RefreshToken createRefreshToken(Authentication authentication, String refreshToken) {
+    public RefreshToken createRefreshTokenEntity(String username, String refreshToken) {
+        LocalDateTime now = LocalDateTime.now();
         return RefreshToken.builder()
-                .userEmail(authentication.getName())
+                .userEmail(username)
                 .refreshToken(refreshToken)
-                .timeToLive(refreshTokenValidityInMilliseconds)
+                .expiredAt(now.plusSeconds(refreshTokenValidityInMilliseconds / 1000))
                 .build();
     }
 }

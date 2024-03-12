@@ -2,12 +2,9 @@ package com.playkuround.playkuroundserver.domain.user.domain;
 
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-import lombok.*;
-import org.hibernate.validator.constraints.Length;
-
-import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -20,12 +17,9 @@ public class User extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Email
     private String email;
 
     @Column(nullable = false, unique = true)
-    @Length(min = 2, max = 8)
-    @Pattern(regexp = "^[0-9a-zA-Z가-힣]*$")
     private String nickname;
 
     @Enumerated(EnumType.STRING)
@@ -33,26 +27,53 @@ public class User extends BaseTimeEntity {
     private Major major;
 
     @Column(nullable = false)
-    private Integer ConsecutiveAttendanceDays;
-
-    @Column(nullable = false)
-    private LocalDateTime lastAttendanceDate;
+    private int attendanceDays;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
-    private Long highestScore;
+    @Embedded
+    private HighestScore highestScore;
 
-    @Builder
-    public User(@NonNull String email, @NonNull String nickname, @NonNull Major major, @NonNull Role role) {
+    private String notification;
+
+    private User(String email, String nickname, Major major, Role role) {
         this.email = email;
         this.nickname = nickname;
         this.major = major;
-        this.ConsecutiveAttendanceDays = 0;
-        this.lastAttendanceDate = LocalDateTime.now().minusDays(1);
         this.role = role;
-        this.highestScore = 0L;
     }
 
+    public static User create(String email, String nickname, Major major, Role role) {
+        return new User(email, nickname, major, role);
+    }
+
+    public HighestScore getHighestScore() {
+        if (highestScore == null) {
+            highestScore = new HighestScore();
+        }
+        return highestScore;
+    }
+
+    public void increaseAttendanceDay() {
+        attendanceDays++;
+    }
+
+    public void clearNotification() {
+        this.notification = null;
+    }
+
+    private void addNotification(String name, String description) {
+        if (notification == null) {
+            notification = name + "#" + description;
+        }
+        else {
+            notification += "@" + name + "#" + description;
+        }
+    }
+
+    public void addNewBadgeNotification(String description) {
+        addNotification("new_badge", description);
+    }
 }

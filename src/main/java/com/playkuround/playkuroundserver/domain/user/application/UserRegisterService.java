@@ -4,29 +4,31 @@ import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.request.UserRegisterRequest;
-import com.playkuround.playkuroundserver.domain.user.dto.response.UserRegisterResponse;
+import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
 import com.playkuround.playkuroundserver.domain.user.exception.UserEmailDuplicationException;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameDuplicationException;
+import com.playkuround.playkuroundserver.domain.user.exception.UserNicknameUnavailableException;
+import com.playkuround.playkuroundserver.global.util.BadWordFilterUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserRegisterService {
 
     private final UserRepository userRepository;
     private final UserLoginService userLoginService;
 
-    public UserRegisterResponse registerUser(UserRegisterRequest registerRequest) {
-        validateDuplicateEmail(registerRequest.getEmail());
-        validateDuplicateNickName(registerRequest.getNickname());
+    @Transactional
+    public TokenDto registerUser(UserRegisterDto userRegisterDto) {
+        validateDuplicateEmail(userRegisterDto.email());
+        validateDuplicateNickName(userRegisterDto.nickname());
 
-        User user = userRepository.save(registerRequest.toEntity(Role.ROLE_USER));
-        TokenDto tokenDto = userLoginService.login(user.getEmail());
-        return UserRegisterResponse.from(tokenDto);
+        User user = User.create(userRegisterDto.email(), userRegisterDto.nickname(), userRegisterDto.major(), Role.ROLE_USER);
+        userRepository.save(user);
+
+        return userLoginService.login(user.getEmail());
     }
 
     private void validateDuplicateEmail(String email) {
@@ -39,10 +41,9 @@ public class UserRegisterService {
         if (userRepository.existsByNickname(nickname)) {
             throw new UserNicknameDuplicationException();
         }
-    }
-
-    public void deleteUser(User user) {
-        userRepository.delete(user);
+        if (BadWordFilterUtils.check(nickname)) {
+            throw new UserNicknameUnavailableException();
+        }
     }
 
 }

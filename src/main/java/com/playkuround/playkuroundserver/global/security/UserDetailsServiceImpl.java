@@ -14,8 +14,8 @@ import java.util.List;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserRepository userRepository;
     private final String ENCODED_PASSWORD;
+    private final UserRepository userRepository;
 
     public UserDetailsServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -29,6 +29,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         String roleName = user.getRole().toString();
         List<String> role = Arrays.stream(roleName.split(",")).toList();
-        return new UserDetailsImpl(user, role, ENCODED_PASSWORD);
+        return new UserDetailsImpl(user, ENCODED_PASSWORD, role);
     }
 }

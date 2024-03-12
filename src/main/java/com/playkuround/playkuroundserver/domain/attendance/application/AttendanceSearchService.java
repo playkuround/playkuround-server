@@ -8,22 +8,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class AttendanceSearchService {
 
     private final AttendanceRepository attendanceRepository;
 
-    public List<LocalDateTime> findByUserMonthLong(User user) {
-        List<Attendance> attendances = attendanceRepository.findByUserAndCreatedAtAfter(user, LocalDateTime.now().minusMonths(1));
+    @Transactional(readOnly = true)
+    public List<LocalDateTime> findAttendanceForMonth(User user) {
+        LocalDateTime monthAgo = LocalDate.now().minusMonths(30).atStartOfDay();
+        List<Attendance> attendances = attendanceRepository.findByUserAndCreatedAtAfter(user, monthAgo);
         return attendances.stream()
                 .map(BaseTimeEntity::getCreatedAt)
-                .collect(Collectors.toList());
+                .sorted()
+                .toList();
     }
-
 }

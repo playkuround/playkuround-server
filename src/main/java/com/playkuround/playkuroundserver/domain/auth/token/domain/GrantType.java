@@ -1,13 +1,13 @@
 package com.playkuround.playkuroundserver.domain.auth.token.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum GrantType {
 
     BEARER("Bearer");
-    private final String type;
 
+    private final String type;
 }

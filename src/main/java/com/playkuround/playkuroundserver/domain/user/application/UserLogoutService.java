@@ -8,11 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserLogoutService {
 
     private final TokenService tokenService;
 
+    @Transactional
     public void logout(User user) {
         tokenService.deleteRefreshTokenByUser(user);
     }

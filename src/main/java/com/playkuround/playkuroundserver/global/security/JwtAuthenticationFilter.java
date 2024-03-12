@@ -24,16 +24,23 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenManager tokenManager;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = resolveToken(request);
         if (accessToken != null) {
             if (isValidateAccessToken(accessToken)) {
-                setAuthenticationToContext(accessToken);
+                try {
+                    Authentication authentication = tokenManager.getAuthenticationFromAccessToken(accessToken);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } catch (Exception e) {
+                    jwtExceptionHandler(response, ErrorCode.FAIL_AUTHENTICATION);
+                    return;
+                }
             }
             else {
-                jwtExceptionHandler(response);
+                jwtExceptionHandler(response, ErrorCode.INVALID_TOKEN);
                 return;
             }
         }
@@ -61,20 +68,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return true;
     }
 
-    private void setAuthenticationToContext(String accessToken) {
-        Authentication authentication = tokenManager.getAuthentication(accessToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    private void jwtExceptionHandler(HttpServletResponse response) {
-        ErrorCode errorCode = ErrorCode.INVALID_TOKEN;
+    private void jwtExceptionHandler(HttpServletResponse response, ErrorCode errorCode) {
         response.setStatus(errorCode.getStatus().value());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         try {
             ErrorResponse errorResponse = ErrorResponse.of(errorCode);
             ApiResponse<Object> objectApiResponse = ApiResponse.create(false, null, errorResponse);
-            String responseBody = new ObjectMapper().writeValueAsString(objectApiResponse);
+            String responseBody = objectMapper.writeValueAsString(objectApiResponse);
             response.getWriter().write(responseBody);
         } catch (Exception e) {
             System.err.println(e.getMessage());

@@ -2,7 +2,9 @@ package com.playkuround.playkuroundserver.domain.auth.email.application;
 
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
-import com.playkuround.playkuroundserver.domain.auth.email.dto.response.AuthVerifyEmailResponse;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthVerifyEmailResult;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthVerifyTokenResult;
+import com.playkuround.playkuroundserver.domain.auth.email.dto.TokenDtoResult;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.AuthCodeExpiredException;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.AuthEmailNotFoundException;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.NotMatchAuthCodeException;
@@ -11,44 +13,42 @@ import com.playkuround.playkuroundserver.domain.auth.token.domain.AuthVerifyToke
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
-import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class AuthEmailVerifyService {
 
     private final TokenService tokenService;
     private final UserRepository userRepository;
-    private final AuthEmailRepository authEmailRepository;
     private final UserLoginService userLoginService;
+    private final AuthEmailRepository authEmailRepository;
 
-    public AuthVerifyEmailResponse verifyAuthEmail(String code, String email) {
+    @Transactional
+    public AuthVerifyEmailResult verifyAuthEmail(String code, String email) {
         AuthEmail authEmail = authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(email)
                 .orElseThrow(AuthEmailNotFoundException::new);
 
         validateEmailAndCode(authEmail, code);
-        authEmail.makeInvalidate();
+        authEmail.changeInvalidate();
 
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (optionalUser.isPresent()) {
+        boolean existsUser = userRepository.existsByEmail(email);
+        if (existsUser) {
             TokenDto tokenDto = userLoginService.login(email);
-            return AuthVerifyEmailResponse.fromTokenDto(tokenDto);
+            return new TokenDtoResult(tokenDto);
         }
         else {
             AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
-            return AuthVerifyEmailResponse.createByAuthVerifyToken(authVerifyToken.getAuthVerifyToken());
+            return new AuthVerifyTokenResult(authVerifyToken.getAuthVerifyToken());
         }
     }
 
     private void validateEmailAndCode(AuthEmail authEmail, String code) {
-        if (!authEmail.getValidate()) {
+        if (!authEmail.isValidate()) {
             throw new AuthEmailNotFoundException();
         }
         if (authEmail.getExpiredAt().isBefore(LocalDateTime.now())) {

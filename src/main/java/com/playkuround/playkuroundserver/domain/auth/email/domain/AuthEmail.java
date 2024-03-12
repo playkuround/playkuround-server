@@ -3,7 +3,6 @@ package com.playkuround.playkuroundserver.domain.auth.email.domain;
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,10 +27,9 @@ public class AuthEmail extends BaseTimeEntity {
     private LocalDateTime expiredAt;
 
     @Column(nullable = false)
-    private Boolean validate;
+    private boolean validate;
 
-    @Builder
-    public AuthEmail(String target, String code, LocalDateTime expiredAt) {
+    private AuthEmail(String target, String code, LocalDateTime expiredAt) {
         this.code = code;
         this.target = target;
         this.expiredAt = expiredAt;
@@ -39,14 +37,10 @@ public class AuthEmail extends BaseTimeEntity {
     }
 
     public static AuthEmail createAuthEmail(String target, String code, LocalDateTime expireAt) {
-        return AuthEmail.builder()
-                .target(target)
-                .code(code)
-                .expiredAt(expireAt)
-                .build();
+        return new AuthEmail(target, code, expireAt);
     }
 
-    public void makeInvalidate() {
+    public void changeInvalidate() {
         this.validate = false;
     }
 

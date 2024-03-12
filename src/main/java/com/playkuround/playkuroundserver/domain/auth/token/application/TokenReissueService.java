@@ -2,16 +2,12 @@ package com.playkuround.playkuroundserver.domain.auth.token.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenRepository;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
-import com.playkuround.playkuroundserver.domain.auth.token.dto.request.TokenReissueRequest;
-import com.playkuround.playkuroundserver.domain.auth.token.dto.response.TokenReissueResponse;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidRefreshTokenException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class TokenReissueService {
 
@@ -19,22 +15,16 @@ public class TokenReissueService {
     private final TokenService tokenService;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public TokenReissueResponse reissue(TokenReissueRequest request) {
-        Authentication authentication = tokenManager.getAuthentication(request.getAccessToken());
-        validateRefreshToken(request.getRefreshToken(), authentication);
+    @Transactional
+    public TokenDto reissue(String refreshToken) {
+        String username = tokenManager.getUsernameFromToken(refreshToken);
 
-        TokenDto tokenInfo = tokenManager.createTokenDto(authentication);
-        tokenService.registerRefreshToken(authentication, request.getRefreshToken());
-
-        return TokenReissueResponse.from(tokenInfo);
-    }
-
-    private void validateRefreshToken(String sRefreshToken, Authentication authentication) {
-        if (!tokenManager.isValidateToken(sRefreshToken)) {
+        if (!refreshTokenRepository.existsByUserEmail(username)) {
             throw new InvalidRefreshTokenException();
         }
-        if (!refreshTokenRepository.existsById(authentication.getName())) {
-            throw new InvalidRefreshTokenException();
-        }
+
+        TokenDto tokenDto = tokenManager.createTokenDto(username);
+        tokenService.registerRefreshToken(username, tokenDto.getRefreshToken());
+        return tokenDto;
     }
 }

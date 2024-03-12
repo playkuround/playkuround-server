@@ -34,10 +34,16 @@ jobs:
         
       - name: injection application.yml
         run: |
-          touch src/main/resources/application.yml
+          touch src/main/resources/application-prod.yml
+          touch src/main/resources/application-dev.yml
           touch src/main/resources/application-test.yml
-          echo "${{ secrets.YML }}" > src/main/resources/application.yml
+          touch src/main/resources/application-prod-log.properties
+          touch src/main/resources/application-dev-log.properties
+          echo "${{ secrets.PROD_YML }}" > src/main/resources/application-prod.yml
+          echo "${{ secrets.DEV_YML }}" > src/main/resources/application-dev.yml
           echo "${{ secrets.TEST_YML }}" > src/main/resources/application-test.yml
+          echo "${{ secrets.DEV_LOG_PROPERTIES }}" > src/main/resources/application-dev-log.properties
+          echo "${{ secrets.PROD_LOG_PROPERTIES }}" > src/main/resources/application-prod-log.properties
         shell: bash
   
       - name: Grant execute permission for gradlew
@@ -46,7 +52,7 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
 
-      - name: Deliver File
+      - name: Deliver JAR File
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -67,7 +73,7 @@ jobs:
           script: |
             SOURCE_DIR=source/build/libs
             FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
-            PID=`pgrep -f $FILE_NAME.jar | head -n 1`
+            PID=$(sudo lsof -Fp -i TCP:8080 | grep -Po 'p[0-9]+' | grep -Po '[0-9]+')
 
             if [ -z "$PID" ]; then
                     echo "#### THERE IS NO PROCESS ####"
@@ -78,4 +84,4 @@ jobs:
 
             echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
 
-            sudo nohup java -jar $SOURCE_DIR/$FILE_NAME 1>$SOURCE_DIR/stdout.out 2>$SOURCE_DIR/stderr.out 2>&1 &
+            sudo nohup java -jar -Dspring.profiles.active="prod" $SOURCE_DIR/$FILE_NAME 1>$SOURCE_DIR/stdout.out 2>$SOURCE_DIR/stderr.out 2>&1 &

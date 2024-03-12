@@ -1,23 +1,30 @@
 package com.playkuround.playkuroundserver.domain.auth.token.domain;
 
+import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.TimeToLive;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
+@Entity
 @Getter
-@RedisHash(value = "authVerifyToken")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AuthVerifyToken {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
     private String authVerifyToken;
 
-    @TimeToLive
-    private final Integer timeToLive;
+    @Column(nullable = false)
+    private LocalDateTime expiredAt;
 
-    public AuthVerifyToken(String authVerifyToken, Integer timeToLive) {
+    public AuthVerifyToken(String authVerifyToken, LocalDateTime expiredAt) {
         this.authVerifyToken = authVerifyToken;
-        this.timeToLive = timeToLive;
+        this.expiredAt = expiredAt;
     }
 }
 

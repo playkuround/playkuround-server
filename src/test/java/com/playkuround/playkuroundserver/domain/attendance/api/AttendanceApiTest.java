@@ -125,7 +125,7 @@ class AttendanceApiTest {
             // TODO : 12시 넘어가는 시점에는 테스트가 실패함
             // given
             User user = userRepository.findAll().get(0);
-            attendanceRepository.save(Attendance.createAttendance(user, new Location(37.539927, 127.073006)));
+            attendanceRepository.save(Attendance.of(user, new Location(37.539927, 127.073006)));
 
             AttendanceRegisterRequest attendanceRegisterRequest = new AttendanceRegisterRequest(37.539927, 127.073006);
             String request = objectMapper.writeValueAsString(attendanceRegisterRequest);

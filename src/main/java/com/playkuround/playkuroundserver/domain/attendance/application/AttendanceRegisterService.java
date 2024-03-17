@@ -25,6 +25,7 @@ public class AttendanceRegisterService {
     private final UserRepository userRepository;
     private final TotalScoreService totalScoreService;
     private final AttendanceRepository attendanceRepository;
+    private final long attendanceScore = 10;
 
     @Transactional
     public NewlyRegisteredBadge registerAttendance(User user, Location location) {
@@ -33,7 +34,7 @@ public class AttendanceRegisterService {
         saveAttendance(user, location);
         updateUserAttendanceDay(user);
 
-        totalScoreService.incrementTotalScore(user, 10L);
+        totalScoreService.incrementTotalScore(user, attendanceScore);
 
         return badgeService.updateNewlyAttendanceBadges(user);
     }
@@ -57,7 +58,7 @@ public class AttendanceRegisterService {
     }
 
     private void saveAttendance(User user, Location location) {
-        Attendance attendance = Attendance.createAttendance(user, location);
+        Attendance attendance = Attendance.of(user, location);
         attendanceRepository.save(attendance);
     }
 

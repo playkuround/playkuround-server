@@ -15,8 +15,10 @@ public class AttendanceRegisterResponse {
 
     private AttendanceRegisterResponse(NewlyRegisteredBadge newlyRegisteredBadge) {
         this.newBadges = newlyRegisteredBadge.getNewlyBadges().stream()
-                .map(badgeInfo -> BadgeType.valueOf(badgeInfo.name()))
-                .map(it -> new BadgeInfo(it.name(), it.getDescription()))
+                .map(badgeInfo -> {
+                    BadgeType badgeType = BadgeType.valueOf(badgeInfo.name());
+                    return new BadgeInfo(badgeType.name(), badgeType.getDescription());
+                })
                 .toList();
     }
 
@@ -27,6 +29,7 @@ public class AttendanceRegisterResponse {
     @Getter
     @AllArgsConstructor
     public static class BadgeInfo {
+
         @Schema(description = "뱃지 이름", example = "ATTENDANCE_7", requiredMode = Schema.RequiredMode.REQUIRED)
         private String name;
 

@@ -19,8 +19,8 @@ public class AttendanceSearchService {
     private final AttendanceRepository attendanceRepository;
 
     @Transactional(readOnly = true)
-    public List<LocalDateTime> findAttendanceForMonth(User user) {
-        LocalDateTime monthAgo = LocalDate.now().minusMonths(30).atStartOfDay();
+    public List<LocalDateTime> findAttendance(User user, int agoDays) {
+        LocalDateTime monthAgo = LocalDate.now().minusMonths(agoDays).atStartOfDay();
         List<Attendance> attendances = attendanceRepository.findByUserAndCreatedAtAfter(user, monthAgo);
         return attendances.stream()
                 .map(BaseTimeEntity::getCreatedAt)

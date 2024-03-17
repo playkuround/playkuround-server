@@ -1,17 +1,21 @@
 package com.playkuround.playkuroundserver.domain.score.domain;
 
-import com.playkuround.playkuroundserver.domain.score.exception.ScoreTypeNotMatchException;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toMap;
 
 public enum ScoreType {
 
     ATTENDANCE,
     QUIZ, TIME, MOON, BOOK, CATCH, CUPID, ALL_CLEAR, SURVIVE;
 
-    public static ScoreType fromString(String source) {
-        try {
-            return ScoreType.valueOf(source.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new ScoreTypeNotMatchException();
-        }
+    private static final Map<String, ScoreType> stringToEnum =
+            Stream.of(values())
+                    .collect(toMap(Object::toString, e -> e));
+
+    public static Optional<ScoreType> fromString(String source) {
+        return Optional.ofNullable(stringToEnum.get(source));
     }
 }

@@ -6,6 +6,7 @@ import com.playkuround.playkuroundserver.domain.adventure.application.AdventureS
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
+import com.playkuround.playkuroundserver.domain.score.exception.ScoreTypeNotMatchException;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -32,10 +33,12 @@ public class AdventureApi {
             "새로 추가된 뱃지는 DB에 자동 반영됩니다. scoreType은 별도 문서 참고")
     public ApiResponse<AdventureSaveResponse> saveAdventure(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                             @RequestBody @Valid AdventureSaveRequest request) {
-        ScoreType scoreType = ScoreType.fromString(request.getScoreType());
+        ScoreType scoreType = ScoreType.fromString(request.getScoreType())
+                .orElseThrow(ScoreTypeNotMatchException::new);
         Location location = new Location(request.getLatitude(), request.getLongitude());
         AdventureSaveDto adventureSaveDto
                 = new AdventureSaveDto(userDetails.getUser(), request.getLandmarkId(), location, request.getScore(), scoreType);
+
         NewlyRegisteredBadge newlyRegisteredBadge = adventureService.saveAdventure(adventureSaveDto);
         return ApiUtils.success(AdventureSaveResponse.from(newlyRegisteredBadge));
     }

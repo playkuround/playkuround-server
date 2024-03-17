@@ -10,6 +10,6 @@ public interface AuthEmailRepository extends JpaRepository<AuthEmail, Long> {
 
     Optional<AuthEmail> findFirstByTargetOrderByCreatedAtDesc(String target);
 
-    Long countByTargetAndCreatedAtAfter(String target, LocalDateTime localDateTime);
+    long countByTargetAndCreatedAtAfter(String target, LocalDateTime localDateTime);
 
 }

@@ -43,6 +43,7 @@ class AuthEmailSendServiceTest {
         ReflectionTestUtils.setField(authEmailSendService, "codeLength", 6L);
         ReflectionTestUtils.setField(authEmailSendService, "maxSendingCount", 3L);
         ReflectionTestUtils.setField(authEmailSendService, "emailDomain", "test.com");
+        ReflectionTestUtils.setField(authEmailSendService, "codeExpirationSeconds", 300L);
     }
 
     @Test

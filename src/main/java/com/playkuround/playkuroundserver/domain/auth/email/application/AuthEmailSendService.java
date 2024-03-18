@@ -75,7 +75,7 @@ public class AuthEmailSendService {
         String title = "[플레이쿠라운드] 회원가입 인증코드입니다.";
         String content = createContent(authenticationCode);
         Mail mail = new Mail(target, title, content);
-        emailService.sendMessage(mail);
+        emailService.sendMail(mail);
     }
 
     private String createContent(String code) {

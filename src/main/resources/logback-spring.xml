@@ -14,9 +14,6 @@
     <springProfile name="prod">
         <property resource="application-prod-log.properties"/>
     </springProfile>
-    <springProfile name="test">
-        <property resource="application-test-log.properties"/>
-    </springProfile>
 
     <!-- log 변수 값 설정 -->
     <property name="LOG_PATH" value="${log.config.path}"/>

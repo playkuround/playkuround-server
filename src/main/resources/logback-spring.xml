@@ -14,6 +14,9 @@
     <springProfile name="prod">
         <property resource="application-prod-log.properties"/>
     </springProfile>
+    <springProfile name="test">
+        <property resource="application-test-log.properties"/>
+    </springProfile>
 
     <!-- log 변수 값 설정 -->
     <property name="LOG_PATH" value="${log.config.path}"/>
@@ -79,9 +82,6 @@
             <appender-ref ref="STDOUT"/>
             <appender-ref ref="FILE"/>
         </root>
-        <!--        <logger name="org.springframework.web" level="debug">-->
-        <!--            <appender-ref ref="FILE"/>-->
-        <!--        </logger>-->
     </springProfile>
 
     <!--  prod 환경  -->
@@ -89,7 +89,7 @@
         <root level="info">
             <appender-ref ref="STDOUT"/>
         </root>
-        <logger name="org.springframework.web" level="error">
+        <logger name="com.playkuround.playkuroundserver.global" level="error" additivity="false">
             <appender-ref ref="FILE"/>
         </logger>
     </springProfile>

@@ -18,6 +18,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
 
@@ -38,6 +40,9 @@ class AuthEmailSendServiceTest {
     @Mock
     private AuthEmailRepository authEmailRepository;
 
+    @Mock
+    private TemplateEngine templateEngine;
+
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(authEmailSendService, "codeLength", 6L);
@@ -50,8 +55,11 @@ class AuthEmailSendServiceTest {
     @DisplayName("이메일 정상 정송")
     void sendAuthEmail_1() {
         // given
+        String content = "email content";
         when(authEmailRepository.countByTargetAndCreatedAtAfter(any(String.class), any(LocalDateTime.class)))
                 .thenReturn(0L);
+        when(templateEngine.process(any(String.class), any(Context.class)))
+                .thenReturn(content);
 
         // when
         String target = "test@test.com";
@@ -64,13 +72,13 @@ class AuthEmailSendServiceTest {
         verify(authEmailRepository, times(1)).save(authEmailArgument.capture());
         AuthEmail authEmail = authEmailArgument.getValue();
         assertThat(authEmail.getTarget()).isEqualTo(target);
-        assertThat(authEmail.getCode()).containsPattern("[0-9a-zA-Z]{6}");
+        assertThat(authEmail.getCode()).containsPattern("[0-9]{6}");
 
         ArgumentCaptor<Mail> mailArgument = ArgumentCaptor.forClass(Mail.class);
         verify(emailService, times(1)).sendMail(mailArgument.capture());
         Mail mail = mailArgument.getValue();
         assertThat(mail.target()).isEqualTo(target);
-        assertThat(mail.content()).contains("회원가입 인증코드입니다.");
+        assertThat(mail.content()).contains(content);
         assertThat(mail.title()).isEqualTo("[플레이쿠라운드] 회원가입 인증코드입니다.");
     }
 

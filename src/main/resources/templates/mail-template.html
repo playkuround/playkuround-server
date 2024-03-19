@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <title>Static Template</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <!--    <script>-->
+    <!--        function copy_on_clipboard() {-->
+    <!--            var r = document.createRange();-->
+    <!--            r.selectNode(document.getElementById('code'));-->
+    <!--            window.getSelection().removeAllRanges();-->
+    <!--            window.getSelection().addRange(r);-->
+    <!--            document.execCommand('Copy');-->
+    <!--            window.getSelection().removeAllRanges();-->
+    <!--        }-->
+    <!--    </script>-->
+    <!--    <style>-->
+    <!--        .btn:active {-->
+    <!--            box-shadow: inset -.3rem -.1rem 1.4rem #0067FF, inset .3rem .4rem .8rem #BEC5D0;-->
+    <!--            cursor: pointer;-->
+    <!--        }-->
+    <!--    </style>-->
+
+</head>
+<body style="
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #ffffff;
+      font-size: 14px;">
+<div style="
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 80px 30px 60px;
+    background-size: 650px ;
+    background: #f4f7ff url(https://raw.githubusercontent.com/playkuround/playkuround-server/main/src/main/resources/static/email-background.png) no-repeat top center;
+    font-size: 14px;
+    color: #434343;">
+
+    <header>
+        <table style="width: 100%;">
+            <tbody>
+            <tr style="height: 0;">
+                <td style="text-align: right;">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </header>
+
+    <main>
+        <div style="
+            margin: 70px 0 0;
+            padding: 40px 20px 40px;
+            background: #ffffff;
+            border-radius: 30px;
+            text-align: center;">
+
+            <div style="width: 100%; max-width: 489px; margin: 0 auto;">
+                <h1 style="
+                    margin: 0;
+                    font-size: 24px;
+                    font-weight: 600;
+                    color: #1f1f1f;">
+                    Verification Code
+                </h1>
+                <p style="
+                    margin: 17px 0 0;
+                    font-size: 16px;
+                    font-weight: 500;">
+                    건국대의 작은 놀이터, 플레이쿠라운드
+                </p>
+                <p style="
+                margin: 17px 0 0;
+                font-weight: 500;
+                letter-spacing: 0.56px;">
+                    안녕하세요. 플레이쿠라운드입니다. <br/>
+                    앱으로 돌아가, 아래 인증 코드를 입력해주세요.<br/>
+                    해당 인증코드는 <span style="font-weight: 600; color: #1f1f1f;">5분간</span> 유효합니다.
+                </p>
+
+                <p id='code' style="
+                margin: 20px 0 0;
+                font-size: 30px;
+                font-weight: 600;
+                letter-spacing: 20px;
+                color: #ba3d4f;" th:text="${code}">
+                    123456
+                </p>
+                <!--                <p>-->
+                <!--                    <button onclick="copy_on_clipboard()" style="-->
+                <!--    background-color:#0067a3;-->
+                <!--    color: #fff;-->
+                <!--    border:none;-->
+                <!--    border-radius:20px;padding:10px;min-height:30px;-->
+                <!--    min-width: 100px;" class="btn">복사하기-->
+                <!--                    </button>-->
+                <!--                </p>-->
+            </div>
+            <div style="
+          width: 100%;
+          max-width: 490px;
+          margin: 20px auto 0;
+          text-align: center;
+          border-top: 1px solid #e6ebf1;">
+
+                <div style="margin: 16px 0 0;">
+                    <a href="https://litt.ly/playkuround" style="display: inline-block;" target="_blank">
+                        <img alt="linktree" src="https://raw.githubusercontent.com/playkuround/playkuround-server/main/src/main/resources/static/linktree.svg"
+                             width="36px"/>
+                    </a>
+                    <a href="https://www.instagram.com/playkuround_/" style="display: inline-block; margin-left: 8px;"
+                       target="_blank">
+                        <img alt="Instagram" src="https://raw.githubusercontent.com/playkuround/playkuround-server/main/src/main/resources/static/instagram.svg"
+                             width="36px"/>
+                    </a>
+                    <a href="https://play.google.com/store/apps/details?id=com.umc.playkuround" style="display: inline-block; margin-left: 8px;"
+                       target="_blank">
+                        <img alt="googleplay" src="https://raw.githubusercontent.com/playkuround/playkuround-server/main/src/main/resources/static/googleplay.svg"
+                             width="36px"/>
+                    </a>
+                </div>
+                <p style="margin: 16px 0 0;color: #434343;">
+                    Copyright © 2024 Playkuround. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </main>
+
+
+</div>
+</body>
+</html>

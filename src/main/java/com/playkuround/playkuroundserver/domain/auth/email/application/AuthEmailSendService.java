@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ public class AuthEmailSendService {
 
     private final EmailService emailService;
     private final AuthEmailRepository authEmailRepository;
+    private final TemplateEngine templateEngine;
 
     @Value("${authentication.email.domain}")
     private String emailDomain;
@@ -73,25 +76,11 @@ public class AuthEmailSendService {
 
     private void sendEmail(String target, String authenticationCode) {
         String title = "[플레이쿠라운드] 회원가입 인증코드입니다.";
-        String content = createContent(authenticationCode);
+        Context context = new Context();
+        context.setVariable("code", authenticationCode);
+        String content = templateEngine.process("mail-template", context);
+
         Mail mail = new Mail(target, title, content);
         emailService.sendMail(mail);
-    }
-
-    private String createContent(String code) {
-        return "<div>" +
-                "<h2>안녕하세요, 플레이쿠라운드입니다.</h1>" +
-                "<div font-family:verdana'>" +
-                "<p>아래 인증코드를 회원가입 창으로 돌아가 입력해주세요.<p>" +
-                "<p>회원가입 인증코드입니다.<p>" +
-                "<div style='font-size:130%'>" +
-                "<strong>" +
-                code +
-                "</strong>" +
-                "<div>" +
-                "<br> " +
-                "</div>" +
-                "<br>" +
-                "</div>";
     }
 }

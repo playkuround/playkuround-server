@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Random;
+import java.util.EnumSet;
 
 @Service
 @RequiredArgsConstructor
@@ -32,12 +32,16 @@ public class AuthEmailSendService {
     @Value("${authentication.email.code-length}")
     private Long codeLength;
 
+    @Value("${authentication.email.code-expiration-seconds}")
+    private Long codeExpirationSeconds;
+
     @Transactional
     public AuthEmailInfo sendAuthEmail(String target) {
         validateEmailDomain(target);
         long sendingCount = validateSendingCount(target);
 
-        String authenticationCode = createCode();
+        CodeGenerator codeGenerator = new CodeGenerator();
+        String authenticationCode = codeGenerator.generateCode(EnumSet.of(CodeGenerator.CodeType.NUMBER), codeLength);
         LocalDateTime expiredAt = saveAuthEmail(target, authenticationCode);
         sendEmail(target, authenticationCode);
 
@@ -53,29 +57,15 @@ public class AuthEmailSendService {
 
     private long validateSendingCount(String target) {
         LocalDateTime today = LocalDate.now().atStartOfDay();
-        Long sendingCount = authEmailRepository.countByTargetAndCreatedAtAfter(target, today);
+        long sendingCount = authEmailRepository.countByTargetAndCreatedAtAfter(target, today);
         if (sendingCount >= maxSendingCount) {
             throw new SendingLimitExceededException();
         }
         return sendingCount;
     }
 
-    private String createCode() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder codeBuilder = new StringBuilder();
-
-        Random random = new Random();
-        for (int i = 0; i < codeLength; i++) {
-            int index = random.nextInt(characters.length());
-            char randomChar = characters.charAt(index);
-            codeBuilder.append(randomChar);
-        }
-
-        return codeBuilder.toString();
-    }
-
     private LocalDateTime saveAuthEmail(String target, String authenticationCode) {
-        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
+        LocalDateTime expiredAt = LocalDateTime.now().plusSeconds(codeExpirationSeconds);
         AuthEmail authEmail = AuthEmail.createAuthEmail(target, authenticationCode, expiredAt);
         authEmailRepository.save(authEmail);
         return expiredAt;
@@ -85,7 +75,7 @@ public class AuthEmailSendService {
         String title = "[플레이쿠라운드] 회원가입 인증코드입니다.";
         String content = createContent(authenticationCode);
         Mail mail = new Mail(target, title, content);
-        emailService.sendMessage(mail);
+        emailService.sendMail(mail);
     }
 
     private String createContent(String code) {

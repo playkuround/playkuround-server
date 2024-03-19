@@ -43,6 +43,7 @@ class AuthEmailSendServiceTest {
         ReflectionTestUtils.setField(authEmailSendService, "codeLength", 6L);
         ReflectionTestUtils.setField(authEmailSendService, "maxSendingCount", 3L);
         ReflectionTestUtils.setField(authEmailSendService, "emailDomain", "test.com");
+        ReflectionTestUtils.setField(authEmailSendService, "codeExpirationSeconds", 300L);
     }
 
     @Test
@@ -66,7 +67,7 @@ class AuthEmailSendServiceTest {
         assertThat(authEmail.getCode()).containsPattern("[0-9a-zA-Z]{6}");
 
         ArgumentCaptor<Mail> mailArgument = ArgumentCaptor.forClass(Mail.class);
-        verify(emailService, times(1)).sendMessage(mailArgument.capture());
+        verify(emailService, times(1)).sendMail(mailArgument.capture());
         Mail mail = mailArgument.getValue();
         assertThat(mail.target()).isEqualTo(target);
         assertThat(mail.content()).contains("회원가입 인증코드입니다.");

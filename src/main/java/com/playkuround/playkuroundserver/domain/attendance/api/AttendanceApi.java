@@ -32,8 +32,8 @@ public class AttendanceApi {
     @PostMapping
     @Operation(summary = "출석하기", description = "오늘 출석을 저장합니다. 출석은 하루에 한번만 가능하며, " +
             "새롭게 얻은 뱃지가 있을 시 반환됩니다. 뱃지는 DB에 자동 반영됩니다.")
-    public ApiResponse<AttendanceRegisterResponse> attendanceRegister(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                      @Valid @RequestBody AttendanceRegisterRequest registerRequest) {
+    public ApiResponse<AttendanceRegisterResponse> saveAttendance(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                  @Valid @RequestBody AttendanceRegisterRequest registerRequest) {
         Location location = new Location(registerRequest.getLatitude(), registerRequest.getLongitude());
         NewlyRegisteredBadge newlyRegisteredBadge = attendanceRegisterService.registerAttendance(userDetails.getUser(), location);
         return ApiUtils.success(AttendanceRegisterResponse.from(newlyRegisteredBadge));
@@ -41,8 +41,8 @@ public class AttendanceApi {
 
     @GetMapping
     @Operation(summary = "출석 조회하기", description = "30일 간의 출석 기록을 반환합니다. 가장 최신 기록이 배열의 마지막에 위치합니다.")
-    public ApiResponse<AttendanceSearchResponse> attendanceSearch(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<LocalDateTime> attendanceDateTime = attendanceSearchService.findAttendanceForMonth(userDetails.getUser());
+    public ApiResponse<AttendanceSearchResponse> searchAttendanceFor30Days(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<LocalDateTime> attendanceDateTime = attendanceSearchService.findAttendance(userDetails.getUser(), 30);
         return ApiUtils.success(AttendanceSearchResponse.from(attendanceDateTime));
     }
 

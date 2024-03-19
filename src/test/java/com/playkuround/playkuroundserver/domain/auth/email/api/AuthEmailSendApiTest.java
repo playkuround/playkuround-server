@@ -64,7 +64,7 @@ class AuthEmailSendApiTest {
     @DisplayName("이메일 인증 전송 성공")
     void sendAuthEmailSuccess() throws Exception {
         // given
-        doNothing().when(emailService).sendMessage(any());
+        doNothing().when(emailService).sendMail(any());
 
         String email = "test@konkuk.ac.kr";
         AuthEmailSendRequest attendanceRegisterRequest = new AuthEmailSendRequest(email);

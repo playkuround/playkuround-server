@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class AttendanceRegisterRequest {
+
     @Latitude
     private Double latitude;
 

@@ -6,6 +6,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -16,7 +17,8 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-    public void sendMessage(Mail mail) {
+    @Async("mailExecutor")
+    public void sendMail(Mail mail) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
 

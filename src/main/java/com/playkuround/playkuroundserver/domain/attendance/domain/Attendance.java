@@ -30,13 +30,13 @@ public class Attendance extends BaseTimeEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    private Attendance(double latitude, double longitude, User user) {
+    private Attendance(User user, double latitude, double longitude) {
+        this.user = user;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.user = user;
     }
 
-    public static Attendance createAttendance(User user, Location location) {
-        return new Attendance(location.latitude(), location.longitude(), user);
+    public static Attendance of(User user, Location location) {
+        return new Attendance(user, location.latitude(), location.longitude());
     }
 }

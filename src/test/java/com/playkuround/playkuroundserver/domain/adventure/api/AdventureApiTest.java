@@ -71,7 +71,7 @@ class AdventureApiTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("탐험 저장")
+    @DisplayName("탐험 저장 성공")
     void saveAdventure_1() throws Exception {
         // given
         Landmark landmark = landmarkRepository.findById(3L).get();
@@ -115,7 +115,7 @@ class AdventureApiTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("탐험 저장 : 랜드마크가 존재하지 않으면 에러가 발생한다.")
+    @DisplayName("랜드마크가 존재하지 않으면 에러가 발생한다.")
     void saveAdventure_2() throws Exception {
         // given
         Landmark landmark = landmarkRepository.findById(3L).get();
@@ -138,7 +138,7 @@ class AdventureApiTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("탐험 저장 : 인식 거리 밖에 있으면 에러가 발생한다.")
+    @DisplayName("인식 거리 밖에 있으면 에러가 발생한다.")
     void saveAdventure_3() throws Exception {
         // given
         Landmark landmark = landmarkRepository.findById(3L).get();
@@ -157,6 +157,27 @@ class AdventureApiTest {
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.INVALID_LOCATION_LANDMARK.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.INVALID_LOCATION_LANDMARK.getMessage()))
                 .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_LOCATION_LANDMARK.getStatus().value()))
+                .andDo(print());
+    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("정상적인 ScoreType이 아니면 에러가 발생한다.")
+    void saveAdventure_4() throws Exception {
+        // given
+        Landmark landmark = landmarkRepository.findById(3L).get();
+
+        AdventureSaveRequest adventureSaveRequest
+                = new AdventureSaveRequest(landmark.getId(), landmark.getLatitude(), landmark.getLongitude(), 100L, "notFound");
+        String request = objectMapper.writeValueAsString(adventureSaveRequest);
+
+        // expected
+        mockMvc.perform(post("/api/adventures")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.isSuccess").value(false))
                 .andDo(print());
     }
 }

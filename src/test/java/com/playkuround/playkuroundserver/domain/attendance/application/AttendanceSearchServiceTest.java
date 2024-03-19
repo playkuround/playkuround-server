@@ -49,7 +49,7 @@ class AttendanceSearchServiceTest {
                 .distinct()
                 .sorted()
                 .forEach(x -> {
-                    Attendance attendance = Attendance.createAttendance(user, location);
+                    Attendance attendance = Attendance.of(user, location);
                     ReflectionTestUtils.setField(attendance, "createdAt", now.plusDays(x));
 
                     attendances.add(attendance);
@@ -59,7 +59,7 @@ class AttendanceSearchServiceTest {
                 .thenReturn(attendances);
 
         // when
-        List<LocalDateTime> result = attendanceSearchService.findAttendanceForMonth(user);
+        List<LocalDateTime> result = attendanceSearchService.findAttendance(user, 30);
 
         // then
         assertThat(result).isEqualTo(expected);
@@ -74,7 +74,7 @@ class AttendanceSearchServiceTest {
 
         // when
         User user = TestUtil.createUser();
-        List<LocalDateTime> result = attendanceSearchService.findAttendanceForMonth(user);
+        List<LocalDateTime> result = attendanceSearchService.findAttendance(user, 30);
 
         // then
         assertThat(result).isEmpty();

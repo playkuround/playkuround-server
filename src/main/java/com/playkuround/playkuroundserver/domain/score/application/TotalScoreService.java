@@ -4,16 +4,17 @@ import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.domain.user.dto.EmailAndNickname;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,9 +55,9 @@ public class TotalScoreService {
     }
 
     private Map<String, String> getNicknameBindingEmailMapList(List<String> emails) {
-        List<Map<String, String>> nicknameBindingEmailMapList = userRepository.findNicknameByEmailIn(emails);
-        return nicknameBindingEmailMapList.stream()
-                .collect(HashMap::new, (m, v) -> m.put(v.get("email"), v.get("nickname")), HashMap::putAll);
+        List<EmailAndNickname> nicknameByEmailIn = userRepository.findNicknameByEmailIn(emails);
+        return nicknameByEmailIn.stream()
+                .collect(Collectors.toMap(EmailAndNickname::email, EmailAndNickname::nickname));
     }
 
     private RankAndScore getMyRank(User user) {

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,18 +22,12 @@ public class LandmarkRankService {
         ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
 
         List<NicknameAndScore> nicknameAndScores = adventureRepository.findRankTop100DescByLandmarkId(landmarkId);
-        nicknameAndScores
-                .forEach(nicknameAndScore ->
-                        response.addRank(nicknameAndScore.nickname(), nicknameAndScore.score()));
+        nicknameAndScores.forEach(nicknameAndScore ->
+                response.addRank(nicknameAndScore.nickname(), nicknameAndScore.score()));
 
-        Optional<RankAndScore> optionalMyScore = adventureRepository.findMyRankByLandmarkId(user, landmarkId);
-        if (optionalMyScore.isPresent()) {
-            RankAndScore myScore = optionalMyScore.get();
-            response.setMyRank(myScore.ranking(), myScore.score());
-        }
-        else {
-            response.setMyRank(0, 0);
-        }
+        RankAndScore rankAndScore = adventureRepository.findMyRankByLandmarkId(user, landmarkId)
+                .orElseGet(() -> new RankAndScore(0, 0));
+        response.setMyRank(rankAndScore.ranking(), rankAndScore.score());
         return response;
     }
 }

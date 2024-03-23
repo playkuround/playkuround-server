@@ -24,8 +24,9 @@ public class AdminApi {
 
     @PostMapping("/app-version")
     @Operation(summary = "앱 버전 올리기(관리자모드)", description = "앱 버전을 올립니다. 이전버전 사용자에게 공지 메시지를 보냅니다.")
-    public ApiResponse<Void> updateAppVersion(@RequestParam("version") String appVersion) {
-        AppVersion.changeAppVersion(appVersion);
+    public ApiResponse<Void> updateAppVersion(@RequestParam("version") String appVersion,
+                                              @RequestParam(value = "os") String applicationOS) {
+        AppVersion.changeLatestUpdatedVersion(appVersion, applicationOS);
         return ApiUtils.success(null);
     }
 

@@ -53,12 +53,13 @@ public class UserProfileApi {
     @GetMapping("/notification")
     @Operation(summary = "유저 알림 얻기", description = "유저 개인 알림을 얻습니다. 저장된 메시지는 (정상적인) 호출 이후 삭제됩니다.")
     public ApiResponse<List<UserNotificationResponse>> getNotification(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                       @RequestParam("version") String appVersion) {
+                                                                       @RequestParam("version") String appVersion,
+                                                                       @RequestParam(value = "os", required = false, defaultValue = "android") String os) {
         List<UserNotificationResponse> response;
         if (!SystemCheck.isSystemAvailable()) {
             response = UserNotificationResponse.from(UserNotificationResponse.NotificationEnum.SYSTEM_CHECK);
         }
-        else if (!AppVersion.isCurrentVersion(appVersion)) {
+        else if (!AppVersion.isLatestUpdatedVersion(appVersion, os)) {
             response = UserNotificationResponse.from(UserNotificationResponse.NotificationEnum.UPDATE);
         }
         else {

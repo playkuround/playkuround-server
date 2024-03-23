@@ -15,6 +15,7 @@ public enum ErrorCode {
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "C004", "권한이 없습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C005", "서버 내부에서 에러가 발생하였습니다."),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "C006", "Bad Request"),
+    NOT_SUPPORT_OS(HttpStatus.BAD_REQUEST, "C007", "지원하지 않는 OS입니다."),
 
     // User
     EMAIL_DUPLICATION(HttpStatus.BAD_REQUEST, "U001", "이미 존재하는 이메일입니다."),

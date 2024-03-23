@@ -19,18 +19,18 @@ public enum AppVersion {
         this.latest_updated_version = latest_updated_version;
     }
 
-    public static boolean isLatestUpdatedVersion(String version, String os) {
+    public static boolean isLatestUpdatedVersion(String os, String version) {
         AppVersion appVersion = stringToEnum.get(os.toUpperCase());
         if (appVersion == null) {
-            throw new IllegalArgumentException("Invalid OS");
+            throw new NotSupportOSException();
         }
         return appVersion.latest_updated_version.equals(version);
     }
 
-    public static void changeLatestUpdatedVersion(String version, String os) {
+    public static void changeLatestUpdatedVersion(String os, String version) {
         AppVersion appVersion = stringToEnum.get(os.toUpperCase());
         if (appVersion == null) {
-            throw new IllegalArgumentException("Invalid OS");
+            throw new NotSupportOSException();
         }
         appVersion.latest_updated_version = version;
     }

@@ -67,11 +67,50 @@ class AdminApiTest {
         void success_1(String version) throws Exception {
             // expect
             mockMvc.perform(post("/api/admin/app-version")
-                            .queryParam("version", version))
+                            .queryParam("version", version)
+                            .queryParam("os", "android"))
                     .andExpect(status().isOk())
                     .andDo(print());
 
-            assertThat(AppVersion.isCurrentVersion(version)).isTrue();
+            assertThat(AppVersion.isLatestUpdatedVersion("android", version)).isTrue();
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"android", "ios"})
+        @WithMockCustomUser(role = Role.ROLE_ADMIN)
+        @DisplayName("OS 별로 앱 버전을 별도로 관리한다.")
+        void success_2(String os) throws Exception {
+            String appVersion = "12.0.0";
+            // expect
+            mockMvc.perform(post("/api/admin/app-version")
+                            .queryParam("version", appVersion)
+                            .queryParam("os", os))
+                    .andExpect(status().isOk())
+                    .andDo(print());
+
+            assertThat(AppVersion.isLatestUpdatedVersion(os, appVersion)).isTrue();
+        }
+
+        @Test
+        @WithMockCustomUser(role = Role.ROLE_ADMIN)
+        @DisplayName("존재하지 않는 OS이면 에러가 발생한다.")
+        void fail_1() throws Exception {
+            mockMvc.perform(post("/api/admin/app-version")
+                            .queryParam("version", "12.0.0")
+                            .queryParam("os", "notFound"))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print());
+        }
+
+        @Test
+        @WithMockCustomUser(role = Role.ROLE_USER)
+        @DisplayName("ROLE_ADMIN이 아니면 권한 에러가 발생한다.")
+        void fail_2() throws Exception {
+            mockMvc.perform(post("/api/admin/app-version")
+                            .queryParam("version", "12.0.0")
+                            .queryParam("os", "android"))
+                    .andExpect(status().isForbidden())
+                    .andDo(print());
         }
     }
 

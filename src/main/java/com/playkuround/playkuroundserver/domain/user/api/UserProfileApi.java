@@ -54,10 +54,10 @@ public class UserProfileApi {
     @GetMapping("/notification")
     @Operation(summary = "유저 알림 얻기",
             description = "유저 개인 알림을 얻습니다. 저장된 메시지는 (정상적인) 호출 이후 삭제됩니다.<br>" +
-                    "=== name 명 리스트 ===<br>" +
+                    "=== name 명 리스트(new_badge는 description도 중요) ===<br>" +
                     "1. 시스템 점검 중일 때(단독으로만 반환): system_check<br>" +
                     "2. 앱 버전 업데이트가 필요할 때(단독으로만 반환): update<br>" +
-                    "3. 새로운 뱃지 획득: new_badge<br>" +
+                    "3. 새로운 뱃지 획득: new_badge(MONTHLY_RANKING_1, MONTHLY_RANKING_2, MONTHLY_RANKING_3, COLLEGE_OF_BUSINESS_ADMINISTRATION_100_AND_FIRST_PLACE)<br>" +
                     "4. 개인 알림: alarm",
             parameters = {
                     @Parameter(name = "version", description = "현재 앱 버전", example = "2.0.2", required = true),

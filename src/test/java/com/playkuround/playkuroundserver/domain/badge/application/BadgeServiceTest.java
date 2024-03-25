@@ -9,6 +9,8 @@ import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.Notification;
+import com.playkuround.playkuroundserver.domain.user.domain.NotificationEnum;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.DateUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -385,7 +387,8 @@ class BadgeServiceTest {
 
             // then
             assertThat(result).isTrue();
-            assertThat(user.getNotification()).isEqualTo("new_badge#" + badgeType.name());
+            assertThat(user.getNotification())
+                    .containsOnly(new Notification(NotificationEnum.NEW_BADGE, badgeType.name()));
         }
     }
 

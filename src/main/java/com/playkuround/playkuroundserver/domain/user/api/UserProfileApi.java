@@ -7,7 +7,8 @@ import com.playkuround.playkuroundserver.domain.user.api.response.UserNotificati
 import com.playkuround.playkuroundserver.domain.user.api.response.UserProfileResponse;
 import com.playkuround.playkuroundserver.domain.user.application.UserProfileService;
 import com.playkuround.playkuroundserver.domain.user.domain.HighestScore;
-import com.playkuround.playkuroundserver.domain.user.dto.UserNotification;
+import com.playkuround.playkuroundserver.domain.user.domain.Notification;
+import com.playkuround.playkuroundserver.domain.user.domain.NotificationEnum;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -69,13 +70,13 @@ public class UserProfileApi {
                                                                        @RequestParam(name = "os", required = false, defaultValue = "android") String os) {
         List<UserNotificationResponse> response;
         if (!SystemCheck.isSystemAvailable()) {
-            response = UserNotificationResponse.from(UserNotificationResponse.NotificationEnum.SYSTEM_CHECK);
+            response = UserNotificationResponse.from(NotificationEnum.SYSTEM_CHECK);
         }
         else if (!AppVersion.isLatestUpdatedVersion(os, appVersion)) {
-            response = UserNotificationResponse.from(UserNotificationResponse.NotificationEnum.UPDATE);
+            response = UserNotificationResponse.from(NotificationEnum.UPDATE);
         }
         else {
-            List<UserNotification> notificationList = userProfileService.getNotification(userDetails.getUser());
+            List<Notification> notificationList = userProfileService.getNotification(userDetails.getUser());
             response = UserNotificationResponse.from(notificationList);
         }
         return ApiUtils.success(response);

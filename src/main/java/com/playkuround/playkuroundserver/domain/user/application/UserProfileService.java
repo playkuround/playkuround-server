@@ -2,16 +2,16 @@ package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.HighestScore;
+import com.playkuround.playkuroundserver.domain.user.domain.Notification;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.UserNotification;
 import com.playkuround.playkuroundserver.global.util.BadWordFilterUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Service
@@ -34,21 +34,16 @@ public class UserProfileService {
     }
 
     @Transactional
-    public List<UserNotification> getNotification(User user) {
-        String str_notification = user.getNotification();
-        if (str_notification == null) {
+    public List<Notification> getNotification(User user) {
+        Set<Notification> notificationSet = user.getNotification();
+        if (notificationSet == null || notificationSet.isEmpty()) {
             return new ArrayList<>();
         }
+
+        List<Notification> userNotifications = notificationSet.stream().toList();
         user.clearNotification();
         userRepository.save(user);
-        return convertToUserNotificationList(str_notification);
-    }
 
-    private List<UserNotification> convertToUserNotificationList(String str_notification) {
-        return Arrays.stream(str_notification.split("@"))
-                .map(notifications -> notifications.split("#"))
-                .filter(nameAndDescription -> nameAndDescription.length == 2)
-                .map(nameAndDescription -> new UserNotification(nameAndDescription[0], nameAndDescription[1]))
-                .toList();
+        return userNotifications;
     }
 }

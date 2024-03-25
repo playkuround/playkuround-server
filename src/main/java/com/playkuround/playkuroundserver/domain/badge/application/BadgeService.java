@@ -116,7 +116,7 @@ public class BadgeService {
         Badge badge = Badge.createBadge(user, badgeType);
         badgeRepository.save(badge);
         if (registerMessage) {
-            user.addNewBadgeNotification(badgeType.name());
+            user.addNewBadgeNotification(badgeType);
         }
         return true;
     }

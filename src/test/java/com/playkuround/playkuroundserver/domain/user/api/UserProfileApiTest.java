@@ -1,12 +1,15 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
 import com.playkuround.playkuroundserver.TestUtil;
+import com.playkuround.playkuroundserver.domain.common.AppVersion;
+import com.playkuround.playkuroundserver.domain.common.SystemCheck;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -80,6 +83,50 @@ class UserProfileApiTest {
                 .andExpect(jsonPath("$.isSuccess").value(true))
                 .andExpect(jsonPath("$.response").value(true))
                 .andDo(print());
+    }
+
+    @Nested
+    @WithMockCustomUser
+    @DisplayName("유저 알림 얻기")
+    class getNotification {
+
+        @Test
+        @DisplayName("시스템이 사용 불가능할 때: name=system_check")
+        void success_1() throws Exception {
+            // given
+            SystemCheck.changeSystemAvailable(false);
+            String os = "android";
+            String version = "2.0.0";
+            AppVersion.changeLatestUpdatedVersion(os, version);
+
+            // expect
+            mockMvc.perform(get("/api/users/notification")
+                            .queryParam("version", version)
+                            .queryParam("os", os))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.isSuccess").value(true))
+                    .andExpect(jsonPath("$.response[0].name").value("system_check"))
+                    .andDo(print());
+        }
+
+        @Test
+        @DisplayName("앱 버전을 지원하지 않을 때: name=update")
+        void success_2() throws Exception {
+            // given
+            SystemCheck.changeSystemAvailable(true);
+            String os = "android";
+            String version = "2.0.0";
+            AppVersion.changeLatestUpdatedVersion(os, version);
+
+            // expect
+            mockMvc.perform(get("/api/users/notification")
+                            .queryParam("version", "notSupport")
+                            .queryParam("os", os))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.isSuccess").value(true))
+                    .andExpect(jsonPath("$.response[0].name").value("update"))
+                    .andDo(print());
+        }
     }
 }
 

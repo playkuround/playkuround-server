@@ -7,11 +7,13 @@ import com.playkuround.playkuroundserver.domain.user.api.response.UserNotificati
 import com.playkuround.playkuroundserver.domain.user.api.response.UserProfileResponse;
 import com.playkuround.playkuroundserver.domain.user.application.UserProfileService;
 import com.playkuround.playkuroundserver.domain.user.domain.HighestScore;
-import com.playkuround.playkuroundserver.domain.user.dto.UserNotification;
+import com.playkuround.playkuroundserver.domain.user.domain.Notification;
+import com.playkuround.playkuroundserver.domain.user.domain.NotificationEnum;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -51,18 +53,30 @@ public class UserProfileApi {
     }
 
     @GetMapping("/notification")
-    @Operation(summary = "유저 알림 얻기", description = "유저 개인 알림을 얻습니다. 저장된 메시지는 (정상적인) 호출 이후 삭제됩니다.")
+    @Operation(summary = "유저 알림 얻기",
+            description = "유저 개인 알림을 얻습니다. 저장된 메시지는 (정상적인) 호출 이후 삭제됩니다.<br>" +
+                    "=== name 명 리스트(new_badge는 description도 중요) ===<br>" +
+                    "1. 시스템 점검 중일 때(단독으로만 반환): system_check<br>" +
+                    "2. 앱 버전 업데이트가 필요할 때(단독으로만 반환): update<br>" +
+                    "3. 새로운 뱃지 획득: new_badge(MONTHLY_RANKING_1, MONTHLY_RANKING_2, MONTHLY_RANKING_3, COLLEGE_OF_BUSINESS_ADMINISTRATION_100_AND_FIRST_PLACE)<br>" +
+                    "4. 개인 알림: alarm",
+            parameters = {
+                    @Parameter(name = "version", description = "현재 앱 버전", example = "2.0.2", required = true),
+                    @Parameter(name = "os", description = "모바일 운영체제(android 또는 ios)", example = "android")
+            }
+    )
     public ApiResponse<List<UserNotificationResponse>> getNotification(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                       @RequestParam("version") String appVersion) {
+                                                                       @RequestParam("version") String appVersion,
+                                                                       @RequestParam(name = "os", required = false, defaultValue = "android") String os) {
         List<UserNotificationResponse> response;
         if (!SystemCheck.isSystemAvailable()) {
-            response = UserNotificationResponse.from(UserNotificationResponse.NotificationEnum.SYSTEM_CHECK);
+            response = UserNotificationResponse.from(NotificationEnum.SYSTEM_CHECK);
         }
-        else if (!AppVersion.isCurrentVersion(appVersion)) {
-            response = UserNotificationResponse.from(UserNotificationResponse.NotificationEnum.UPDATE);
+        else if (!AppVersion.isLatestUpdatedVersion(os, appVersion)) {
+            response = UserNotificationResponse.from(NotificationEnum.UPDATE);
         }
         else {
-            List<UserNotification> notificationList = userProfileService.getNotification(userDetails.getUser());
+            List<Notification> notificationList = userProfileService.getNotification(userDetails.getUser());
             response = UserNotificationResponse.from(notificationList);
         }
         return ApiUtils.success(response);

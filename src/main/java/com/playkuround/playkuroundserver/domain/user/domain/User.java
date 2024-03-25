@@ -1,10 +1,14 @@
 package com.playkuround.playkuroundserver.domain.user.domain;
 
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -36,7 +40,8 @@ public class User extends BaseTimeEntity {
     @Embedded
     private HighestScore highestScore;
 
-    private String notification;
+    @Convert(converter = NotificationConverter.class)
+    private Set<Notification> notification;
 
     private User(String email, String nickname, Major major, Role role) {
         this.email = email;
@@ -61,19 +66,15 @@ public class User extends BaseTimeEntity {
     }
 
     public void clearNotification() {
-        this.notification = null;
-    }
-
-    private void addNotification(String name, String description) {
-        if (notification == null) {
-            notification = name + "#" + description;
-        }
-        else {
-            notification += "@" + name + "#" + description;
+        if (this.notification != null) {
+            this.notification.clear();
         }
     }
 
-    public void addNewBadgeNotification(String description) {
-        addNotification("new_badge", description);
+    public void addNewBadgeNotification(BadgeType badgeType) {
+        if (this.notification == null) {
+            this.notification = new HashSet<>();
+        }
+        this.notification.add(new Notification(NotificationEnum.NEW_BADGE, badgeType.name()));
     }
 }

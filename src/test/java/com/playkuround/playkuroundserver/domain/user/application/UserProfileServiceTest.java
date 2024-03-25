@@ -1,9 +1,11 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.TestUtil;
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.Notification;
+import com.playkuround.playkuroundserver.domain.user.domain.NotificationEnum;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.UserNotification;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -95,7 +97,7 @@ class UserProfileServiceTest {
             User user = TestUtil.createUser();
 
             // when
-            List<UserNotification> result = userProfileService.getNotification(user);
+            List<Notification> result = userProfileService.getNotification(user);
 
             // then
             assertThat(result).isEmpty();
@@ -106,16 +108,16 @@ class UserProfileServiceTest {
         void success_2() {
             // given
             User user = TestUtil.createUser();
-            user.addNewBadgeNotification("new badge");
+            user.addNewBadgeNotification(BadgeType.MONTHLY_RANKING_1);
 
             // when
-            List<UserNotification> result = userProfileService.getNotification(user);
+            List<Notification> result = userProfileService.getNotification(user);
 
             // then
             assertThat(result).hasSize(1);
-            assertThat(result.get(0).name()).isEqualTo("new_badge");
-            assertThat(result.get(0).description()).isEqualTo("new badge");
-            assertThat(user.getNotification()).isNull();
+            assertThat(result.get(0).getName()).isEqualTo("new_badge");
+            assertThat(result.get(0).getDescription()).isEqualTo(BadgeType.MONTHLY_RANKING_1.name());
+            assertThat(user.getNotification()).isEmpty();
         }
 
         @Test
@@ -123,19 +125,18 @@ class UserProfileServiceTest {
         void success_3() {
             // given
             User user = TestUtil.createUser();
-            user.addNewBadgeNotification("new badge1");
-            user.addNewBadgeNotification("new badge2");
+            user.addNewBadgeNotification(BadgeType.MONTHLY_RANKING_1);
+            user.addNewBadgeNotification(BadgeType.MONTHLY_RANKING_2);
 
             // when
-            List<UserNotification> result = userProfileService.getNotification(user);
+            List<Notification> result = userProfileService.getNotification(user);
 
             // then
-            assertThat(result).hasSize(2);
-            assertThat(result.get(0).name()).isEqualTo("new_badge");
-            assertThat(result.get(0).description()).isEqualTo("new badge1");
-            assertThat(result.get(1).name()).isEqualTo("new_badge");
-            assertThat(result.get(1).description()).isEqualTo("new badge2");
-            assertThat(user.getNotification()).isNull();
+            assertThat(result).containsOnly(
+                    new Notification(NotificationEnum.NEW_BADGE, BadgeType.MONTHLY_RANKING_1.name()),
+                    new Notification(NotificationEnum.NEW_BADGE, BadgeType.MONTHLY_RANKING_2.name())
+            );
+            assertThat(user.getNotification()).isEmpty();
         }
 
     }

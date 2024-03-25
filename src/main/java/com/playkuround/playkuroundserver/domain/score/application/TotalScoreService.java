@@ -4,28 +4,32 @@ import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import lombok.RequiredArgsConstructor;
+import com.playkuround.playkuroundserver.domain.user.dto.EmailAndNickname;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class TotalScoreService {
 
-    private final String redisSetKey = "ranking";
+    private final String redisSetKey;
     private final UserRepository userRepository;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final ZSetOperations<String, String> zSetOperations;
+
+    public TotalScoreService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate) {
+        this.redisSetKey = "ranking";
+        this.userRepository = userRepository;
+        this.zSetOperations = redisTemplate.opsForZSet();
+    }
 
     @Transactional
     public Long incrementTotalScore(User user, Long score) {
-        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
         zSetOperations.incrementScore(redisSetKey, user.getEmail(), score);
 
         Double myTotalScore = zSetOperations.score(redisSetKey, user.getEmail());
@@ -38,7 +42,7 @@ public class TotalScoreService {
     @Transactional(readOnly = true)
     public ScoreRankingResponse getRankTop100(User user) {
         Set<ZSetOperations.TypedTuple<String>> typedTuples
-                = redisTemplate.opsForZSet().reverseRangeWithScores(redisSetKey, 0, 99);
+                = zSetOperations.reverseRangeWithScores(redisSetKey, 0, 99);
         if (typedTuples == null) {
             return ScoreRankingResponse.createEmptyResponse();
         }
@@ -54,14 +58,12 @@ public class TotalScoreService {
     }
 
     private Map<String, String> getNicknameBindingEmailMapList(List<String> emails) {
-        List<Map<String, String>> nicknameBindingEmailMapList = userRepository.findNicknameByEmailIn(emails);
-        return nicknameBindingEmailMapList.stream()
-                .collect(HashMap::new, (m, v) -> m.put(v.get("email"), v.get("nickname")), HashMap::putAll);
+        List<EmailAndNickname> nicknameByEmailIn = userRepository.findNicknameByEmailIn(emails);
+        return nicknameByEmailIn.stream()
+                .collect(Collectors.toMap(EmailAndNickname::email, EmailAndNickname::nickname));
     }
 
     private RankAndScore getMyRank(User user) {
-        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
-
         Double myTotalScore = zSetOperations.score(redisSetKey, user.getEmail());
         if (myTotalScore == null) {
             return new RankAndScore(0, 0);
@@ -69,18 +71,23 @@ public class TotalScoreService {
 
         Set<String> emailSet = zSetOperations.reverseRangeByScore(redisSetKey, myTotalScore, myTotalScore, 0, 1);
         if (emailSet == null) {
-            return new RankAndScore(0, 0);
+            return new RankAndScore(0, 0); // 발생하지 않음
         }
+        int myRank = getMyRank(emailSet);
 
+        return new RankAndScore(myRank, myTotalScore.intValue());
+    }
+
+    private int getMyRank(Set<String> emailSet) {
         int myRank = -1;
+        // emailSet의 크기는 항상 1일 것이다.
         for (String email : emailSet) {
             Long rank = zSetOperations.reverseRank(redisSetKey, email);
             if (rank == null) {
-                continue;
+                continue; // 발생하지 않음
             }
             myRank = rank.intValue();
         }
-
-        return new RankAndScore(myRank + 1, myTotalScore.intValue());
+        return myRank + 1;
     }
 }

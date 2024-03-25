@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.user.api.response;
 
-import com.playkuround.playkuroundserver.domain.user.dto.UserNotification;
+import com.playkuround.playkuroundserver.domain.user.domain.Notification;
+import com.playkuround.playkuroundserver.domain.user.domain.NotificationEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,25 +19,12 @@ public class UserNotificationResponse {
     private String description;
 
     public static List<UserNotificationResponse> from(NotificationEnum notificationEnum) {
-        return List.of(new UserNotificationResponse(notificationEnum.name, notificationEnum.description));
+        return List.of(new UserNotificationResponse(notificationEnum.getName(), notificationEnum.getDefaultMessage()));
     }
 
-    public static List<UserNotificationResponse> from(List<UserNotification> notificationList) {
+    public static List<UserNotificationResponse> from(List<Notification> notificationList) {
         return notificationList.stream()
-                .map(notification -> new UserNotificationResponse(notification.name(), notification.description()))
+                .map(notification -> new UserNotificationResponse(notification.getName(), notification.getDescription()))
                 .toList();
-    }
-
-    public enum NotificationEnum {
-        UPDATE("update", "application is must update"),
-        SYSTEM_CHECK("system_check", "system is not available");
-
-        private final String name;
-        private final String description;
-
-        NotificationEnum(String name, String description) {
-            this.name = name;
-            this.description = description;
-        }
     }
 }

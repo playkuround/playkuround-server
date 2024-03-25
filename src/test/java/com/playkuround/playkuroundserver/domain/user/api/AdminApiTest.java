@@ -9,9 +9,7 @@ import com.playkuround.playkuroundserver.domain.common.AppVersion;
 import com.playkuround.playkuroundserver.domain.common.SystemCheck;
 import com.playkuround.playkuroundserver.domain.user.api.request.ManualBadgeSaveRequest;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
-import com.playkuround.playkuroundserver.domain.user.domain.Major;
-import com.playkuround.playkuroundserver.domain.user.domain.Role;
-import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.domain.user.domain.*;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -190,7 +189,9 @@ class AdminApiTest {
             assertThat(badges.get(0).getBadgeType()).isEqualTo(BadgeType.MONTHLY_RANKING_1);
 
             Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
-            assertThat(optionalUser.get().getNotification()).isEqualTo("new_badge#" + BadgeType.MONTHLY_RANKING_1.name());
+            Set<Notification> notification = optionalUser.get().getNotification();
+            assertThat(notification)
+                    .containsOnly(new Notification(NotificationEnum.NEW_BADGE, BadgeType.MONTHLY_RANKING_1.name()));
         }
 
         @Test

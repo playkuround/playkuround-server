@@ -64,6 +64,9 @@
         <root level="info">
             <appender-ref ref="STDOUT"/>
         </root>
+        <logger name="org.hibernate.SQL" level="debug" additivity="false">
+            <appender-ref ref="STDOUT"/>
+        </logger>
     </springProfile>
 
     <!--  local 환경  -->

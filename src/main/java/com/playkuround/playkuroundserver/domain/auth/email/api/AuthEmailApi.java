@@ -25,10 +25,10 @@ public class AuthEmailApi {
     private final AuthEmailVerifyService authEmailVerifyService;
 
     @PostMapping
-    @Operation(summary = "인증메일 전송", description = "해당 메일로 알파벳 대소문자, 숫자 조합으로 이루어진 6자리의 인증 코드를 전송합니다. " +
+    @Operation(summary = "인증메일 전송", description = "해당 메일로 숫자 6자리의 인증 코드를 전송합니다. " +
             "인증 메일 전송은 자정을 기준으로 최대 5번까지 가능합니다. 또한 인증 유효시간은 5분입니다.")
     public ApiResponse<AuthEmailSendResponse> authEmailSend(@RequestBody @Valid AuthEmailSendRequest requestDto) {
-        AuthEmailInfo authEmailInfo = authEmailSendService.sendAuthEmail(requestDto.getTarget());
+        AuthEmailInfo authEmailInfo = authEmailSendService.sendAuthEmail(requestDto.getTarget().toLowerCase());
         return ApiUtils.success(AuthEmailSendResponse.from(authEmailInfo));
     }
 
@@ -36,7 +36,7 @@ public class AuthEmailApi {
     @Operation(summary = "인증 코드 확인", description = "인증 코드를 확인합니다. 인증 코드는 메일 전송 후 5분간 유효합니다.")
     public ApiResponse<AuthVerifyEmailResponse> authEmailVerify(@RequestParam("code") String code,
                                                                 @RequestParam("email") String email) {
-        AuthVerifyEmailResult authVerifyEmailResult = authEmailVerifyService.verifyAuthEmail(code, email);
+        AuthVerifyEmailResult authVerifyEmailResult = authEmailVerifyService.verifyAuthEmail(code, email.toLowerCase());
         return ApiUtils.success(AuthVerifyEmailResponse.from(authVerifyEmailResult));
     }
 

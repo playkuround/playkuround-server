@@ -91,12 +91,12 @@ class AuthEmailVerifyApiTest {
     @DisplayName("이메일 인증 성공 : 신규회원")
     void authEmailVerifySuccessNewUser() throws Exception {
         // given
-        AuthEmail authEmail = AuthEmail.createAuthEmail("newUserEmail", "code", LocalDateTime.now().plusMinutes(5));
+        AuthEmail authEmail = AuthEmail.createAuthEmail("user@test.com", "code", LocalDateTime.now().plusMinutes(5));
         authEmailRepository.save(authEmail);
 
         // expected
         MvcResult mvcResult = mockMvc.perform(get("/api/auth/emails")
-                        .param("email", "newUserEmail")
+                        .param("email", "user@test.com")
                         .param("code", "code")
                 )
                 .andExpect(status().isOk())

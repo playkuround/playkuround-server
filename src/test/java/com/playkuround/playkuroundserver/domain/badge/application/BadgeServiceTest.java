@@ -12,7 +12,7 @@ import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Notification;
 import com.playkuround.playkuroundserver.domain.user.domain.NotificationEnum;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.global.util.DateUtils;
+import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -133,12 +133,12 @@ class BadgeServiceTest {
             when(badgeRepository.findByUser(user)).thenReturn(new ArrayList<>());
 
             List<NewlyRegisteredBadge.BadgeInfo> result;
-            try (MockedStatic<DateUtils> mockedStatic = Mockito.mockStatic(DateUtils.class)) {
-                mockedStatic.when(DateUtils::isTodayDuckDay).thenReturn(false);
-                mockedStatic.when(DateUtils::isTodayArborDay).thenReturn(false);
-                mockedStatic.when(DateUtils::isTodayWhiteDay).thenReturn(false);
-                mockedStatic.when(DateUtils::isTodayChildrenDay).thenReturn(false);
-                mockedStatic.when(DateUtils::isTodayFoundationDay).thenReturn(false);
+            try (MockedStatic<DateTimeUtils> mockedStatic = Mockito.mockStatic(DateTimeUtils.class)) {
+                mockedStatic.when(DateTimeUtils::isTodayDuckDay).thenReturn(false);
+                mockedStatic.when(DateTimeUtils::isTodayArborDay).thenReturn(false);
+                mockedStatic.when(DateTimeUtils::isTodayWhiteDay).thenReturn(false);
+                mockedStatic.when(DateTimeUtils::isTodayChildrenDay).thenReturn(false);
+                mockedStatic.when(DateTimeUtils::isTodayFoundationDay).thenReturn(false);
 
                 // when
                 NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAttendanceBadges(user);
@@ -160,12 +160,12 @@ class BadgeServiceTest {
             when(badgeRepository.findByUser(user)).thenReturn(new ArrayList<>());
 
             List<NewlyRegisteredBadge.BadgeInfo> result;
-            try (MockedStatic<DateUtils> mockedStatic = Mockito.mockStatic(DateUtils.class)) {
-                mockedStatic.when(DateUtils::isTodayDuckDay).thenReturn(false);
-                mockedStatic.when(DateUtils::isTodayArborDay).thenReturn(false);
-                mockedStatic.when(DateUtils::isTodayWhiteDay).thenReturn(false);
-                mockedStatic.when(DateUtils::isTodayChildrenDay).thenReturn(true);
-                mockedStatic.when(DateUtils::isTodayFoundationDay).thenReturn(false);
+            try (MockedStatic<DateTimeUtils> mockedStatic = Mockito.mockStatic(DateTimeUtils.class)) {
+                mockedStatic.when(DateTimeUtils::isTodayDuckDay).thenReturn(false);
+                mockedStatic.when(DateTimeUtils::isTodayArborDay).thenReturn(false);
+                mockedStatic.when(DateTimeUtils::isTodayWhiteDay).thenReturn(false);
+                mockedStatic.when(DateTimeUtils::isTodayChildrenDay).thenReturn(true);
+                mockedStatic.when(DateTimeUtils::isTodayFoundationDay).thenReturn(false);
 
                 // when
                 NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAttendanceBadges(user);
@@ -193,12 +193,12 @@ class BadgeServiceTest {
                     ));
 
             List<NewlyRegisteredBadge.BadgeInfo> result;
-            try (MockedStatic<DateUtils> mockedStatic = Mockito.mockStatic(DateUtils.class)) {
-                mockedStatic.when(DateUtils::isTodayDuckDay).thenReturn(false);
-                mockedStatic.when(DateUtils::isTodayWhiteDay).thenReturn(false);
-                mockedStatic.when(DateUtils::isTodayArborDay).thenReturn(false);
-                mockedStatic.when(DateUtils::isTodayChildrenDay).thenReturn(true);
-                mockedStatic.when(DateUtils::isTodayFoundationDay).thenReturn(false);
+            try (MockedStatic<DateTimeUtils> mockedStatic = Mockito.mockStatic(DateTimeUtils.class)) {
+                mockedStatic.when(DateTimeUtils::isTodayDuckDay).thenReturn(false);
+                mockedStatic.when(DateTimeUtils::isTodayWhiteDay).thenReturn(false);
+                mockedStatic.when(DateTimeUtils::isTodayArborDay).thenReturn(false);
+                mockedStatic.when(DateTimeUtils::isTodayChildrenDay).thenReturn(true);
+                mockedStatic.when(DateTimeUtils::isTodayFoundationDay).thenReturn(false);
 
                 // when
                 NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAttendanceBadges(user);

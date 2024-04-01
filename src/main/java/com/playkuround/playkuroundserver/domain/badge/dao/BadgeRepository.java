@@ -10,5 +10,5 @@ import java.util.List;
 public interface BadgeRepository extends JpaRepository<Badge, Long> {
     List<Badge> findByUser(User user);
 
-    boolean existsByUserAndBadgeType(User user, BadgeType conqueror);
+    boolean existsByUserAndBadgeType(User user, BadgeType badgeType);
 }

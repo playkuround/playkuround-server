@@ -140,4 +140,26 @@ class AuthEmailSendApiTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("메일은 대소문자를 구분하지 않는다.")
+    void authEmail() throws Exception {
+        // given
+        AuthEmailSendRequest attendanceRegisterRequest = new AuthEmailSendRequest("TeSt@kOnkUk.aC.Kr");
+        String request = objectMapper.writeValueAsString(attendanceRegisterRequest);
+
+        // expected
+        mockMvc.perform(post("/api/auth/emails")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isSuccess").value(true))
+                .andExpect(jsonPath("$.response.sendingCount").value(1))
+                .andDo(print());
+
+        List<AuthEmail> authEmails = authEmailRepository.findAll();
+        assertThat(authEmails).hasSize(1);
+        assertThat(authEmails.get(0).getTarget()).isEqualTo("test@konkuk.ac.kr");
+    }
+
 }

@@ -28,10 +28,12 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
             "SELECT new com.playkuround.playkuroundserver.domain.score.dto.RankAndScore(cast(user_rank as integer), cast(score as integer)) FROM " +
                     "(SELECT a.user.id as user_id, (RANK() over (order by SUM(a.score) desc)) as user_rank, SUM(a.score) as score " +
                     "FROM Adventure a " +
-                    "where a.landmark.id=:landmark " +
+                    "where a.landmark.id=:landmark AND a.createdAt >= :from " +
                     "GROUP BY a.user.id) " +
                     "where user_id=:#{#user.id}")
-    Optional<RankAndScore> findMyRankByLandmarkId(@Param(value = "user") User user, @Param(value = "landmark") Long landmarkId);
+    Optional<RankAndScore> findMyRankByLandmarkId(@Param(value = "user") User user,
+                                                  @Param(value = "landmark") Long landmarkId,
+                                                  @Param(value = "from") LocalDateTime from);
 
     @Query("SELECT SUM(a.score) FROM Adventure a WHERE a.user.id=:#{#user.id} AND a.landmark.id=:#{#landmark.id}")
     long getSumScoreByUserAndLandmark(@Param(value = "user") User user, @Param(value = "landmark") Landmark landmark);

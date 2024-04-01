@@ -14,9 +14,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,13 +35,13 @@ class LandmarkRankServiceTest {
     @DisplayName("랭킹 유저가 한명도 없을 때")
     void getRankTop100ByLandmark1() {
         // given
-        User user = TestUtil.createUser();
         when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(List.of());
-        when(adventureRepository.findMyRankByLandmarkId(user, 1L))
+        when(adventureRepository.findMyRankByLandmarkId(any(User.class), any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.empty());
 
         // when
+        User user = TestUtil.createUser();
         ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
 
         // then
@@ -54,16 +54,16 @@ class LandmarkRankServiceTest {
     @DisplayName("전체 유저 100명 미만 + 내 랭킹은 없음")
     void getRankTop100ByLandmark2() {
         // given
-        List<NicknameAndScore> nicknameAndScores = new ArrayList<>();
-        for (int i = 50; i > 0; i--) {
-            nicknameAndScores.add(new NicknameAndScore("nickname" + i, i));
-        }
+        List<NicknameAndScore> nicknameAndScores = IntStream.rangeClosed(1, 50)
+                .mapToObj(i -> new NicknameAndScore("nickname" + (51 - i), 51 - i))
+                .toList();
         when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(nicknameAndScores);
-        User user = TestUtil.createUser();
-        when(adventureRepository.findMyRankByLandmarkId(user, 1L)).thenReturn(Optional.empty());
+        when(adventureRepository.findMyRankByLandmarkId(any(User.class), any(Long.class), any(LocalDateTime.class)))
+                .thenReturn(Optional.empty());
 
         // when
+        User user = TestUtil.createUser();
         ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
 
         // then
@@ -82,17 +82,16 @@ class LandmarkRankServiceTest {
     @DisplayName("전체 유저 100명 미만 + 내 랭킹 존재")
     void getRankTop100ByLandmark3() {
         // given
-        List<NicknameAndScore> nicknameAndScores = new ArrayList<>();
-        for (int i = 50; i > 0; i--) {
-            nicknameAndScores.add(new NicknameAndScore("nickname" + i, i));
-        }
+        List<NicknameAndScore> nicknameAndScores = IntStream.rangeClosed(1, 50)
+                .mapToObj(i -> new NicknameAndScore("nickname" + (51 - i), 51 - i))
+                .toList();
         when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(nicknameAndScores);
-        User user = TestUtil.createUser();
-        when(adventureRepository.findMyRankByLandmarkId(user, 1L))
+        when(adventureRepository.findMyRankByLandmarkId(any(User.class), any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.of(new RankAndScore(14, 37)));
 
         // when
+        User user = TestUtil.createUser();
         ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
 
         // then
@@ -110,17 +109,16 @@ class LandmarkRankServiceTest {
     @DisplayName("전체 유저 100명 초과 + 내 랭킹 중간에 존재")
     void getRankTop100ByLandmark4() {
         // given
-        List<NicknameAndScore> nicknameAndScores = new ArrayList<>();
-        for (int i = 101; i > 0; i--) {
-            nicknameAndScores.add(new NicknameAndScore("nickname" + i, i));
-        }
+        List<NicknameAndScore> nicknameAndScores = IntStream.rangeClosed(1, 101)
+                .mapToObj(i -> new NicknameAndScore("nickname" + (102 - i), 102 - i))
+                .toList();
         when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(nicknameAndScores);
-        User user = TestUtil.createUser();
-        when(adventureRepository.findMyRankByLandmarkId(user, 1L))
+        when(adventureRepository.findMyRankByLandmarkId(any(User.class), any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.of(new RankAndScore(40, 62)));
 
         // when
+        User user = TestUtil.createUser();
         ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
 
         // then

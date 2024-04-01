@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.badge.application.specialday_badge;
 
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.global.util.DateUtils;
+import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
 
 import java.util.Set;
 
@@ -13,7 +13,7 @@ public class ArborDayBadge implements SpecialDayBadge {
     @Override
     public boolean supports(Set<BadgeType> userBadgeSet) {
         BadgeType badgeType = getBadgeType();
-        return DateUtils.isTodayArborDay() && !userBadgeSet.contains(badgeType);
+        return DateTimeUtils.isTodayArborDay() && !userBadgeSet.contains(badgeType);
     }
 
     @Override

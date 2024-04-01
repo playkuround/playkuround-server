@@ -3,9 +3,15 @@ package com.playkuround.playkuroundserver.global.util;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public class DateUtils {
+public class DateTimeUtils {
+
+    public static LocalDateTime getMonthStartDateTime() {
+        LocalDate today = LocalDate.now();
+        return today.withDayOfMonth(1).atStartOfDay();
+    }
 
     public static boolean isTodayFoundationDay() {
         LocalDate today = LocalDate.now();

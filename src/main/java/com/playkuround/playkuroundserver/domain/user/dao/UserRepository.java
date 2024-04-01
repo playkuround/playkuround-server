@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "from User u " +
             "where u.email in :emails")
     List<EmailAndNickname> findNicknameByEmailIn(List<String> emails);
+
+    List<User> findByEmailIn(List<String> emailList);
 }

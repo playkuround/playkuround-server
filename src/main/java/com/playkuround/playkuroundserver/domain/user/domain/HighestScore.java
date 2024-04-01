@@ -23,6 +23,16 @@ public class HighestScore {
     private Long highestAllClearScore;
     private Long highestMicrobeScore;
 
+    public void updateHighestTotalLank(long rank, long score) {
+        if (this.highestTotalRank == null || this.highestTotalScore < score) {
+            this.highestTotalScore = score;
+            this.highestTotalRank = rank;
+        }
+        else if (this.highestTotalScore == score && this.highestTotalRank > rank) {
+            this.highestTotalRank = rank;
+        }
+    }
+
     public void updateGameHighestScore(ScoreType scoreType, Long score) {
         switch (scoreType) {
             case QUIZ -> updateHighestQuizScore(score);

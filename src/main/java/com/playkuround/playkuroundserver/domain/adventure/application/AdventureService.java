@@ -13,11 +13,14 @@ import com.playkuround.playkuroundserver.domain.score.application.TotalScoreServ
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
 import com.playkuround.playkuroundserver.global.util.Location;
 import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +66,8 @@ public class AdventureService {
     }
 
     private void updateLandmarkHighestScore(User user, Landmark landmark) {
-        long sumScore = adventureRepository.getSumScoreByUserAndLandmark(user, landmark);
+        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime();
+        long sumScore = adventureRepository.getSumScoreByUserAndLandmark(user, landmark, monthStartDateTime);
         landmark.updateFirstUser(user, sumScore);
     }
 }

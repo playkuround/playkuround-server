@@ -41,4 +41,9 @@ public class Landmark {
             this.highestScore = score;
         }
     }
+
+    public void deleteRank() {
+        this.firstUser = null;
+        this.highestScore = 0;
+    }
 }

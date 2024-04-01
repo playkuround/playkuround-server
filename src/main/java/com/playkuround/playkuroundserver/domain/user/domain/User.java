@@ -77,4 +77,9 @@ public class User extends BaseTimeEntity {
         }
         this.notification.add(new Notification(NotificationEnum.NEW_BADGE, badgeType.name()));
     }
+
+    public void updateHighestRank(long rank, long score) {
+        HighestScore highestScore = getHighestScore();
+        highestScore.updateHighestTotalLank(rank, score);
+    }
 }

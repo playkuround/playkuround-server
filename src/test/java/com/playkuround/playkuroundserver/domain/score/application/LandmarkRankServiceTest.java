@@ -13,11 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,7 +36,7 @@ class LandmarkRankServiceTest {
     void getRankTop100ByLandmark1() {
         // given
         User user = TestUtil.createUser();
-        when(adventureRepository.findRankTop100DescByLandmarkId(1L))
+        when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(List.of());
         when(adventureRepository.findMyRankByLandmarkId(user, 1L))
                 .thenReturn(Optional.empty());
@@ -56,7 +58,8 @@ class LandmarkRankServiceTest {
         for (int i = 50; i > 0; i--) {
             nicknameAndScores.add(new NicknameAndScore("nickname" + i, i));
         }
-        when(adventureRepository.findRankTop100DescByLandmarkId(1L)).thenReturn(nicknameAndScores);
+        when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
+                .thenReturn(nicknameAndScores);
         User user = TestUtil.createUser();
         when(adventureRepository.findMyRankByLandmarkId(user, 1L)).thenReturn(Optional.empty());
 
@@ -83,7 +86,8 @@ class LandmarkRankServiceTest {
         for (int i = 50; i > 0; i--) {
             nicknameAndScores.add(new NicknameAndScore("nickname" + i, i));
         }
-        when(adventureRepository.findRankTop100DescByLandmarkId(1L)).thenReturn(nicknameAndScores);
+        when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
+                .thenReturn(nicknameAndScores);
         User user = TestUtil.createUser();
         when(adventureRepository.findMyRankByLandmarkId(user, 1L))
                 .thenReturn(Optional.of(new RankAndScore(14, 37)));
@@ -110,7 +114,8 @@ class LandmarkRankServiceTest {
         for (int i = 101; i > 0; i--) {
             nicknameAndScores.add(new NicknameAndScore("nickname" + i, i));
         }
-        when(adventureRepository.findRankTop100DescByLandmarkId(1L)).thenReturn(nicknameAndScores);
+        when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
+                .thenReturn(nicknameAndScores);
         User user = TestUtil.createUser();
         when(adventureRepository.findMyRankByLandmarkId(user, 1L))
                 .thenReturn(Optional.of(new RankAndScore(40, 62)));

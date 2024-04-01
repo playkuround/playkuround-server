@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,11 +18,11 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
     @Query(value =
             "SELECT new com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScore(a.user.nickname, cast(SUM(a.score) as integer)) " +
                     "FROM Adventure a " +
-                    "where a.landmark.id=:landmark " +
+                    "where a.landmark.id=:landmark AND a.createdAt >= :from " +
                     "GROUP BY a.user.id " +
                     "ORDER BY SUM(a.score) DESC, a.user.nickname DESC " +
                     "LIMIT 100")
-    List<NicknameAndScore> findRankTop100DescByLandmarkId(@Param(value = "landmark") Long landmarkId);
+    List<NicknameAndScore> findRankTop100DescByLandmarkId(@Param(value = "landmark") Long landmarkId, @Param(value = "from") LocalDateTime from);
 
     @Query(value =
             "SELECT new com.playkuround.playkuroundserver.domain.score.dto.RankAndScore(cast(user_rank as integer), cast(score as integer)) FROM " +

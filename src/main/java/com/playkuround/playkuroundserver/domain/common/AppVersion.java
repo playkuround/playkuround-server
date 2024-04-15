@@ -7,7 +7,7 @@ import static java.util.stream.Collectors.toMap;
 
 public enum AppVersion {
 
-    ANDROID("2.0.2"),
+    ANDROID("2.0.3"),
     IOS("2.0.0");
 
     private static final Map<String, AppVersion> stringToEnum =

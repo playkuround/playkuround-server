@@ -118,7 +118,6 @@ public class TokenManager {
                     .parseClaimsJws(accessToken)
                     .getBody();
         } catch (Exception e) {
-            log.info("Invalid JWT Token", e);
             throw new InvalidTokenException();
         }
     }

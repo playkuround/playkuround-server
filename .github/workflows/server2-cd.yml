@@ -59,6 +59,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME2 }}
           password: ${{ secrets.SSH_PASSWORD2 }}
           port: ${{ secrets.SSH_PORT2 }}
+          proxy_port: ${{ secrets.SSH_PORT2 }}
           source: "build/libs/*.jar"
           target: "source"
           rm: true

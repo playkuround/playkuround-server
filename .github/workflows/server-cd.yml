@@ -19,7 +19,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ~/.gradle/caches
+            ~/.gradle/cachesz
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |

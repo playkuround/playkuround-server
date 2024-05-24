@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.global.config;
 
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
 import com.playkuround.playkuroundserver.global.security.JwtAuthenticationFilter;
+import com.playkuround.playkuroundserver.global.security.LoggingFilter;
 import com.playkuround.playkuroundserver.global.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -56,6 +57,7 @@ public class WebSecurityConfig {
                         ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(new LoggingFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthenticationFilter(tokenManager), UsernamePasswordAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)
                 .build();

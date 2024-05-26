@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/app-version")
+@RequestMapping("/api/admin/app-version")
 @RequiredArgsConstructor
 @Tag(name = "APP Version")
 public class AppVersionApi {

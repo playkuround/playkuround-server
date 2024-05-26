@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,18 +24,20 @@ public class AppVersionService {
 
     @Transactional
     public void changeSupportedList(Set<OSAndVersion> osAndVersions) {
+        Set<OSAndVersion> osAndVersionHashSet = new HashSet<>(osAndVersions);
+
         List<AppVersion> appVersions = appVersionRepository.findAll();
         for (AppVersion appVersion : appVersions) {
             OSAndVersion osAndVersion = new OSAndVersion(appVersion.getOs(), appVersion.getVersion());
-            if (osAndVersions.contains(osAndVersion)) {
-                osAndVersions.remove(osAndVersion);
+            if (osAndVersionHashSet.contains(osAndVersion)) {
+                osAndVersionHashSet.remove(osAndVersion);
             }
             else {
                 appVersionRepository.delete(appVersion);
             }
         }
 
-        for (OSAndVersion osAndVersion : osAndVersions) {
+        for (OSAndVersion osAndVersion : osAndVersionHashSet) {
             AppVersion appVersion = new AppVersion(osAndVersion.os(), osAndVersion.version());
             appVersionRepository.save(appVersion);
         }

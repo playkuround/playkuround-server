@@ -4,7 +4,8 @@ import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.appversion.dao.AppVersionRepository;
 import com.playkuround.playkuroundserver.domain.appversion.domain.AppVersion;
 import com.playkuround.playkuroundserver.domain.appversion.domain.OperationSystem;
-import com.playkuround.playkuroundserver.domain.common.SystemCheck;
+import com.playkuround.playkuroundserver.domain.systemcheck.dao.SystemCheckRepository;
+import com.playkuround.playkuroundserver.domain.systemcheck.domain.SystemCheck;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -36,10 +37,14 @@ class UserProfileApiTest {
     @Autowired
     private AppVersionRepository appVersionRepository;
 
+    @Autowired
+    private SystemCheckRepository systemCheckRepository;
+
     @AfterEach
     void afterEach() {
         userRepository.deleteAll();
         appVersionRepository.deleteAll();
+        systemCheckRepository.deleteAll();
     }
 
     @Test
@@ -98,10 +103,10 @@ class UserProfileApiTest {
         @DisplayName("시스템이 사용 불가능할 때: name=system_check")
         void success_1() throws Exception {
             // given
-            SystemCheck.changeSystemAvailable(false);
             OperationSystem os = OperationSystem.ANDROID;
             String version = "2.0.0";
             appVersionRepository.save(new AppVersion(os, version));
+            systemCheckRepository.save(new SystemCheck(false));
 
             // expect
             mockMvc.perform(get("/api/users/notification")
@@ -117,10 +122,10 @@ class UserProfileApiTest {
         @DisplayName("앱 버전을 지원하지 않을 때: name=update")
         void success_2() throws Exception {
             // given
-            SystemCheck.changeSystemAvailable(true);
             OperationSystem os = OperationSystem.ANDROID;
             String version = "2.0.0";
             appVersionRepository.save(new AppVersion(os, version));
+            systemCheckRepository.save(new SystemCheck(true));
 
             // expect
             mockMvc.perform(get("/api/users/notification")

@@ -2,7 +2,6 @@ package com.playkuround.playkuroundserver.domain.user.api;
 
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.domain.common.SystemCheck;
 import com.playkuround.playkuroundserver.domain.user.api.request.ManualBadgeSaveRequest;
 import com.playkuround.playkuroundserver.domain.user.application.NewMonthUpdateService;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
@@ -22,13 +21,6 @@ public class AdminApi {
 
     private final BadgeService badgeService;
     private final NewMonthUpdateService newMonthUpdateService;
-
-    @PostMapping("system-available")
-    @Operation(summary = "시스템 점검 유무 변경하기", description = "시스템 점검 유무를 변경합니다.")
-    public ApiResponse<Void> changeSystemAvailable(@RequestParam("available") boolean appVersion) {
-        SystemCheck.changeSystemAvailable(appVersion);
-        return ApiUtils.success(null);
-    }
 
     @PostMapping("badges/manual")
     @ResponseStatus(HttpStatus.CREATED)

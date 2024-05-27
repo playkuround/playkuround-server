@@ -5,7 +5,6 @@ import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.domain.common.SystemCheck;
 import com.playkuround.playkuroundserver.domain.user.api.request.ManualBadgeSaveRequest;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.*;
@@ -14,8 +13,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,25 +49,6 @@ class AdminApiTest {
     void clean() {
         badgeRepository.deleteAll();
         userRepository.deleteAll();
-    }
-
-    @Nested
-    @DisplayName("시스템 점검 유무 변경하기")
-    class changeSystemAvailable {
-
-        @ParameterizedTest
-        @ValueSource(booleans = {true, false})
-        @WithMockCustomUser(role = Role.ROLE_ADMIN)
-        @DisplayName("시스템 변경 유무를 변경합니다.")
-        void success_1(boolean available) throws Exception {
-            // expect
-            mockMvc.perform(post("/api/admin/system-available")
-                            .queryParam("available", String.valueOf(available)))
-                    .andExpect(status().isOk())
-                    .andDo(print());
-
-            assertThat(SystemCheck.isSystemAvailable()).isEqualTo(available);
-        }
     }
 
     @Nested

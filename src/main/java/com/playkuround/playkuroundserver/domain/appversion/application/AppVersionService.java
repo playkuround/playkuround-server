@@ -1,9 +1,9 @@
 package com.playkuround.playkuroundserver.domain.appversion.application;
 
-import com.playkuround.playkuroundserver.domain.appversion.OSAndVersion;
 import com.playkuround.playkuroundserver.domain.appversion.dao.AppVersionRepository;
 import com.playkuround.playkuroundserver.domain.appversion.domain.AppVersion;
 import com.playkuround.playkuroundserver.domain.appversion.domain.OperationSystem;
+import com.playkuround.playkuroundserver.domain.appversion.dto.OSAndVersion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

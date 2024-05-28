@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.appversion;
+package com.playkuround.playkuroundserver.domain.appversion.dto;
 
 import com.playkuround.playkuroundserver.domain.appversion.domain.OperationSystem;
 

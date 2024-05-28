@@ -1,9 +1,9 @@
 package com.playkuround.playkuroundserver.domain.appversion.application;
 
-import com.playkuround.playkuroundserver.domain.appversion.OSAndVersion;
 import com.playkuround.playkuroundserver.domain.appversion.dao.AppVersionRepository;
 import com.playkuround.playkuroundserver.domain.appversion.domain.AppVersion;
 import com.playkuround.playkuroundserver.domain.appversion.domain.OperationSystem;
+import com.playkuround.playkuroundserver.domain.appversion.dto.OSAndVersion;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

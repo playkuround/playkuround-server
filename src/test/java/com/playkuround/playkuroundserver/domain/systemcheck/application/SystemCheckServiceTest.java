@@ -1,7 +1,12 @@
 package com.playkuround.playkuroundserver.domain.systemcheck.application;
 
+import com.playkuround.playkuroundserver.domain.appversion.dao.AppVersionRepository;
+import com.playkuround.playkuroundserver.domain.appversion.domain.AppVersion;
+import com.playkuround.playkuroundserver.domain.appversion.domain.OperationSystem;
+import com.playkuround.playkuroundserver.domain.appversion.dto.OSAndVersion;
 import com.playkuround.playkuroundserver.domain.systemcheck.dao.SystemCheckRepository;
 import com.playkuround.playkuroundserver.domain.systemcheck.domain.SystemCheck;
+import com.playkuround.playkuroundserver.domain.systemcheck.dto.HealthCheckDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,6 +32,9 @@ class SystemCheckServiceTest {
 
     @Mock
     private SystemCheckRepository systemCheckRepository;
+
+    @Mock
+    private AppVersionRepository appVersionRepository;
 
     @Nested
     @DisplayName("시스템 점검 유무 조회하기")
@@ -67,7 +76,7 @@ class SystemCheckServiceTest {
 
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
-        @DisplayName("기존의 데이터를 모우 지우고 새로운 데이터를 저장")
+        @DisplayName("기존의 데이터를 모두 지우고 새로운 데이터를 저장")
         void success_1(boolean available) {
             // when
             systemCheckService.changeSystemAvailable(available);
@@ -78,6 +87,39 @@ class SystemCheckServiceTest {
             ArgumentCaptor<SystemCheck> saveArgument = ArgumentCaptor.forClass(SystemCheck.class);
             verify(systemCheckRepository, times(1)).save(saveArgument.capture());
             assertThat(saveArgument.getValue().isAvailable()).isEqualTo(available);
+        }
+    }
+
+    @Nested
+    @DisplayName("Health Check")
+    class healthCheck {
+
+        @Test
+        @DisplayName("시스템 사용가능 여부와 지원하는 앱 버전을 반환")
+        void success_1() {
+            // given
+            when(systemCheckRepository.findTopByOrderByUpdatedAtDesc())
+                    .thenReturn(Optional.of(new SystemCheck(true)));
+            when(appVersionRepository.findAll())
+                    .thenReturn(
+                            List.of(
+                                    new AppVersion(OperationSystem.ANDROID, "1.0.0"),
+                                    new AppVersion(OperationSystem.ANDROID, "1.0.1"),
+                                    new AppVersion(OperationSystem.IOS, "1.0.3")
+                            )
+                    );
+
+            // when
+            HealthCheckDto healthCheckDto = systemCheckService.healthCheck();
+
+            // then
+            assertThat(healthCheckDto.systemAvailable()).isTrue();
+            assertThat(healthCheckDto.supportAppVersionList())
+                    .containsExactlyInAnyOrder(
+                            new OSAndVersion(OperationSystem.ANDROID, "1.0.0"),
+                            new OSAndVersion(OperationSystem.ANDROID, "1.0.1"),
+                            new OSAndVersion(OperationSystem.IOS, "1.0.3")
+                    );
         }
     }
 

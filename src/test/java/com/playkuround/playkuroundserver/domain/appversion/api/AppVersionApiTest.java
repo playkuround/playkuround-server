@@ -1,11 +1,11 @@
 package com.playkuround.playkuroundserver.domain.appversion.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.playkuround.playkuroundserver.domain.appversion.OSAndVersion;
 import com.playkuround.playkuroundserver.domain.appversion.api.request.UpdateAppVersionRequest;
 import com.playkuround.playkuroundserver.domain.appversion.dao.AppVersionRepository;
 import com.playkuround.playkuroundserver.domain.appversion.domain.AppVersion;
 import com.playkuround.playkuroundserver.domain.appversion.domain.OperationSystem;
+import com.playkuround.playkuroundserver.domain.appversion.dto.OSAndVersion;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;

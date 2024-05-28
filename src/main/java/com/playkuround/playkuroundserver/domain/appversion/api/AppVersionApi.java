@@ -1,9 +1,9 @@
 package com.playkuround.playkuroundserver.domain.appversion.api;
 
-import com.playkuround.playkuroundserver.domain.appversion.OSAndVersion;
 import com.playkuround.playkuroundserver.domain.appversion.api.request.UpdateAppVersionRequest;
 import com.playkuround.playkuroundserver.domain.appversion.application.AppVersionService;
 import com.playkuround.playkuroundserver.domain.appversion.domain.OperationSystem;
+import com.playkuround.playkuroundserver.domain.appversion.dto.OSAndVersion;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;

@@ -19,7 +19,7 @@ public class SystemCheckApi {
     private final SystemCheckService systemCheckService;
 
     @PostMapping
-    @Operation(summary = "시스템 점검 유무 변경하기", description = "시스템 점검 유무를 변경합니다.")
+    @Operation(summary = "시스템 사용가능 여부 변경하기", description = "시스템 점검 유무를 변경합니다.")
     public ApiResponse<Void> changeSystemAvailable(@RequestParam("available") boolean appVersion) {
         systemCheckService.changeSystemAvailable(appVersion);
         return ApiUtils.success(null);

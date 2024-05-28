@@ -1,7 +1,8 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
-import com.playkuround.playkuroundserver.domain.common.AppVersion;
-import com.playkuround.playkuroundserver.domain.common.SystemCheck;
+import com.playkuround.playkuroundserver.domain.appversion.application.AppVersionService;
+import com.playkuround.playkuroundserver.domain.appversion.domain.OperationSystem;
+import com.playkuround.playkuroundserver.domain.systemcheck.application.SystemCheckService;
 import com.playkuround.playkuroundserver.domain.user.api.response.UserGameHighestScoreResponse;
 import com.playkuround.playkuroundserver.domain.user.api.response.UserNotificationResponse;
 import com.playkuround.playkuroundserver.domain.user.api.response.UserProfileResponse;
@@ -30,7 +31,9 @@ import java.util.List;
 @Tag(name = "User", description = "User API")
 public class UserProfileApi {
 
+    private final AppVersionService appVersionService;
     private final UserProfileService userProfileService;
+    private final SystemCheckService systemCheckService;
 
     @GetMapping
     @Operation(summary = "프로필 얻기", description = "로그인 유저의 기본 정보를 얻습니다.")
@@ -68,11 +71,13 @@ public class UserProfileApi {
     public ApiResponse<List<UserNotificationResponse>> getNotification(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                        @RequestParam("version") String appVersion,
                                                                        @RequestParam(name = "os", required = false, defaultValue = "android") String os) {
+        OperationSystem operationSystem = OperationSystem.fromString(os.toUpperCase());
+
         List<UserNotificationResponse> response;
-        if (!SystemCheck.isSystemAvailable()) {
+        if (!systemCheckService.isSystemAvailable()) {
             response = UserNotificationResponse.from(NotificationEnum.SYSTEM_CHECK);
         }
-        else if (!AppVersion.isLatestUpdatedVersion(os, appVersion)) {
+        else if (!appVersionService.isSupportedVersion(operationSystem, appVersion)) {
             response = UserNotificationResponse.from(NotificationEnum.UPDATE);
         }
         else {

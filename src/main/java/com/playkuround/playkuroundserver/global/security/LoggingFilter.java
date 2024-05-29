@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -17,7 +18,12 @@ public class LoggingFilter extends OncePerRequestFilter {
             return;
         }
         String queryString = request.getQueryString();
-        log.info("Request : {} uri=[{}] content-type=[{}]", request.getMethod(), queryString == null ? request.getRequestURI() : request.getRequestURI() + queryString, request.getContentType());
+        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        log.info("Request : {} uri=[{}] content-type=[{}] token=[{}]",
+                request.getMethod(),
+                queryString == null ? request.getRequestURI() : request.getRequestURI() + queryString,
+                request.getContentType(),
+                bearerToken);
     }
 
     @Override

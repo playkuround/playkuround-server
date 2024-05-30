@@ -42,15 +42,12 @@
 
     <!-- 파일(FILE) -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!--     log 기록할 파일 위치 설정 -->
-        <file>${LOG_PATH}/${LOG_FILE_NAME}_${BY_DATE}.log</file>
-        <!--     log 기록 타입 인코딩 -->
         <encoder>
             <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>${LOG_PATH}/archive/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>${LOG_MAX_HISTORY}</maxHistory>
             <totalSizeCap>${LOG_TOTAL_SIZE_CAP}</totalSizeCap>
         </rollingPolicy>
@@ -89,6 +86,10 @@
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
         </root>
+        <logger name="com.playkuround.playkuroundserver.global.error.GlobalExceptionHandler"
+                level="ERROR" additive="false">
+            <appender-ref ref="FILE"/>
+        </logger>
     </springProfile>
 
 </configuration>

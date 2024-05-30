@@ -49,7 +49,7 @@ public class WebSecurityConfig {
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui/**"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui.html"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api-docs/**"),
-                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/admin/system-available"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/system-available"),
                                 AntPathRequestMatcher.antMatcher("/actu/**")
                         ).permitAll()
                         .requestMatchers(

@@ -108,7 +108,7 @@ class SystemCheckApiTest {
             appVersionRepository.save(new AppVersion(OperationSystem.IOS, "1.0.2"));
 
             // expect
-            MvcResult mvcResult = mockMvc.perform(get("/api/admin/system-available"))
+            MvcResult mvcResult = mockMvc.perform(get("/api/system-available"))
                     .andExpect(status().isOk())
                     .andDo(print())
                     .andReturn();
@@ -135,7 +135,7 @@ class SystemCheckApiTest {
             appVersionRepository.save(new AppVersion(OperationSystem.ANDROID, "1.0.1"));
 
             // expect
-            MvcResult mvcResult = mockMvc.perform(get("/api/admin/system-available"))
+            MvcResult mvcResult = mockMvc.perform(get("/api/system-available"))
                     .andExpect(status().isOk())
                     .andDo(print())
                     .andReturn();

@@ -14,7 +14,8 @@ import java.io.IOException;
 public class LoggingFilter extends OncePerRequestFilter {
 
     private static void logRequest(HttpServletRequest request) {
-        if (request.getRequestURI() != null && request.getRequestURI().contains("/prometheus")) {
+        if (request.getRequestURI() != null &&
+                (request.getRequestURI().contains("/prometheus") || request.getRequestURI().equals("/api/system-available"))) {
             return;
         }
         String queryString = request.getQueryString();

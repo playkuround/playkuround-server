@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.securityPersistence;
+package com.playkuround.playkuroundserver.learning.securityPersistence;
 
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
@@ -6,10 +6,14 @@ import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,7 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Disabled
 @AutoConfigureMockMvc
 @SpringBootTest(properties = "spring.profiles.active=test")
-public class PersistenceTest {
+@Import({PersistenceController.class, PersistenceService.class})
+@DisplayName("Spring security의 @AuthenticationPrincipal 테스트")
+public class SecurityPersistenceTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -32,20 +38,19 @@ public class PersistenceTest {
     private TokenManager tokenManager;
 
     @AfterEach
-    @BeforeEach
-    void clean() {
-        userRepository.deleteAll();
+    void tearDown() {
+        userRepository.deleteAllInBatch();
     }
 
     @Test
-    @DisplayName("직접 save 함수를 호출해 update 쿼리를 실행한다.")
-    void successUpdate() throws Exception {
+    @DisplayName("Spring Data JPA의 save 함수를 호출해 update 쿼리를 실행한다.")
+    void springSecurityContextPersistent1() throws Exception {
         // given
         User user = TestUtil.createUser();
         userRepository.save(user);
+
         TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
         String accessToken = tokenDto.getAccessToken();
-        System.out.println(accessToken);
 
         // expected
         mockMvc.perform(get("/api/persistence-test/success")
@@ -58,11 +63,12 @@ public class PersistenceTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("spring security에서 조회한 user 객체는 영속성 컨텍스트에 존재하지 않는다.")
-    void failUpdate() throws Exception {
+    @DisplayName("spring security에서 조회한 user 객체는 영속 상태가 아니기 때문에 dirty check가 되지 않는다.")
+    void springSecurityContextPersistent2() throws Exception {
         // given
         User user = TestUtil.createUser();
         userRepository.save(user);
+
         TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
         String accessToken = tokenDto.getAccessToken();
 
@@ -77,11 +83,12 @@ public class PersistenceTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("save() 호출 이후 rollback을 수행한다.")
+    @DisplayName("Transaction 내에서 save() 호출 이후 에러가 발생하면 rollback을 수행한다.")
     void rollback() throws Exception {
         // given
         User user = TestUtil.createUser();
         userRepository.save(user);
+
         TokenDto tokenDto = tokenManager.createTokenDto(user.getEmail());
         String accessToken = tokenDto.getAccessToken();
 

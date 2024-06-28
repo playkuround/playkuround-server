@@ -1,12 +1,12 @@
-package com.playkuround.playkuroundserver.securityPersistence.code;
+package com.playkuround.playkuroundserver.learning.securityPersistence;
 
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@TestComponent
 @Transactional
 @RequiredArgsConstructor
 public class PersistenceService {

@@ -1,7 +1,8 @@
-package com.playkuround.playkuroundserver;
+package com.playkuround.playkuroundserver.learning.redis;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Disabled
+@DisplayName("Redis ZSet 테스트")
 @SpringBootTest(properties = "spring.profiles.active=test")
 public class RedisTest {
 

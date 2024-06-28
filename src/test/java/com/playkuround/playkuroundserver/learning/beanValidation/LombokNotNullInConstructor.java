@@ -1,15 +1,18 @@
-package com.playkuround.playkuroundserver.beanValidation.code;
+package com.playkuround.playkuroundserver.learning.beanValidation;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserConstruct2 {
+class LombokNotNullInConstructor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,8 +20,7 @@ public class UserConstruct2 {
     private String name;
     private int age;
 
-    @Builder
-    public UserConstruct2(@NonNull String name, int age) {
+    public LombokNotNullInConstructor(@NonNull String name, int age) {
         this.name = name;
         this.age = age;
     }

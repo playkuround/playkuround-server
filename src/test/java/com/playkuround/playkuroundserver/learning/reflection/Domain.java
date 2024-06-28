@@ -1,9 +1,12 @@
-package com.playkuround.playkuroundserver.reflection.code;
+package com.playkuround.playkuroundserver.learning.reflection;
 
-public class Domain {
+import lombok.Getter;
 
-    private String name;
+@Getter
+class Domain {
+
     private int age;
+    private String name;
 
     private Domain() {
     }
@@ -17,11 +20,4 @@ public class Domain {
         this.age = age;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public int getAge() {
-        return age;
-    }
 }

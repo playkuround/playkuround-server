@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.beanValidation.code;
+package com.playkuround.playkuroundserver.learning.beanValidation;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,19 +13,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserField {
+class ConstructAnnotation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotBlank
     private String name;
-
-    @Min(0)
     private int age;
 
-    public UserField(String name, int age) {
+    public ConstructAnnotation(@NotBlank String name, @Min(0) int age) {
         this.name = name;
         this.age = age;
     }

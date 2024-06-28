@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver;
+package com.playkuround.playkuroundserver.learning.java;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;

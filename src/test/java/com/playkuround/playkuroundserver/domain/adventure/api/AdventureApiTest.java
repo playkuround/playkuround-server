@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.adventure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.domain.adventure.api.request.AdventureSaveRequest;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
@@ -17,8 +18,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -32,8 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@SpringBootTest(properties = "spring.profiles.active=test")
+@IntegrationControllerTest
 @Sql(scripts = {"/data-mysql.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class AdventureApiTest {
 
@@ -62,10 +60,10 @@ class AdventureApiTest {
 
     @AfterEach
     void clean() {
-        badgeRepository.deleteAll();
-        adventureRepository.deleteAll();
-        landmarkRepository.deleteAll();
-        userRepository.deleteAll();
+        badgeRepository.deleteAllInBatch();
+        adventureRepository.deleteAllInBatch();
+        landmarkRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
         redisTemplate.delete(redisSetKey);
     }
 

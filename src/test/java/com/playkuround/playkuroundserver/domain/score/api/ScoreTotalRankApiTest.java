@@ -1,5 +1,6 @@
 package com.playkuround.playkuroundserver.domain.score.api;
 
+import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -10,8 +11,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,22 +24,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@SpringBootTest(properties = "spring.profiles.active=test")
+@IntegrationControllerTest
 class ScoreTotalRankApiTest {
 
-    private final String redisSetKey = "ranking";
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
+    private final String redisSetKey = "ranking";
+
     @AfterEach
     void clean() {
+        userRepository.deleteAllInBatch();
         redisTemplate.delete("ranking");
-        userRepository.deleteAll();
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
@@ -14,8 +15,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -29,8 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@SpringBootTest(properties = "spring.profiles.active=test")
+@IntegrationControllerTest
 class AdminApiTest {
 
     @Autowired
@@ -47,8 +45,8 @@ class AdminApiTest {
 
     @AfterEach
     void clean() {
-        badgeRepository.deleteAll();
-        userRepository.deleteAll();
+        badgeRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
     }
 
     @Nested

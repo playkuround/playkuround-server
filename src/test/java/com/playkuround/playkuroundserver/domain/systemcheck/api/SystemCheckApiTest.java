@@ -1,5 +1,6 @@
 package com.playkuround.playkuroundserver.domain.systemcheck.api;
 
+import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.appversion.dao.AppVersionRepository;
 import com.playkuround.playkuroundserver.domain.appversion.domain.AppVersion;
@@ -17,8 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -30,8 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@SpringBootTest(properties = "spring.profiles.active=test")
+@IntegrationControllerTest
 class SystemCheckApiTest {
 
     @Autowired
@@ -48,9 +46,9 @@ class SystemCheckApiTest {
 
     @AfterEach
     void clean() {
-        appVersionRepository.deleteAll();
-        systemCheckRepository.deleteAll();
-        userRepository.deleteAll();
+        appVersionRepository.deleteAllInBatch();
+        systemCheckRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
     }
 
     @Nested

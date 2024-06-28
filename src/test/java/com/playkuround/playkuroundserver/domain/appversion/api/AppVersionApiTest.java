@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.appversion.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.domain.appversion.api.request.UpdateAppVersionRequest;
 import com.playkuround.playkuroundserver.domain.appversion.dao.AppVersionRepository;
 import com.playkuround.playkuroundserver.domain.appversion.domain.AppVersion;
@@ -14,8 +15,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,8 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@SpringBootTest(properties = "spring.profiles.active=test")
+@IntegrationControllerTest
 class AppVersionApiTest {
 
     @Autowired
@@ -45,8 +43,8 @@ class AppVersionApiTest {
 
     @AfterEach
     void afterEach() {
-        appVersionRepository.deleteAll();
-        userRepository.deleteAll();
+        appVersionRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
     }
 
     @Nested

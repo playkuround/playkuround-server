@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.domain.attendance.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.domain.attendance.api.request.AttendanceRegisterRequest;
 import com.playkuround.playkuroundserver.domain.attendance.application.AttendanceRegisterService;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
@@ -20,8 +21,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.auditing.AuditingHandler;
@@ -46,8 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@SpringBootTest(properties = "spring.profiles.active=test")
+@IntegrationControllerTest
 class AttendanceApiTest {
 
     @Autowired
@@ -65,15 +63,16 @@ class AttendanceApiTest {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
-    private final String redisSetKey = "ranking";
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
+    private final String redisSetKey = "ranking";
+
     @AfterEach
     void clean() {
-        attendanceRepository.deleteAll();
-        badgeRepository.deleteAll();
-        userRepository.deleteAll();
+        attendanceRepository.deleteAllInBatch();
+        badgeRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
         redisTemplate.delete(redisSetKey);
     }
 

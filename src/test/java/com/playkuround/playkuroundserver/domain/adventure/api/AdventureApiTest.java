@@ -24,8 +24,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -69,7 +71,7 @@ class AdventureApiTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("탐험 저장 성공")
+    @DisplayName("탐험을 하게 되면 total score 증가, adventure 저장, 랜드마크별 최고기록과 유저별 게임 최고기록이 업데이트 된다.")
     void saveAdventure_1() throws Exception {
         // given
         Landmark landmark = landmarkRepository.findById(3L).get();
@@ -81,8 +83,7 @@ class AdventureApiTest {
         // expected
         mockMvc.perform(post("/api/adventures")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request)
-                )
+                        .content(request))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.isSuccess").value(true))
                 .andExpect(jsonPath("$.response.newBadges.size()").value(1))
@@ -92,23 +93,22 @@ class AdventureApiTest {
 
         // Total Score 저장 및 최고 점수 갱신
         List<User> users = userRepository.findAll();
-        assertThat(users).hasSize(1);
-        User user = users.get(0);
-        assertThat(user.getHighestScore().getHighestCardScore()).isEqualTo(100L);
+        assertThat(users).hasSize(1)
+                .extracting("highestScore.highestCardScore")
+                .containsOnly(100L);
 
         // adventure 저장
         List<Adventure> adventures = adventureRepository.findAll();
-        assertThat(adventures).hasSize(1);
-        Adventure adventure = adventures.get(0);
-        assertThat(adventure.getScore()).isEqualTo(100L);
-        assertThat(adventure.getScoreType()).isEqualTo(ScoreType.BOOK);
-        assertThat(adventure.getUser().getId()).isEqualTo(user.getId());
-        assertThat(adventure.getLandmark().getId()).isEqualTo(landmark.getId());
+        assertThat(adventures).hasSize(1)
+                .extracting("score", "scoreType", "user.id", "landmark.id")
+                .containsOnly(tuple(100L, ScoreType.BOOK, users.get(0).getId(), landmark.getId()));
 
         // 랜드마크 최고 점수 갱신
-        Landmark updatedLandmark = landmarkRepository.findById(landmark.getId()).get();
-        assertThat(updatedLandmark.getHighestScore()).isEqualTo(100L);
-        assertThat(updatedLandmark.getFirstUser().getId()).isEqualTo(user.getId());
+        Optional<Landmark> optionalLandmark = landmarkRepository.findById(landmark.getId());
+        assertThat(optionalLandmark).isPresent()
+                .get()
+                .extracting("highestScore", "firstUser.id")
+                .contains(100L, users.get(0).getId());
     }
 
     @Test
@@ -125,13 +125,15 @@ class AdventureApiTest {
         // expected
         mockMvc.perform(post("/api/adventures")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request)
-                )
+                        .content(request))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.NOT_FOUND.getCode()))
                 .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_VALUE.getStatus().value()))
                 .andDo(print());
+
+        List<Adventure> adventures = adventureRepository.findAll();
+        assertThat(adventures).isEmpty();
     }
 
     @Test
@@ -148,14 +150,16 @@ class AdventureApiTest {
         // expected
         mockMvc.perform(post("/api/adventures")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request)
-                )
+                        .content(request))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.INVALID_LOCATION_LANDMARK.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.INVALID_LOCATION_LANDMARK.getMessage()))
                 .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_LOCATION_LANDMARK.getStatus().value()))
                 .andDo(print());
+
+        List<Adventure> adventures = adventureRepository.findAll();
+        assertThat(adventures).isEmpty();
     }
 
     @Test
@@ -172,10 +176,12 @@ class AdventureApiTest {
         // expected
         mockMvc.perform(post("/api/adventures")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request)
-                )
+                        .content(request))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.isSuccess").value(false))
                 .andDo(print());
+
+        List<Adventure> adventures = adventureRepository.findAll();
+        assertThat(adventures).isEmpty();
     }
 }

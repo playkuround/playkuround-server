@@ -11,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,13 +48,13 @@ class AttendanceSearchServiceTest {
                 .distinct()
                 .sorted()
                 .forEach(x -> {
-                    Attendance attendance = Attendance.of(user, location);
-                    ReflectionTestUtils.setField(attendance, "createdAt", now.plusDays(x));
+                    Attendance attendance = Attendance.of(user, location, now.plusDays(x));
+                    //ReflectionTestUtils.setField(attendance, "createdAt", now.plusDays(x));
 
                     attendances.add(attendance);
-                    expected.add(attendance.getCreatedAt());
+                    expected.add(attendance.getAttendanceDateTime());
                 });
-        when(attendanceRepository.findByUserAndCreatedAtAfter(any(User.class), any(LocalDateTime.class)))
+        when(attendanceRepository.findByUserAndAttendanceDateTimeAfter(any(User.class), any(LocalDateTime.class)))
                 .thenReturn(attendances);
 
         // when
@@ -69,7 +68,7 @@ class AttendanceSearchServiceTest {
     @DisplayName("출석정보가 없으면 빈리스트가 반환된다")
     void findAttendanceForMonth_2() {
         // given
-        when(attendanceRepository.findByUserAndCreatedAtAfter(any(User.class), any(LocalDateTime.class)))
+        when(attendanceRepository.findByUserAndAttendanceDateTimeAfter(any(User.class), any(LocalDateTime.class)))
                 .thenReturn(new ArrayList<>());
 
         // when

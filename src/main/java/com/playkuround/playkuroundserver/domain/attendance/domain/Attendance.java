@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,13 +32,16 @@ public class Attendance extends BaseTimeEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    private Attendance(User user, double latitude, double longitude) {
+    private LocalDateTime attendanceDateTime;
+
+    private Attendance(User user, double latitude, double longitude, LocalDateTime attendanceDateTime) {
         this.user = user;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.attendanceDateTime = attendanceDateTime;
     }
 
-    public static Attendance of(User user, Location location) {
-        return new Attendance(user, location.latitude(), location.longitude());
+    public static Attendance of(User user, Location location, LocalDateTime attendanceDateTime) {
+        return new Attendance(user, location.latitude(), location.longitude(), attendanceDateTime);
     }
 }

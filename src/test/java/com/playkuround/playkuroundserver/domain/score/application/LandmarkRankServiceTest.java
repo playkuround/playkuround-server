@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.domain.score.application;
 
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
+import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScore;
 import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
@@ -31,6 +32,9 @@ class LandmarkRankServiceTest {
     @Mock
     private AdventureRepository adventureRepository;
 
+    @Mock
+    private DateTimeService dateTimeService;
+
     @Test
     @DisplayName("랭킹 유저가 한명도 없을 때")
     void getRankTop100ByLandmark1() {
@@ -39,6 +43,8 @@ class LandmarkRankServiceTest {
                 .thenReturn(List.of());
         when(adventureRepository.findMyRankByLandmarkId(any(User.class), any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.empty());
+        when(dateTimeService.now())
+                .thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
 
         // when
         User user = TestUtil.createUser();
@@ -61,6 +67,8 @@ class LandmarkRankServiceTest {
                 .thenReturn(nicknameAndScores);
         when(adventureRepository.findMyRankByLandmarkId(any(User.class), any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.empty());
+        when(dateTimeService.now())
+                .thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
 
         // when
         User user = TestUtil.createUser();
@@ -89,6 +97,8 @@ class LandmarkRankServiceTest {
                 .thenReturn(nicknameAndScores);
         when(adventureRepository.findMyRankByLandmarkId(any(User.class), any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.of(new RankAndScore(14, 37)));
+        when(dateTimeService.now())
+                .thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
 
         // when
         User user = TestUtil.createUser();
@@ -116,6 +126,8 @@ class LandmarkRankServiceTest {
                 .thenReturn(nicknameAndScores);
         when(adventureRepository.findMyRankByLandmarkId(any(User.class), any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.of(new RankAndScore(40, 62)));
+        when(dateTimeService.now())
+                .thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
 
         // when
         User user = TestUtil.createUser();

@@ -27,8 +27,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -62,8 +60,6 @@ class AuthEmailSendApiTest {
     @DisplayName("이메일 인증 전송 성공")
     void sendAuthEmailSuccess() throws Exception {
         // given
-        doNothing().when(emailService).sendMail(any());
-
         String email = "test@konkuk.ac.kr";
         AuthEmailSendRequest attendanceRegisterRequest = new AuthEmailSendRequest(email);
         String request = objectMapper.writeValueAsString(attendanceRegisterRequest);
@@ -71,8 +67,7 @@ class AuthEmailSendApiTest {
         // expected
         MvcResult mvcResult = mockMvc.perform(post("/api/auth/emails")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request)
-                )
+                        .content(request))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))
                 .andExpect(jsonPath("$.response.expireAt").exists())

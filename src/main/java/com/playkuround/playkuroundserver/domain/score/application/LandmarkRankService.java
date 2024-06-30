@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.score.application;
 
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
+import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScore;
 import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
 import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
@@ -18,11 +19,12 @@ import java.util.List;
 public class LandmarkRankService {
 
     private final AdventureRepository adventureRepository;
+    private final DateTimeService dateTimeService;
 
     @Transactional(readOnly = true)
     public ScoreRankingResponse getRankTop100ByLandmark(User user, Long landmarkId) {
         ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
-        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime();
+        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime(dateTimeService.now().toLocalDate());
 
         List<NicknameAndScore> nicknameAndScores = adventureRepository.findRankTop100DescByLandmarkId(landmarkId, monthStartDateTime);
         nicknameAndScores.forEach(nicknameAndScore ->

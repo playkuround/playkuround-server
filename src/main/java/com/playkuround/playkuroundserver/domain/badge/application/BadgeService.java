@@ -8,6 +8,7 @@ import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
+import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -27,6 +28,7 @@ public class BadgeService {
 
     private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;
+    private final DateTimeService dateTimeService;
     private final CollegeSpecialBadgeFactory collegeSpecialBadgeFactory;
 
     @Transactional(readOnly = true)
@@ -51,7 +53,7 @@ public class BadgeService {
 
         // 기념일 기준 뱃지
         SpecialDayBadgeList.getSpecialDayBadges().stream()
-                .filter(specialDayBadge -> specialDayBadge.supports(userBadgeSet))
+                .filter(specialDayBadge -> specialDayBadge.supports(userBadgeSet, dateTimeService.now().toLocalDate()))
                 .forEach(specialDayBadge -> {
                     BadgeType badgeType = specialDayBadge.getBadgeType();
                     badgeRepository.save(Badge.createBadge(user, badgeType));

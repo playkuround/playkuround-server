@@ -2,7 +2,6 @@ package com.playkuround.playkuroundserver.domain.attendance.application;
 
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
-import com.playkuround.playkuroundserver.domain.common.BaseTimeEntity;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,9 +20,9 @@ public class AttendanceSearchService {
     @Transactional(readOnly = true)
     public List<LocalDateTime> findAttendance(User user, int agoDays) {
         LocalDateTime monthAgo = LocalDate.now().minusMonths(agoDays).atStartOfDay();
-        List<Attendance> attendances = attendanceRepository.findByUserAndCreatedAtAfter(user, monthAgo);
+        List<Attendance> attendances = attendanceRepository.findByUserAndAttendanceDateTimeAfter(user, monthAgo);
         return attendances.stream()
-                .map(BaseTimeEntity::getCreatedAt)
+                .map(Attendance::getAttendanceDateTime)
                 .sorted()
                 .toList();
     }

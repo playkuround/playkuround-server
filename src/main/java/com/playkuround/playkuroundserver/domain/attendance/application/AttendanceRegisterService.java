@@ -6,6 +6,7 @@ import com.playkuround.playkuroundserver.domain.attendance.exception.DuplicateAt
 import com.playkuround.playkuroundserver.domain.attendance.exception.InvalidAttendanceLocationException;
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
+import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.score.application.TotalScoreService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -15,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-
 @Service
 @RequiredArgsConstructor
 public class AttendanceRegisterService {
@@ -25,6 +24,7 @@ public class AttendanceRegisterService {
     private final UserRepository userRepository;
     private final TotalScoreService totalScoreService;
     private final AttendanceRepository attendanceRepository;
+    private final DateTimeService dateTimeService;
     private final long attendanceScore = 10;
 
     @Transactional
@@ -52,13 +52,13 @@ public class AttendanceRegisterService {
     }
 
     private void validateDuplicateAttendance(User user) {
-        if (attendanceRepository.existsByUserAndCreatedAtAfter(user, LocalDate.now().atStartOfDay())) {
+        if (attendanceRepository.existsByUserAndAttendanceDateTimeAfter(user, dateTimeService.getLocalDateNow().atStartOfDay())) {
             throw new DuplicateAttendanceException();
         }
     }
 
     private void saveAttendance(User user, Location location) {
-        Attendance attendance = Attendance.of(user, location);
+        Attendance attendance = Attendance.of(user, location, dateTimeService.getLocalDateTimeNow());
         attendanceRepository.save(attendance);
     }
 

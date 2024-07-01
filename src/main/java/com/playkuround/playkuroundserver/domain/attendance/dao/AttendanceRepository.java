@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
-    List<Attendance> findByUserAndCreatedAtAfter(User user, LocalDateTime localDateTime);
+    List<Attendance> findByUserAndAttendanceDateTimeAfter(User user, LocalDateTime localDateTime);
 
-    boolean existsByUserAndCreatedAtAfter(User user, LocalDateTime localDateTime);
+    boolean existsByUserAndAttendanceDateTimeAfter(User user, LocalDateTime localDateTime);
 }

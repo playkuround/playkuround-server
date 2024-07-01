@@ -6,6 +6,7 @@ import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
+import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
@@ -31,6 +32,7 @@ public class AdventureService {
     private final TotalScoreService totalScoreService;
     private final LandmarkRepository landmarkRepository;
     private final AdventureRepository adventureRepository;
+    private final DateTimeService dateTimeService;
 
     @Transactional
     public NewlyRegisteredBadge saveAdventure(AdventureSaveDto adventureSaveDto) {
@@ -66,7 +68,7 @@ public class AdventureService {
     }
 
     private void updateLandmarkHighestScore(User user, Landmark landmark) {
-        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime();
+        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime(dateTimeService.getLocalDateNow());
         long sumScore = adventureRepository.getSumScoreByUserAndLandmark(user, landmark, monthStartDateTime);
         landmark.updateFirstUser(user, sumScore);
     }

@@ -12,6 +12,7 @@ import com.playkuround.playkuroundserver.domain.auth.email.exception.NotMatchAut
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.AuthVerifyToken;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -48,6 +49,9 @@ class AuthEmailVerifyServiceTest {
     @Mock
     private AuthEmailRepository authEmailRepository;
 
+    @Mock
+    private DateTimeService dateTimeService;
+
     @Test
     @DisplayName("이메일 인증 정상 처리 : 기존회원")
     void authEmailSuccessExists() {
@@ -55,11 +59,15 @@ class AuthEmailVerifyServiceTest {
         User user = TestUtil.createUser();
         String target = user.getEmail();
         String code = "123456";
-        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
+        LocalDateTime expiredAt = LocalDateTime.of(2024, 7, 1, 0, 0);
         AuthEmail authEmail = AuthEmail.createAuthEmail(target, code, expiredAt);
         when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(target))
                 .thenReturn(Optional.of(authEmail));
-        when(userRepository.existsByEmail(target)).thenReturn(true);
+        when(userRepository.existsByEmail(target))
+                .thenReturn(true);
+        when(dateTimeService.getLocalDateTimeNow())
+                .thenReturn(expiredAt.minusMinutes(2));
+
 
         TokenDto tokenDto = new TokenDto("Bearer", "accessToken", "refreshToken", null, null);
         when(userLoginService.login(target)).thenReturn(tokenDto);
@@ -83,11 +91,14 @@ class AuthEmailVerifyServiceTest {
         String target = user.getEmail();
         String code = "123456";
         String authVerify = "authVerifyToken";
-        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
+        LocalDateTime expiredAt = LocalDateTime.of(2024, 7, 1, 0, 0);
         AuthEmail authEmail = AuthEmail.createAuthEmail(target, code, expiredAt);
         when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(target))
                 .thenReturn(Optional.of(authEmail));
-        when(userRepository.existsByEmail(target)).thenReturn(false);
+        when(userRepository.existsByEmail(target))
+                .thenReturn(false);
+        when(dateTimeService.getLocalDateTimeNow())
+                .thenReturn(expiredAt.minusMinutes(2));
 
         AuthVerifyToken authVerifyToken = new AuthVerifyToken(authVerify, null);
         when(tokenService.registerAuthVerifyToken()).thenReturn(authVerifyToken);
@@ -134,6 +145,8 @@ class AuthEmailVerifyServiceTest {
         AuthEmail authEmail = AuthEmail.createAuthEmail("target", "code", LocalDateTime.now().minusDays(1));
         when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(any(String.class)))
                 .thenReturn(Optional.of(authEmail));
+        when(dateTimeService.getLocalDateTimeNow())
+                .thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
 
         // expected
         assertThatThrownBy(() -> authEmailVerifyService.verifyAuthEmail("code", "target"))
@@ -148,6 +161,8 @@ class AuthEmailVerifyServiceTest {
         AuthEmail authEmail = AuthEmail.createAuthEmail("target", code, LocalDateTime.now().plusMinutes(1));
         when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(any(String.class)))
                 .thenReturn(Optional.of(authEmail));
+        when(dateTimeService.getLocalDateTimeNow())
+                .thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
 
         // expected
         assertThatThrownBy(() -> authEmailVerifyService.verifyAuthEmail(code + "NotEqual", "target"))

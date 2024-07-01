@@ -21,12 +21,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -58,7 +61,7 @@ class AttendanceApiTest {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
-    @Autowired
+    @SpyBean
     private DateTimeService dateTimeService;
 
     @Autowired
@@ -119,10 +122,15 @@ class AttendanceApiTest {
         @WithMockCustomUser
         @DisplayName("출석은 하루에 한번만 가능하다.")
         void fail_1() throws Exception {
-            // TODO : 12시 넘어가는 시점에는 테스트가 실패함
             // given
-            User user = userRepository.findAll().get(0);
-            attendanceRepository.save(Attendance.of(user, new Location(37.539927, 127.073006), dateTimeService.now()));
+            when(dateTimeService.getLocalDateNow())
+                    .thenReturn(LocalDate.of(2024, 7, 1));
+
+            Attendance attendance = Attendance.of(
+                    userRepository.findAll().get(0),
+                    new Location(37.539927, 127.073006),
+                    LocalDateTime.of(2024, 7, 1, 1, 0));
+            attendanceRepository.save(attendance);
 
             AttendanceRegisterRequest attendanceRegisterRequest = new AttendanceRegisterRequest(37.539927, 127.073006);
             String request = objectMapper.writeValueAsString(attendanceRegisterRequest);
@@ -180,11 +188,10 @@ class AttendanceApiTest {
         void attendanceSearch() throws Exception {
             // TODO : need refactoring
             // given
-
             User user = userRepository.findAll().get(0);
             Location location = new Location(37.539927, 127.073006);
 
-            LocalDateTime todayLocalDate = LocalDateTime.now();
+            LocalDateTime todayLocalDate = LocalDateTime.of(2024, 7, 1, 0, 0);
             List<String> dateList = new ArrayList<>();
             for (int i = 29; i > 0; i -= 2) {
                 LocalDateTime thatLocalDateTime = todayLocalDate.minusDays(i);
@@ -193,6 +200,9 @@ class AttendanceApiTest {
 
                 attendanceRepository.save(Attendance.of(user, location, thatLocalDateTime));
             }
+
+            when(dateTimeService.getLocalDateNow())
+                    .thenReturn(todayLocalDate.toLocalDate());
 
             // expected
             MvcResult mvcResult = mockMvc.perform(get("/api/attendances"))

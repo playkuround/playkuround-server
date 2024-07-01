@@ -30,7 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -135,8 +135,10 @@ class BadgeServiceTest {
             for (int i = 0; i < attendanceDay; i++) {
                 user.increaseAttendanceDay();
             }
-            when(badgeRepository.findByUser(user)).thenReturn(new ArrayList<>());
-            when(dateTimeService.now()).thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
+            when(badgeRepository.findByUser(user))
+                    .thenReturn(new ArrayList<>());
+            when(dateTimeService.getLocalDateNow())
+                    .thenReturn(LocalDate.of(2024, 7, 1));
 
             List<NewlyRegisteredBadge.BadgeInfo> result;
             try (MockedStatic<DateTimeUtils> mockedStatic = Mockito.mockStatic(DateTimeUtils.class)) {
@@ -163,8 +165,10 @@ class BadgeServiceTest {
         void success_2() {
             // given
             User user = TestUtil.createUser();
-            when(badgeRepository.findByUser(user)).thenReturn(new ArrayList<>());
-            when(dateTimeService.now()).thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
+            when(badgeRepository.findByUser(user))
+                    .thenReturn(new ArrayList<>());
+            when(dateTimeService.getLocalDateNow())
+                    .thenReturn(LocalDate.of(2024, 7, 1));
 
             List<NewlyRegisteredBadge.BadgeInfo> result;
             try (MockedStatic<DateTimeUtils> mockedStatic = Mockito.mockStatic(DateTimeUtils.class)) {
@@ -198,7 +202,8 @@ class BadgeServiceTest {
                             new Badge(user, BadgeType.ATTENDANCE_10),
                             new Badge(user, BadgeType.ATTENDANCE_CHILDREN_DAY)
                     ));
-            when(dateTimeService.now()).thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
+            when(dateTimeService.getLocalDateNow())
+                    .thenReturn(LocalDate.of(2024, 7, 1));
 
             List<NewlyRegisteredBadge.BadgeInfo> result;
             try (MockedStatic<DateTimeUtils> mockedStatic = Mockito.mockStatic(DateTimeUtils.class)) {
@@ -281,12 +286,13 @@ class BadgeServiceTest {
             when(collegeSpecialBadgeFactory.getBadgeType(any(User.class), any(Set.class), any(Landmark.class)))
                     .thenReturn(Optional.empty());
 
-            // when
             Landmark landmark = createLandmark(landmarkType);
+
+            // when
             NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAdventureBadges(user, landmark);
-            List<NewlyRegisteredBadge.BadgeInfo> result = newlyRegisteredBadge.getNewlyBadges();
 
             // then
+            List<NewlyRegisteredBadge.BadgeInfo> result = newlyRegisteredBadge.getNewlyBadges();
             List<String> target = result.stream()
                     .map(NewlyRegisteredBadge.BadgeInfo::name)
                     .toList();
@@ -303,12 +309,13 @@ class BadgeServiceTest {
             when(collegeSpecialBadgeFactory.getBadgeType(any(User.class), any(Set.class), any(Landmark.class)))
                     .thenReturn(Optional.of(BadgeType.COLLEGE_OF_ENGINEERING_A));
 
-            // when
             Landmark landmark = createLandmark(LandmarkType.공학관A);
+
+            // when
             NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAdventureBadges(user, landmark);
-            List<NewlyRegisteredBadge.BadgeInfo> result = newlyRegisteredBadge.getNewlyBadges();
 
             // then
+            List<NewlyRegisteredBadge.BadgeInfo> result = newlyRegisteredBadge.getNewlyBadges();
             List<String> target = result.stream()
                     .map(NewlyRegisteredBadge.BadgeInfo::name)
                     .toList();

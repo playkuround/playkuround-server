@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -43,8 +44,8 @@ class LandmarkRankServiceTest {
                 .thenReturn(List.of());
         when(adventureRepository.findMyRankByLandmarkId(any(User.class), any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.empty());
-        when(dateTimeService.now())
-                .thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
+        when(dateTimeService.getLocalDateNow())
+                .thenReturn(LocalDate.of(2024, 7, 1));
 
         // when
         User user = TestUtil.createUser();
@@ -67,8 +68,8 @@ class LandmarkRankServiceTest {
                 .thenReturn(nicknameAndScores);
         when(adventureRepository.findMyRankByLandmarkId(any(User.class), any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.empty());
-        when(dateTimeService.now())
-                .thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
+        when(dateTimeService.getLocalDateNow())
+                .thenReturn(LocalDate.of(2024, 7, 1));
 
         // when
         User user = TestUtil.createUser();
@@ -97,8 +98,8 @@ class LandmarkRankServiceTest {
                 .thenReturn(nicknameAndScores);
         when(adventureRepository.findMyRankByLandmarkId(any(User.class), any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.of(new RankAndScore(14, 37)));
-        when(dateTimeService.now())
-                .thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
+        when(dateTimeService.getLocalDateNow())
+                .thenReturn(LocalDate.of(2024, 7, 1));
 
         // when
         User user = TestUtil.createUser();
@@ -126,8 +127,8 @@ class LandmarkRankServiceTest {
                 .thenReturn(nicknameAndScores);
         when(adventureRepository.findMyRankByLandmarkId(any(User.class), any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.of(new RankAndScore(40, 62)));
-        when(dateTimeService.now())
-                .thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
+        when(dateTimeService.getLocalDateNow())
+                .thenReturn(LocalDate.of(2024, 7, 1));
 
         // when
         User user = TestUtil.createUser();

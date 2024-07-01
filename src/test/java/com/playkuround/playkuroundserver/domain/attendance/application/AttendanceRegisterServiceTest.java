@@ -21,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,9 +56,8 @@ class AttendanceRegisterServiceTest {
         // given
         when(attendanceRepository.existsByUserAndAttendanceDateTimeAfter(any(User.class), any(LocalDateTime.class)))
                 .thenReturn(false);
-
-        when(dateTimeService.now())
-                .thenReturn(LocalDateTime.of(2024, 6, 30, 0, 0));
+        when(dateTimeService.getLocalDateNow())
+                .thenReturn(LocalDate.of(2024, 6, 30));
 
         NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
         newlyRegisteredBadge.addBadge(BadgeType.ATTENDANCE_1);
@@ -65,9 +65,10 @@ class AttendanceRegisterServiceTest {
         when(badgeService.updateNewlyAttendanceBadges(any(User.class)))
                 .thenReturn(newlyRegisteredBadge);
 
-        // when
         User user = TestUtil.createUser();
         Location location = new Location(37.539927, 127.073006);
+
+        // when
         NewlyRegisteredBadge result = attendanceRegisterService.registerAttendance(user, location);
 
         // then
@@ -86,9 +87,11 @@ class AttendanceRegisterServiceTest {
     @Test
     @DisplayName("출석 범위에 벗어나면 에러가 발생한다")
     void registerAttendance_2() {
-        // expect
+        // given
         User user = TestUtil.createUser();
         Location location = new Location(0.0, 0.0);
+
+        // expect
         assertThatThrownBy(() -> attendanceRegisterService.registerAttendance(user, location))
                 .isInstanceOf(InvalidAttendanceLocationException.class);
     }
@@ -99,10 +102,12 @@ class AttendanceRegisterServiceTest {
         // given
         when(attendanceRepository.existsByUserAndAttendanceDateTimeAfter(any(User.class), any(LocalDateTime.class)))
                 .thenReturn(true);
-
-        // expect
+        when(dateTimeService.getLocalDateNow())
+                .thenReturn(LocalDate.of(2024, 6, 30));
         User user = TestUtil.createUser();
         Location location = new Location(37.539927, 127.073006);
+
+        // expect
         assertThatThrownBy(() -> attendanceRegisterService.registerAttendance(user, location))
                 .isInstanceOf(DuplicateAttendanceException.class);
     }

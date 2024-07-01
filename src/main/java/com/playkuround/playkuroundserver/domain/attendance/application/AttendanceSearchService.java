@@ -2,12 +2,12 @@ package com.playkuround.playkuroundserver.domain.attendance.application;
 
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
+import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,10 +16,14 @@ import java.util.List;
 public class AttendanceSearchService {
 
     private final AttendanceRepository attendanceRepository;
+    private final DateTimeService dateTimeService;
 
     @Transactional(readOnly = true)
     public List<LocalDateTime> findAttendance(User user, int agoDays) {
-        LocalDateTime monthAgo = LocalDate.now().minusMonths(agoDays).atStartOfDay();
+        LocalDateTime monthAgo = dateTimeService.getLocalDateNow()
+                .minusMonths(agoDays)
+                .atStartOfDay();
+
         List<Attendance> attendances = attendanceRepository.findByUserAndAttendanceDateTimeAfter(user, monthAgo);
         return attendances.stream()
                 .map(Attendance::getAttendanceDateTime)

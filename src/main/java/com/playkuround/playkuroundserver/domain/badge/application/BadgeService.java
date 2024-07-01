@@ -53,7 +53,7 @@ public class BadgeService {
 
         // 기념일 기준 뱃지
         SpecialDayBadgeList.getSpecialDayBadges().stream()
-                .filter(specialDayBadge -> specialDayBadge.supports(userBadgeSet, dateTimeService.now().toLocalDate()))
+                .filter(specialDayBadge -> specialDayBadge.supports(userBadgeSet, dateTimeService.getLocalDateNow()))
                 .forEach(specialDayBadge -> {
                     BadgeType badgeType = specialDayBadge.getBadgeType();
                     badgeRepository.save(Badge.createBadge(user, badgeType));

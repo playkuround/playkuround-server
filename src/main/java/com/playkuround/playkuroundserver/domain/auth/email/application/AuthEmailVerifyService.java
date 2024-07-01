@@ -11,13 +11,12 @@ import com.playkuround.playkuroundserver.domain.auth.email.exception.NotMatchAut
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.AuthVerifyToken;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +26,7 @@ public class AuthEmailVerifyService {
     private final UserRepository userRepository;
     private final UserLoginService userLoginService;
     private final AuthEmailRepository authEmailRepository;
+    private final DateTimeService dateTimeService;
 
     @Transactional
     public AuthVerifyEmailResult verifyAuthEmail(String code, String email) {
@@ -51,7 +51,7 @@ public class AuthEmailVerifyService {
         if (!authEmail.isValidate()) {
             throw new AuthEmailNotFoundException();
         }
-        if (authEmail.getExpiredAt().isBefore(LocalDateTime.now())) {
+        if (authEmail.getExpiredAt().isBefore(dateTimeService.getLocalDateTimeNow())) {
             throw new AuthCodeExpiredException();
         }
         if (!authEmail.getCode().equals(code)) {

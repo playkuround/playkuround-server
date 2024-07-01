@@ -24,7 +24,7 @@ public class LandmarkRankService {
     @Transactional(readOnly = true)
     public ScoreRankingResponse getRankTop100ByLandmark(User user, Long landmarkId) {
         ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
-        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime(dateTimeService.now().toLocalDate());
+        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime(dateTimeService.getLocalDateNow());
 
         List<NicknameAndScore> nicknameAndScores = adventureRepository.findRankTop100DescByLandmarkId(landmarkId, monthStartDateTime);
         nicknameAndScores.forEach(nicknameAndScore ->

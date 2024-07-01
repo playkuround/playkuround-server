@@ -16,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-
 @Service
 @RequiredArgsConstructor
 public class AttendanceRegisterService {
@@ -54,13 +52,13 @@ public class AttendanceRegisterService {
     }
 
     private void validateDuplicateAttendance(User user) {
-        if (attendanceRepository.existsByUserAndAttendanceDateTimeAfter(user, LocalDate.now().atStartOfDay())) {
+        if (attendanceRepository.existsByUserAndAttendanceDateTimeAfter(user, dateTimeService.getLocalDateNow().atStartOfDay())) {
             throw new DuplicateAttendanceException();
         }
     }
 
     private void saveAttendance(User user, Location location) {
-        Attendance attendance = Attendance.of(user, location, dateTimeService.now());
+        Attendance attendance = Attendance.of(user, location, dateTimeService.getLocalDateTimeNow());
         attendanceRepository.save(attendance);
     }
 

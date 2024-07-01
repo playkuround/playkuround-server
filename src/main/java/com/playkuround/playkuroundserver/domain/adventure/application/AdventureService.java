@@ -68,7 +68,7 @@ public class AdventureService {
     }
 
     private void updateLandmarkHighestScore(User user, Landmark landmark) {
-        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime(dateTimeService.now().toLocalDate());
+        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime(dateTimeService.getLocalDateNow());
         long sumScore = adventureRepository.getSumScoreByUserAndLandmark(user, landmark, monthStartDateTime);
         landmark.updateFirstUser(user, sumScore);
     }

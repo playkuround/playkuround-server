@@ -1,6 +1,8 @@
 package com.playkuround.playkuroundserver.domain.landmark.domain;
 
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.global.util.Location;
+import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -45,5 +47,12 @@ public class Landmark {
     public void deleteRank() {
         this.firstUser = null;
         this.highestScore = 0;
+    }
+
+    public boolean isInRecognitionRadius(Location location) {
+        Location locationOfLandmark = new Location(latitude, longitude);
+        double distance = LocationDistanceUtils.distance(locationOfLandmark, location);
+
+        return distance <= recognitionRadius;
     }
 }

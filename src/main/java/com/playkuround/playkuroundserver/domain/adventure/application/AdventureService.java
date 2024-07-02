@@ -16,7 +16,6 @@ import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
 import com.playkuround.playkuroundserver.global.util.Location;
-import com.playkuround.playkuroundserver.global.util.LocationDistanceUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,16 +48,15 @@ public class AdventureService {
     }
 
     private void validateLocation(Landmark landmark, Location location) {
-        Location locationOfLandmark = new Location(landmark.getLatitude(), landmark.getLongitude());
-        double distance = LocationDistanceUtils.distance(locationOfLandmark, location);
-        if (distance > landmark.getRecognitionRadius()) {
+        if (!landmark.isInRecognitionRadius(location)) {
             throw new InvalidLandmarkLocationException();
         }
     }
 
     private void updateUserScore(User user, ScoreType scoreType, long score) {
         totalScoreService.incrementTotalScore(user, score);
-        user.getHighestScore().updateGameHighestScore(scoreType, score);
+        user.getHighestScore()
+                .updateGameHighestScore(scoreType, score);
         userRepository.save(user);
     }
 
@@ -69,7 +67,7 @@ public class AdventureService {
 
     private void updateLandmarkHighestScore(User user, Landmark landmark) {
         LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime(dateTimeService.getLocalDateNow());
-        long sumScore = adventureRepository.getSumScoreByUserAndLandmark(user, landmark, monthStartDateTime);
+        long sumScore = adventureRepository.getSumScoreByUserAndLandmarkAfter(user, landmark, monthStartDateTime);
         landmark.updateFirstUser(user, sumScore);
     }
 }

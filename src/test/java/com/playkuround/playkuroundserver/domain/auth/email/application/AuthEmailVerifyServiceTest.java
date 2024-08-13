@@ -142,11 +142,12 @@ class AuthEmailVerifyServiceTest {
     @DisplayName("authEmail이 만료되면 AuthCodeExpiredException 발생")
     void authEmailExpired() {
         // given
-        AuthEmail authEmail = AuthEmail.createAuthEmail("target", "code", LocalDateTime.now().minusDays(1));
+        LocalDateTime now = LocalDateTime.of(2024, 7, 1, 0, 0);
+        AuthEmail authEmail = AuthEmail.createAuthEmail("target", "code", now.minusDays(1));
         when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(any(String.class)))
                 .thenReturn(Optional.of(authEmail));
         when(dateTimeService.getLocalDateTimeNow())
-                .thenReturn(LocalDateTime.of(2024, 7, 1, 0, 0));
+                .thenReturn(now);
 
         // expected
         assertThatThrownBy(() -> authEmailVerifyService.verifyAuthEmail("code", "target"))

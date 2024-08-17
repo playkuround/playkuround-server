@@ -30,6 +30,9 @@ public class UserProfileResponse {
     @Schema(description = "출석한 횟수", example = "28", requiredMode = RequiredMode.REQUIRED)
     private int attendanceDays;
 
+    @Schema(description = "대표 뱃지(대표 뱃지가 없다면 null 리턴)", example = "MONTHLY_RANKING_1", requiredMode = RequiredMode.REQUIRED)
+    private String badge;
+
     public static UserProfileResponse from(User user) {
         return UserProfileResponse.builder()
                 .email(user.getEmail())
@@ -38,6 +41,7 @@ public class UserProfileResponse {
                 .attendanceDays(user.getAttendanceDays())
                 .highestScore(user.getHighestScore() == null ? null : user.getHighestScore().getHighestTotalScore())
                 .highestRank(user.getHighestScore() == null ? null : user.getHighestScore().getHighestTotalRank())
+                .badge(user.getRepresentBadge() == null ? null : user.getRepresentBadge().name())
                 .build();
     }
 }

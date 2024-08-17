@@ -8,6 +8,7 @@ import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
+import com.playkuround.playkuroundserver.domain.badge.exception.BadgeNotHaveException;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
@@ -122,4 +123,15 @@ public class BadgeService {
         }
         return true;
     }
+
+    @Transactional
+    public void representationBadge(User user, BadgeType badgeType) {
+        if (!badgeRepository.existsByUserAndBadgeType(user, badgeType)) {
+            throw new BadgeNotHaveException();
+        }
+
+        user.updateRepresentBadge(badgeType);
+        userRepository.save(user);
+    }
+
 }

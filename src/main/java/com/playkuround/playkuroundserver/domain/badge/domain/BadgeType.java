@@ -3,6 +3,12 @@ package com.playkuround.playkuroundserver.domain.badge.domain;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toMap;
+
 @Getter
 @RequiredArgsConstructor
 public enum BadgeType {
@@ -66,8 +72,16 @@ public enum BadgeType {
     MONTHLY_RANKING_1("월간 랭킹 1등"), // 수동
     MONTHLY_RANKING_2("월간 랭킹 2등"), // 수동
     MONTHLY_RANKING_3("월간 랭킹 3등"), // 수동
-
     ;
 
     private final String description;
+
+    private static final Map<String, BadgeType> stringToEnum =
+            Stream.of(values())
+                    .collect(toMap(Object::toString, e -> e));
+
+    public static Optional<BadgeType> fromString(String source) {
+        return Optional.ofNullable(stringToEnum.get(source));
+    }
+
 }

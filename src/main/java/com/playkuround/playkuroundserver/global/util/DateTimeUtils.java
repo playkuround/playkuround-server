@@ -32,4 +32,24 @@ public class DateTimeUtils {
         return localDate.getMonth().getValue() == 5 && localDate.getDayOfMonth() == 2;
     }
 
+    public static boolean isChuseokDay(LocalDate localDate) {
+        return localDate.getMonth().getValue() == 9 && localDate.getDayOfMonth() == 17;
+    }
+
+    public static boolean isKoreanDay(LocalDate localDate) {
+        return localDate.getMonth().getValue() == 10 && localDate.getDayOfMonth() == 9;
+    }
+
+    public static boolean isDokdoDay(LocalDate localDate) {
+        return localDate.getMonth().getValue() == 10 && localDate.getDayOfMonth() == 25;
+    }
+
+    public static boolean isKimchiDay(LocalDate localDate) {
+        return localDate.getMonth().getValue() == 11 && localDate.getDayOfMonth() == 22;
+    }
+
+    public static boolean isChristmasDay(LocalDate localDate) {
+        return localDate.getMonth().getValue() == 12 && localDate.getDayOfMonth() == 25;
+    }
+
 }

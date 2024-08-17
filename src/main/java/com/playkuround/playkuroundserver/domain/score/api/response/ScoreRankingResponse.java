@@ -1,4 +1,4 @@
-package com.playkuround.playkuroundserver.domain.score.dto.response;
+package com.playkuround.playkuroundserver.domain.score.api.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

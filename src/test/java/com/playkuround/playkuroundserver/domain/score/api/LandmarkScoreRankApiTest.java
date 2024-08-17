@@ -6,8 +6,8 @@ import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepositor
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
-import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -92,8 +92,8 @@ class LandmarkScoreRankApiTest {
             assertThat(rank.get(i - 1).getNickname()).isEqualTo("user" + (51 - i));
             assertThat(rank.get(i - 1).getScore()).isEqualTo(51 - i);
         }
-        assertThat(response.getMyRank().getScore()).isEqualTo(0);
-        assertThat(response.getMyRank().getRanking()).isEqualTo(0);
+        assertThat(response.getMyRank().getScore()).isZero();
+        assertThat(response.getMyRank().getRanking()).isZero();
     }
 
     @Test

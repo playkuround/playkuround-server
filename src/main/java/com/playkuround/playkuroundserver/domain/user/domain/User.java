@@ -43,6 +43,9 @@ public class User extends BaseTimeEntity {
     @Convert(converter = NotificationConverter.class)
     private Set<Notification> notification;
 
+    @Enumerated(EnumType.STRING)
+    private BadgeType representBadge;
+
     private User(String email, String nickname, Major major, Role role) {
         this.email = email;
         this.nickname = nickname;
@@ -52,13 +55,6 @@ public class User extends BaseTimeEntity {
 
     public static User create(String email, String nickname, Major major, Role role) {
         return new User(email, nickname, major, role);
-    }
-
-    public HighestScore getHighestScore() {
-        if (highestScore == null) {
-            highestScore = new HighestScore();
-        }
-        return highestScore;
     }
 
     public void increaseAttendanceDay() {
@@ -81,5 +77,16 @@ public class User extends BaseTimeEntity {
     public void updateHighestRank(long rank, long score) {
         HighestScore highestScore = getHighestScore();
         highestScore.updateHighestTotalLank(rank, score);
+    }
+
+    public void updateRepresentBadge(BadgeType badgeType) {
+        this.representBadge = badgeType;
+    }
+
+    public HighestScore getHighestScore() {
+        if (highestScore == null) {
+            highestScore = new HighestScore();
+        }
+        return highestScore;
     }
 }

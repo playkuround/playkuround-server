@@ -3,9 +3,9 @@ package com.playkuround.playkuroundserver.domain.score.application;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScore;
 import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
-import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,8 +53,8 @@ class LandmarkRankServiceTest {
 
         // then
         assertThat(result.getRank()).isEmpty();
-        assertThat(result.getMyRank().getRanking()).isEqualTo(0);
-        assertThat(result.getMyRank().getScore()).isEqualTo(0);
+        assertThat(result.getMyRank().getRanking()).isZero();
+        assertThat(result.getMyRank().getScore()).isZero();
     }
 
     @Test
@@ -83,8 +83,8 @@ class LandmarkRankServiceTest {
             assertThat(rankList.get(50 - i).getScore()).isEqualTo(i);
         }
 
-        assertThat(result.getMyRank().getRanking()).isEqualTo(0);
-        assertThat(result.getMyRank().getScore()).isEqualTo(0);
+        assertThat(result.getMyRank().getRanking()).isZero();
+        assertThat(result.getMyRank().getScore()).isZero();
     }
 
     @Test

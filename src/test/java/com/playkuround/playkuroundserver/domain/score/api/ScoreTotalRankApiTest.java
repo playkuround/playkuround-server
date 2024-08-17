@@ -2,7 +2,7 @@ package com.playkuround.playkuroundserver.domain.score.api;
 
 import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.TestUtil;
-import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -86,8 +86,8 @@ class ScoreTotalRankApiTest {
             assertThat(rank.get(i - 1).getNickname()).isEqualTo("user" + (51 - i));
             assertThat(rank.get(i - 1).getScore()).isEqualTo(51 - i);
         }
-        assertThat(response.getMyRank().getScore()).isEqualTo(0);
-        assertThat(response.getMyRank().getRanking()).isEqualTo(0);
+        assertThat(response.getMyRank().getScore()).isZero();
+        assertThat(response.getMyRank().getRanking()).isZero();
     }
 
     @Test

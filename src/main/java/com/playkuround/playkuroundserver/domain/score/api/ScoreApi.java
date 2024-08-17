@@ -1,8 +1,9 @@
 package com.playkuround.playkuroundserver.domain.score.api;
 
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.api.response.TotalScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.score.application.LandmarkRankService;
 import com.playkuround.playkuroundserver.domain.score.application.TotalScoreService;
-import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -27,8 +28,8 @@ public class ScoreApi {
     @GetMapping("/rank")
     @Operation(summary = "종합 점수 탑100 얻기",
             description = "토탈 점수 탑100과 내 점수, 등수를 반환합니다. 내 점수가 0점이면 등수는 0등으로 반환됩니다.")
-    public ApiResponse<ScoreRankingResponse> getScoreTop100(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ScoreRankingResponse response = totalScoreService.getRankTop100(userDetails.getUser());
+    public ApiResponse<TotalScoreRankingResponse> getScoreTop100(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        TotalScoreRankingResponse response = totalScoreService.getRankTop100(userDetails.getUser());
         return ApiUtils.success(response);
     }
 

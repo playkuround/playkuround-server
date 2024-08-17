@@ -2,9 +2,9 @@ package com.playkuround.playkuroundserver.domain.score.application;
 
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScore;
 import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
-import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
 import lombok.RequiredArgsConstructor;

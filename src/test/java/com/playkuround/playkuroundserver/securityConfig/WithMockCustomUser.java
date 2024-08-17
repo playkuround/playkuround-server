@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.securityConfig;
 
 
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import org.springframework.security.test.context.support.WithSecurityContext;
@@ -19,4 +20,7 @@ public @interface WithMockCustomUser {
     Major major() default Major.컴퓨터공학부;
 
     Role role() default Role.ROLE_USER;
+
+    BadgeType badgeType() default BadgeType.COLLEGE_OF_ENGINEERING;
+
 }

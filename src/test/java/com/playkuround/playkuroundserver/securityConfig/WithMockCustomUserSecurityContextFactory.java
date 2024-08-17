@@ -26,6 +26,7 @@ public class WithMockCustomUserSecurityContextFactory
 
     public SecurityContext createSecurityContext(WithMockCustomUser annotation) {
         User user = User.create(annotation.email(), annotation.nickname(), annotation.major(), annotation.role());
+        user.updateRepresentBadge(annotation.badgeType());
         userRepository.save(user);
         String roleName = user.getRole().toString();
         List<String> role = Arrays.stream(roleName.split(",")).toList();

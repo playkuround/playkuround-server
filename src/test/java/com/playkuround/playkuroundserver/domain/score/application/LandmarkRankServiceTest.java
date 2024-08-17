@@ -3,7 +3,7 @@ package com.playkuround.playkuroundserver.domain.score.application;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
-import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.api.response.LandmarkScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScore;
 import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -49,7 +49,7 @@ class LandmarkRankServiceTest {
 
         // when
         User user = TestUtil.createUser();
-        ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
+        LandmarkScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
 
         // then
         assertThat(result.getRank()).isEmpty();
@@ -73,10 +73,10 @@ class LandmarkRankServiceTest {
 
         // when
         User user = TestUtil.createUser();
-        ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
+        LandmarkScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
 
         // then
-        List<ScoreRankingResponse.RankList> rankList = result.getRank();
+        List<LandmarkScoreRankingResponse.RankList> rankList = result.getRank();
         assertThat(rankList).hasSize(50);
         for (int i = 50; i > 0; i--) {
             assertThat(rankList.get(50 - i).getNickname()).isEqualTo("nickname" + i);
@@ -103,10 +103,10 @@ class LandmarkRankServiceTest {
 
         // when
         User user = TestUtil.createUser();
-        ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
+        LandmarkScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
 
         // then
-        List<ScoreRankingResponse.RankList> rankList = result.getRank();
+        List<LandmarkScoreRankingResponse.RankList> rankList = result.getRank();
         assertThat(rankList).hasSize(50);
         for (int i = 50; i > 0; i--) {
             assertThat(rankList.get(50 - i).getNickname()).isEqualTo("nickname" + i);
@@ -132,10 +132,10 @@ class LandmarkRankServiceTest {
 
         // when
         User user = TestUtil.createUser();
-        ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
+        LandmarkScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
 
         // then
-        List<ScoreRankingResponse.RankList> rankList = result.getRank();
+        List<LandmarkScoreRankingResponse.RankList> rankList = result.getRank();
         assertThat(rankList).hasSize(101);
         for (int i = 101; i > 0; i--) {
             assertThat(rankList.get(101 - i).getNickname()).isEqualTo("nickname" + i);

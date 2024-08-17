@@ -10,13 +10,13 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ScoreRankingResponse {
+public class LandmarkScoreRankingResponse {
 
     private MyRank myRank;
     private final List<RankList> rank = new ArrayList<>();
 
-    public static ScoreRankingResponse createEmptyResponse() {
-        return new ScoreRankingResponse();
+    public static LandmarkScoreRankingResponse createEmptyResponse() {
+        return new LandmarkScoreRankingResponse();
     }
 
     public void addRank(String nickname, int score) {

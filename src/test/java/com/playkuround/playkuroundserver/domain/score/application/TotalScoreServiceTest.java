@@ -2,7 +2,7 @@ package com.playkuround.playkuroundserver.domain.score.application;
 
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
-import com.playkuround.playkuroundserver.domain.score.api.response.TotalScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -62,7 +62,7 @@ class TotalScoreServiceTest {
     void getRankTop1001() {
         // expect
         User user = TestUtil.createUser();
-        TotalScoreRankingResponse result = totalScoreService.getRankTop100(user);
+        ScoreRankingResponse result = totalScoreService.getRankTop100(user);
 
         assertThat(result.getRank()).isEmpty();
         assertThat(result.getMyRank().getScore()).isZero();
@@ -80,11 +80,11 @@ class TotalScoreServiceTest {
         }
 
         // when
-        TotalScoreRankingResponse result = totalScoreService.getRankTop100(TestUtil.createUser());
+        ScoreRankingResponse result = totalScoreService.getRankTop100(TestUtil.createUser());
 
         // then
         assertThat(result.getRank()).hasSize(50);
-        List<TotalScoreRankingResponse.RankList> rank = result.getRank();
+        List<ScoreRankingResponse.RankList> rank = result.getRank();
         for (int i = 0; i < 50; i++) {
             assertThat(rank.get(i).getNickname()).isEqualTo("user" + (50 - i));
             assertThat(rank.get(i).getScore()).isEqualTo(50 - i);
@@ -107,11 +107,11 @@ class TotalScoreServiceTest {
         totalScoreService.incrementTotalScore(user, (long) 13);
 
         // when
-        TotalScoreRankingResponse result = totalScoreService.getRankTop100(user);
+        ScoreRankingResponse result = totalScoreService.getRankTop100(user);
 
         // then
         assertThat(result.getRank()).hasSize(51);
-        List<TotalScoreRankingResponse.RankList> rank = result.getRank();
+        List<ScoreRankingResponse.RankList> rank = result.getRank();
         for (int i = 0; i < 51; i++) {
             if (i < 38) {
                 assertThat(rank.get(i).getNickname()).isEqualTo("user" + (50 - i));
@@ -144,11 +144,11 @@ class TotalScoreServiceTest {
         totalScoreService.incrementTotalScore(user, (long) 51);
 
         // when
-        TotalScoreRankingResponse result = totalScoreService.getRankTop100(user);
+        ScoreRankingResponse result = totalScoreService.getRankTop100(user);
 
         // then
         assertThat(result.getRank()).hasSize(100);
-        List<TotalScoreRankingResponse.RankList> rank = result.getRank();
+        List<ScoreRankingResponse.RankList> rank = result.getRank();
         assertThat(rank.get(0).getNickname()).isEqualTo("user100");
         assertThat(rank.get(0).getScore()).isEqualTo(100);
         assertThat(rank.get(99).getNickname()).isEqualTo("user2");
@@ -176,11 +176,11 @@ class TotalScoreServiceTest {
         }
 
         // when
-        TotalScoreRankingResponse result = totalScoreService.getRankTop100(me);
+        ScoreRankingResponse result = totalScoreService.getRankTop100(me);
 
         // then
         assertThat(result.getRank()).hasSize(100);
-        List<TotalScoreRankingResponse.RankList> rank = result.getRank();
+        List<ScoreRankingResponse.RankList> rank = result.getRank();
         assertThat(rank.get(0).getNickname()).isEqualTo("user1");
         assertThat(rank.get(0).getScore()).isEqualTo(999);
         assertThat(rank.get(99).getNickname()).isEqualTo("user105");

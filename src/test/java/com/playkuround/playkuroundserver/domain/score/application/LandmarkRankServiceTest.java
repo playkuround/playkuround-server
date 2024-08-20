@@ -3,8 +3,8 @@ package com.playkuround.playkuroundserver.domain.score.application;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
-import com.playkuround.playkuroundserver.domain.score.api.response.LandmarkScoreRankingResponse;
-import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScore;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScoreAndBadgeType;
 import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
@@ -49,7 +49,7 @@ class LandmarkRankServiceTest {
 
         // when
         User user = TestUtil.createUser();
-        LandmarkScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
+        ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
 
         // then
         assertThat(result.getRank()).isEmpty();
@@ -61,8 +61,8 @@ class LandmarkRankServiceTest {
     @DisplayName("전체 유저 100명 미만 + 내 랭킹은 없음")
     void getRankTop100ByLandmark2() {
         // given
-        List<NicknameAndScore> nicknameAndScores = IntStream.rangeClosed(1, 50)
-                .mapToObj(i -> new NicknameAndScore("nickname" + (51 - i), 51 - i))
+        List<NicknameAndScoreAndBadgeType> nicknameAndScores = IntStream.rangeClosed(1, 50)
+                .mapToObj(i -> new NicknameAndScoreAndBadgeType("nickname" + (51 - i), 51 - i, null))
                 .toList();
         when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(nicknameAndScores);
@@ -73,10 +73,10 @@ class LandmarkRankServiceTest {
 
         // when
         User user = TestUtil.createUser();
-        LandmarkScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
+        ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
 
         // then
-        List<LandmarkScoreRankingResponse.RankList> rankList = result.getRank();
+        List<ScoreRankingResponse.RankList> rankList = result.getRank();
         assertThat(rankList).hasSize(50);
         for (int i = 50; i > 0; i--) {
             assertThat(rankList.get(50 - i).getNickname()).isEqualTo("nickname" + i);
@@ -91,8 +91,8 @@ class LandmarkRankServiceTest {
     @DisplayName("전체 유저 100명 미만 + 내 랭킹 존재")
     void getRankTop100ByLandmark3() {
         // given
-        List<NicknameAndScore> nicknameAndScores = IntStream.rangeClosed(1, 50)
-                .mapToObj(i -> new NicknameAndScore("nickname" + (51 - i), 51 - i))
+        List<NicknameAndScoreAndBadgeType> nicknameAndScores = IntStream.rangeClosed(1, 50)
+                .mapToObj(i -> new NicknameAndScoreAndBadgeType("nickname" + (51 - i), 51 - i, null))
                 .toList();
         when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(nicknameAndScores);
@@ -103,10 +103,10 @@ class LandmarkRankServiceTest {
 
         // when
         User user = TestUtil.createUser();
-        LandmarkScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
+        ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
 
         // then
-        List<LandmarkScoreRankingResponse.RankList> rankList = result.getRank();
+        List<ScoreRankingResponse.RankList> rankList = result.getRank();
         assertThat(rankList).hasSize(50);
         for (int i = 50; i > 0; i--) {
             assertThat(rankList.get(50 - i).getNickname()).isEqualTo("nickname" + i);
@@ -120,8 +120,8 @@ class LandmarkRankServiceTest {
     @DisplayName("전체 유저 100명 초과 + 내 랭킹 중간에 존재")
     void getRankTop100ByLandmark4() {
         // given
-        List<NicknameAndScore> nicknameAndScores = IntStream.rangeClosed(1, 101)
-                .mapToObj(i -> new NicknameAndScore("nickname" + (102 - i), 102 - i))
+        List<NicknameAndScoreAndBadgeType> nicknameAndScores = IntStream.rangeClosed(1, 101)
+                .mapToObj(i -> new NicknameAndScoreAndBadgeType("nickname" + (102 - i), 102 - i, null))
                 .toList();
         when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(nicknameAndScores);
@@ -132,10 +132,10 @@ class LandmarkRankServiceTest {
 
         // when
         User user = TestUtil.createUser();
-        LandmarkScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
+        ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, 1L);
 
         // then
-        List<LandmarkScoreRankingResponse.RankList> rankList = result.getRank();
+        List<ScoreRankingResponse.RankList> rankList = result.getRank();
         assertThat(rankList).hasSize(101);
         for (int i = 101; i > 0; i--) {
             assertThat(rankList.get(101 - i).getNickname()).isEqualTo("nickname" + i);

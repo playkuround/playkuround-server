@@ -3,7 +3,7 @@ package com.playkuround.playkuroundserver.domain.score.api;
 import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.domain.score.api.response.TotalScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -79,11 +79,11 @@ class ScoreTotalRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        TotalScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, TotalScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(50);
-        List<TotalScoreRankingResponse.RankList> rank = response.getRank();
+        List<ScoreRankingResponse.RankList> rank = response.getRank();
         for (int i = 0; i < 50; i++) {
             assertThat(rank.get(i).getNickname()).isEqualTo("user" + (50 - i));
             assertThat(rank.get(i).getScore()).isEqualTo(50 - i);
@@ -112,11 +112,11 @@ class ScoreTotalRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        TotalScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, TotalScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(51);
-        List<TotalScoreRankingResponse.RankList> rank = response.getRank();
+        List<ScoreRankingResponse.RankList> rank = response.getRank();
         for (int i = 0; i < 51; i++) {
             if (i < 38) {
                 assertThat(rank.get(i).getNickname()).isEqualTo("user" + (50 - i));
@@ -155,11 +155,11 @@ class ScoreTotalRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        TotalScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, TotalScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(100);
-        List<TotalScoreRankingResponse.RankList> rank = response.getRank();
+        List<ScoreRankingResponse.RankList> rank = response.getRank();
         assertThat(rank.get(0).getNickname()).isEqualTo("user100");
         assertThat(rank.get(0).getScore()).isEqualTo(100);
         assertThat(rank.get(99).getNickname()).isEqualTo("user2");
@@ -193,11 +193,11 @@ class ScoreTotalRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        TotalScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, TotalScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(100);
-        List<TotalScoreRankingResponse.RankList> rank = response.getRank();
+        List<ScoreRankingResponse.RankList> rank = response.getRank();
         assertThat(rank.get(0).getNickname()).isEqualTo("user1");
         assertThat(rank.get(0).getScore()).isEqualTo(999);
         assertThat(rank.get(99).getNickname()).isEqualTo("user105");
@@ -237,7 +237,7 @@ class ScoreTotalRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        TotalScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, TotalScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(3)

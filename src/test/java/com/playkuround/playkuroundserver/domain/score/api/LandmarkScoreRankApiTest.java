@@ -6,7 +6,7 @@ import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepositor
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
-import com.playkuround.playkuroundserver.domain.score.api.response.LandmarkScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
@@ -83,11 +83,11 @@ class LandmarkScoreRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        LandmarkScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, LandmarkScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(50);
-        List<LandmarkScoreRankingResponse.RankList> rank = response.getRank();
+        List<ScoreRankingResponse.RankList> rank = response.getRank();
         for (int i = 0; i < 50; i++) {
             assertThat(rank.get(i).getNickname()).isEqualTo("user" + (50 - i));
             assertThat(rank.get(i).getScore()).isEqualTo(50 - i);
@@ -120,11 +120,11 @@ class LandmarkScoreRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        LandmarkScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, LandmarkScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(51);
-        List<LandmarkScoreRankingResponse.RankList> rank = response.getRank();
+        List<ScoreRankingResponse.RankList> rank = response.getRank();
         for (int i = 0; i < 51; i++) {
             if (i < 14) {
                 assertThat(rank.get(i).getNickname()).isEqualTo("user" + (50 - i));
@@ -167,11 +167,11 @@ class LandmarkScoreRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        LandmarkScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, LandmarkScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(100);
-        List<LandmarkScoreRankingResponse.RankList> rank = response.getRank();
+        List<ScoreRankingResponse.RankList> rank = response.getRank();
         for (int i = 0; i < 100; i++) {
             if (i < 40) {
                 assertThat(rank.get(i).getNickname()).isEqualTo("user" + (101 - i));
@@ -216,11 +216,11 @@ class LandmarkScoreRankApiTest {
                 .andDo(print())
                 .andReturn();
         String json = mvcResult.getResponse().getContentAsString();
-        LandmarkScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, LandmarkScoreRankingResponse.class);
+        ScoreRankingResponse response = TestUtil.convertFromJsonStringToObject(json, ScoreRankingResponse.class);
 
         // then
         assertThat(response.getRank()).hasSize(100);
-        List<LandmarkScoreRankingResponse.RankList> rank = response.getRank();
+        List<ScoreRankingResponse.RankList> rank = response.getRank();
         for (int i = 0; i < 100; i++) {
             if (i < 41) {
                 assertThat(rank.get(i).getNickname()).isEqualTo("user" + (101 - i));

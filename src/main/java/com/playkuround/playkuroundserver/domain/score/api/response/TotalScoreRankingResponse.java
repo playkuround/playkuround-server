@@ -13,29 +13,21 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TotalScoreRankingResponse {
 
-    private final List<RankList> rank = new ArrayList<>();
     private MyRank myRank;
+    private final List<RankList> rank = new ArrayList<>();
 
     public static TotalScoreRankingResponse createEmptyResponse() {
         return new TotalScoreRankingResponse();
     }
 
     public void addRank(String nickname, int score, BadgeType badgeType) {
-        if (badgeType != null) {
-            this.rank.add(new RankList(nickname, badgeType.name(), score));
-        }
-        else {
-            this.rank.add(new RankList(nickname, null, score));
-        }
+        String badgeTypeName = badgeType != null ? badgeType.name() : null;
+        this.rank.add(new RankList(nickname, badgeTypeName, score));
     }
 
     public void setMyRank(int ranking, int score, BadgeType badgeType) {
-        if (badgeType != null) {
-            this.myRank = new MyRank(ranking, score, badgeType.name());
-        }
-        else {
-            this.myRank = new MyRank(ranking, score, null);
-        }
+        String badgeTypeName = badgeType != null ? badgeType.name() : null;
+        this.myRank = new MyRank(ranking, score, badgeTypeName);
     }
 
     @Getter

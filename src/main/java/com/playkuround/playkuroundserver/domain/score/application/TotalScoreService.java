@@ -1,6 +1,6 @@
 package com.playkuround.playkuroundserver.domain.score.application;
 
-import com.playkuround.playkuroundserver.domain.score.api.response.TotalScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.score.dto.NickNameAndBadge;
 import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -41,16 +41,16 @@ public class TotalScoreService {
     }
 
     @Transactional(readOnly = true)
-    public TotalScoreRankingResponse getRankTop100(User user) {
+    public ScoreRankingResponse getRankTop100(User user) {
         Set<ZSetOperations.TypedTuple<String>> typedTuples
                 = zSetOperations.reverseRangeWithScores(redisSetKey, 0, 99);
         if (typedTuples == null) {
-            return TotalScoreRankingResponse.createEmptyResponse();
+            return ScoreRankingResponse.createEmptyResponse();
         }
 
         ScoreRankService scoreRankService = new ScoreRankService(typedTuples);
         Map<String, NickNameAndBadge> emailBindingNickname = getNicknameBindingEmailMapList(scoreRankService.getRankUserEmails());
-        TotalScoreRankingResponse response = scoreRankService.createScoreRankingResponse(emailBindingNickname);
+        ScoreRankingResponse response = scoreRankService.createScoreRankingResponse(emailBindingNickname);
 
         RankAndScore myRank = getMyRank(user);
         response.setMyRank(myRank.ranking(), myRank.score(), user.getRepresentBadge());

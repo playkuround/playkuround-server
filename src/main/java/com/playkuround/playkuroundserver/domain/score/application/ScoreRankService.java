@@ -1,6 +1,6 @@
 package com.playkuround.playkuroundserver.domain.score.application;
 
-import com.playkuround.playkuroundserver.domain.score.api.response.TotalScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.score.dto.NickNameAndBadge;
 import org.springframework.data.redis.core.ZSetOperations;
 
@@ -25,8 +25,8 @@ class ScoreRankService {
                 .toList();
     }
 
-    public TotalScoreRankingResponse createScoreRankingResponse(Map<String, NickNameAndBadge> emailBindingData) {
-        TotalScoreRankingResponse response = TotalScoreRankingResponse.createEmptyResponse();
+    public ScoreRankingResponse createScoreRankingResponse(Map<String, NickNameAndBadge> emailBindingData) {
+        ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
         rankDataList.forEach(rankData -> {
             NickNameAndBadge nickNameAndBadge = emailBindingData.get(rankData.email);
             if (nickNameAndBadge.nickname() == null) {

@@ -1,5 +1,6 @@
 package com.playkuround.playkuroundserver.domain.score.api.response;
 
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,21 +11,23 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class LandmarkScoreRankingResponse {
+public class ScoreRankingResponse {
 
     private MyRank myRank;
     private final List<RankList> rank = new ArrayList<>();
 
-    public static LandmarkScoreRankingResponse createEmptyResponse() {
-        return new LandmarkScoreRankingResponse();
+    public static ScoreRankingResponse createEmptyResponse() {
+        return new ScoreRankingResponse();
     }
 
-    public void addRank(String nickname, int score) {
-        this.rank.add(new RankList(nickname, score));
+    public void addRank(String nickname, int score, BadgeType badgeType) {
+        String badgeTypeName = badgeType != null ? badgeType.name() : null;
+        this.rank.add(new RankList(nickname, badgeTypeName, score));
     }
 
-    public void setMyRank(int ranking, int score) {
-        this.myRank = new MyRank(ranking, score);
+    public void setMyRank(int ranking, int score, BadgeType badgeType) {
+        String badgeTypeName = badgeType != null ? badgeType.name() : null;
+        this.myRank = new MyRank(ranking, score, badgeTypeName);
     }
 
     @Getter
@@ -32,6 +35,7 @@ public class LandmarkScoreRankingResponse {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class RankList {
         private String nickname;
+        private String badgeType;
         private int score;
     }
 
@@ -41,5 +45,6 @@ public class LandmarkScoreRankingResponse {
     public static class MyRank {
         private int ranking;
         private int score;
+        private String badgeType;
     }
 }

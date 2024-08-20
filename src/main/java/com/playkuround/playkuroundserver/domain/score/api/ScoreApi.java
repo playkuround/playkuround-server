@@ -1,6 +1,6 @@
 package com.playkuround.playkuroundserver.domain.score.api;
 
-import com.playkuround.playkuroundserver.domain.score.api.response.TotalScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.score.application.LandmarkRankService;
 import com.playkuround.playkuroundserver.domain.score.application.TotalScoreService;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
@@ -27,17 +27,17 @@ public class ScoreApi {
     @GetMapping("/rank")
     @Operation(summary = "종합 점수 탑100 얻기",
             description = "토탈 점수 탑100과 내 점수, 등수를 반환합니다. 내 점수가 0점이면 등수는 0등으로 반환됩니다.")
-    public ApiResponse<TotalScoreRankingResponse> getScoreTop100(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        TotalScoreRankingResponse response = totalScoreService.getRankTop100(userDetails.getUser());
+    public ApiResponse<ScoreRankingResponse> getScoreTop100(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ScoreRankingResponse response = totalScoreService.getRankTop100(userDetails.getUser());
         return ApiUtils.success(response);
     }
 
     @GetMapping("/rank/{landmarkId}")
     @Operation(summary = "해당 랜드마크의 점수 탑100 얻기",
             description = "해당 랜드마크 점수 탑100과 내 점수, 등수를 반환합니다. 내 점수가 0점이면 등수는 0등으로 반환됩니다.")
-    public ApiResponse<TotalScoreRankingResponse> getScoreTop100ByLandmark(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                              @PathVariable Long landmarkId) {
-        TotalScoreRankingResponse response = landmarkRankService.getRankTop100ByLandmark(userDetails.getUser(), landmarkId);
+    public ApiResponse<ScoreRankingResponse> getScoreTop100ByLandmark(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                      @PathVariable Long landmarkId) {
+        ScoreRankingResponse response = landmarkRankService.getRankTop100ByLandmark(userDetails.getUser(), landmarkId);
         return ApiUtils.success(response);
     }
 

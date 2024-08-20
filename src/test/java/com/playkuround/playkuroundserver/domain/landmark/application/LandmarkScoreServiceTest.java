@@ -4,6 +4,7 @@ import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.dto.LandmarkHighestScoreUser;
+import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,12 +40,14 @@ class LandmarkScoreServiceTest {
         when(landmarkRepository.findById(1L)).thenReturn(Optional.of(mockLandmark));
 
         // when
-        LandmarkHighestScoreUser result = landmarkScoreService.findHighestScoreUserByLandmark(1L);
+        Optional<LandmarkHighestScoreUser> result = landmarkScoreService.findHighestScoreUserByLandmark(1L);
 
         // then
-        assertThat(result.isHasResult()).isTrue();
-        assertThat(result.getScore()).isEqualTo(1234L);
-        assertThat(result.getNickname()).isEqualTo(user.getNickname());
+        assertThat(result).isPresent()
+                .hasValueSatisfying(firstUserData -> {
+                    assertThat(firstUserData.score()).isEqualTo(1234L);
+                    assertThat(firstUserData.nickname()).isEqualTo(user.getNickname());
+                });
     }
 
     @Test
@@ -55,10 +59,22 @@ class LandmarkScoreServiceTest {
         when(landmarkRepository.findById(1L)).thenReturn(Optional.of(mockLandmark));
 
         // when
-        LandmarkHighestScoreUser result = landmarkScoreService.findHighestScoreUserByLandmark(1L);
+        Optional<LandmarkHighestScoreUser> result = landmarkScoreService.findHighestScoreUserByLandmark(1L);
 
         // then
-        assertThat(result.isHasResult()).isFalse();
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 랜드마크 ID로 조회 시 예외 발생")
+    void findHighestScoreUserByNonExistentLandmark() {
+        // given
+        when(landmarkRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // expect
+        assertThatThrownBy(
+                () -> landmarkScoreService.findHighestScoreUserByLandmark(999L)
+        ).isInstanceOf(LandmarkNotFoundException.class);
     }
 
 }

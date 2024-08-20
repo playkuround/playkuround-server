@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.landmark.api;
 
 import com.playkuround.playkuroundserver.IntegrationControllerTest;
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -89,11 +89,13 @@ class LandmarkApiTest {
     class findHighestUserByLandmark {
 
         @Test
-        @Transactional
         @DisplayName("랜드마크에 최고점 유저가 있다면 반환한다")
         void success_1() throws Exception {
             // given
             User user = userRepository.findAll().get(0);
+            user.updateRepresentBadge(BadgeType.ATTENDANCE_50);
+            userRepository.save(user);
+
             Landmark landmark = landmarkRepository.findById(1L).get();
             landmark.updateFirstUser(user, 1000);
             landmarkRepository.save(landmark);
@@ -103,11 +105,15 @@ class LandmarkApiTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.response.score").value(1000))
                     .andExpect(jsonPath("$.response.nickname").value(user.getNickname()))
+                    .andExpect(jsonPath("$.response.badgeType").value(user.getRepresentBadge().name()))
                     .andDo(print());
+
+            // tear down
+            landmark.deleteRank();
+            landmarkRepository.save(landmark);
         }
 
         @Test
-        @WithMockCustomUser
         @DisplayName("랜드마크에 최고점 유저가 없다면 빈 응답을 반환한다")
         void success_2() throws Exception {
             // expected

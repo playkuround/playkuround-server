@@ -89,9 +89,13 @@ public enum Major {
     교육공학과(Collage.사범대학),
     영어교육과(Collage.사범대학),
     교직과(Collage.사범대학),
-    ;
+
     // 상허교양대학
-    //국제학부(Collage.상허교양대학);
+    국제학부(Collage.상허교양대학),
+
+    // 국제대학
+    국제통상학과(Collage.국제대학),
+    문화미디어학과(Collage.국제대학);
 
     private final Collage collage;
 
@@ -116,8 +120,8 @@ public enum Major {
         수의과대학(BadgeType.COLLEGE_OF_VETERINARY_MEDICINE),
         예술디자인대학(BadgeType.COLLEGE_OF_ART_AND_DESIGN),
         사범대학(BadgeType.COLLEGE_OF_EDUCATION),
-        //상허교양대학
-        ;
+        상허교양대학(BadgeType.COLLEGE_OF_SANG_HUH),
+        국제대학(BadgeType.COLLEGE_OF_INTERNATIONAL);
 
         private final BadgeType collageBadgeType;
 

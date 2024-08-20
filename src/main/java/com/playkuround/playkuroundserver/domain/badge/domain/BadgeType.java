@@ -47,6 +47,8 @@ public enum BadgeType {
     COLLEGE_OF_VETERINARY_MEDICINE("수의과대학 1회 이상 탐험"),
     COLLEGE_OF_ART_AND_DESIGN("예술디자인대학 1회 이상 탐험"),
     COLLEGE_OF_EDUCATION("사범대학 1회 이상 탐험"),
+    COLLEGE_OF_SANG_HUH("산학협동관 1회 이상 탐험"),
+    COLLEGE_OF_INTERNATIONAL("법학관 1회 이상 탐험"),
 
     // 경영대 특별
     COLLEGE_OF_BUSINESS_ADMINISTRATION_10("경영대학 10회 이상 탐험"),

@@ -19,10 +19,15 @@ public class LandmarkHighestScoreUserResponse {
     @Schema(description = "최고 점수", example = "294")
     private Long score;
 
-    public static LandmarkHighestScoreUserResponse from(LandmarkHighestScoreUser landmarkHighestScoreUser) {
-        if (landmarkHighestScoreUser.isHasResult()) {
-            return new LandmarkHighestScoreUserResponse(landmarkHighestScoreUser.getNickname(), landmarkHighestScoreUser.getScore());
-        }
+    @Schema(description = "해당 사용자의 뱃지타입", example = "COLLEGE_OF_ENGINEERING")
+    private String badgeType;
+
+    public static LandmarkHighestScoreUserResponse from(LandmarkHighestScoreUser firstUserData) {
+        String badgeTypeName = firstUserData.badgeType() == null ? null : firstUserData.badgeType().name();
+        return new LandmarkHighestScoreUserResponse(firstUserData.nickname(), firstUserData.score(), badgeTypeName);
+    }
+
+    public static LandmarkHighestScoreUserResponse createEmptyResponse() {
         return new LandmarkHighestScoreUserResponse();
     }
 }

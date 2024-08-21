@@ -44,7 +44,7 @@ public class User extends BaseTimeEntity {
     private Set<Notification> notification;
 
     @Enumerated(EnumType.STRING)
-    private BadgeType representBadge;
+    private BadgeType profileBadge;
 
     private User(String email, String nickname, Major major, Role role) {
         this.email = email;
@@ -79,8 +79,8 @@ public class User extends BaseTimeEntity {
         highestScore.updateHighestTotalLank(rank, score);
     }
 
-    public void updateRepresentBadge(BadgeType badgeType) {
-        this.representBadge = badgeType;
+    public void updateProfileBadge(BadgeType badgeType) {
+        this.profileBadge = badgeType;
     }
 
     public HighestScore getHighestScore() {

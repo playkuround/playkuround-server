@@ -2,6 +2,9 @@ package com.playkuround.playkuroundserver.domain.user.api;
 
 import com.playkuround.playkuroundserver.domain.appversion.application.AppVersionService;
 import com.playkuround.playkuroundserver.domain.appversion.domain.OperationSystem;
+import com.playkuround.playkuroundserver.domain.badge.api.request.ProfileBadgeRequest;
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
+import com.playkuround.playkuroundserver.domain.badge.exception.BadgeTypeNotFoundException;
 import com.playkuround.playkuroundserver.domain.systemcheck.application.SystemCheckService;
 import com.playkuround.playkuroundserver.domain.user.api.response.UserGameHighestScoreResponse;
 import com.playkuround.playkuroundserver.domain.user.api.response.UserNotificationResponse;
@@ -16,12 +19,10 @@ import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,8 +32,8 @@ import java.util.List;
 @Tag(name = "User", description = "User API")
 public class UserProfileApi {
 
-    private final AppVersionService appVersionService;
     private final UserProfileService userProfileService;
+    private final AppVersionService appVersionService;
     private final SystemCheckService systemCheckService;
 
     @GetMapping
@@ -53,6 +54,17 @@ public class UserProfileApi {
     public ApiResponse<Boolean> isAvailableNickname(@RequestParam("nickname") String nickname) {
         boolean isAvailable = userProfileService.isAvailableNickname(nickname);
         return ApiUtils.success(isAvailable);
+    }
+
+    @PostMapping("/profile-badge")
+    @Operation(summary = "프로필 뱃지 설정", description = "사용자 프로필 뱃지를 설정합니다.")
+    public ApiResponse<Void> setProfileBadge(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                             @RequestBody @Valid ProfileBadgeRequest request) {
+        BadgeType badgeType = BadgeType.fromString(request.getProfileBadge())
+                .orElseThrow(BadgeTypeNotFoundException::new);
+
+        userProfileService.setProfileBadge(userDetails.getUser(), badgeType);
+        return ApiUtils.success(null);
     }
 
     @GetMapping("/notification")

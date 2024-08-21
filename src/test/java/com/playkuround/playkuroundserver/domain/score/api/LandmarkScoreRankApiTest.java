@@ -250,13 +250,13 @@ class LandmarkScoreRankApiTest {
         }
         {
             User user1 = TestUtil.createUser("user1@konkuk.ac.kr", "user1", Major.건축학부);
-            user1.updateRepresentBadge(BadgeType.ATTENDANCE_1);
+            user1.updateProfileBadge(BadgeType.ATTENDANCE_1);
             userRepository.save(user1);
             adventureRepository.save(new Adventure(user1, landmark, ScoreType.CATCH, 5L));
         }
         {
             User user2 = TestUtil.createUser("user2@konkuk.ac.kr", "user2", Major.컴퓨터공학부);
-            user2.updateRepresentBadge(BadgeType.MONTHLY_RANKING_1);
+            user2.updateProfileBadge(BadgeType.MONTHLY_RANKING_1);
             userRepository.save(user2);
             adventureRepository.save(new Adventure(user2, landmark, ScoreType.CATCH, 15L));
         }
@@ -272,7 +272,7 @@ class LandmarkScoreRankApiTest {
 
         // then
         assertThat(response.getRank()).hasSize(3)
-                .extracting("nickname", "badgeType", "score")
+                .extracting("nickname", "profileBadge", "score")
                 .containsExactly(
                         tuple("user2", BadgeType.MONTHLY_RANKING_1.name(), 15),
                         tuple("tester", BadgeType.COLLEGE_OF_ENGINEERING.name(), 10),
@@ -280,6 +280,6 @@ class LandmarkScoreRankApiTest {
                 );
         assertThat(response.getMyRank().getScore()).isEqualTo(10);
         assertThat(response.getMyRank().getRanking()).isEqualTo(2);
-        assertThat(response.getMyRank().getBadgeType()).isEqualTo(BadgeType.COLLEGE_OF_ENGINEERING.name());
+        assertThat(response.getMyRank().getProfileBadge()).isEqualTo(BadgeType.COLLEGE_OF_ENGINEERING.name());
     }
 }

@@ -35,7 +35,7 @@ public class ScoreRankingResponse {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class RankList {
         private String nickname;
-        private String badgeType;
+        private String profileBadge;
         private int score;
     }
 
@@ -45,6 +45,6 @@ public class ScoreRankingResponse {
     public static class MyRank {
         private int ranking;
         private int score;
-        private String badgeType;
+        private String profileBadge;
     }
 }

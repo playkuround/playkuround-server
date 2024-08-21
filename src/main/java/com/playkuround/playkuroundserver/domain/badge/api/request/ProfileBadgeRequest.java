@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class RepresentationBadgeRequest {
+public class ProfileBadgeRequest {
 
     @ValidEnum(enumClass = BadgeType.class, message = "잘못된 badge type 입니다.")
-    @Schema(description = "설정할 뱃지 타입", example = "ATTENDANCE_CHILDREN_DAY", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String badgeType;
+    @Schema(description = "설정할 뱃지 이름", example = "ATTENDANCE_CHILDREN_DAY", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String profileBadge;
 
 }

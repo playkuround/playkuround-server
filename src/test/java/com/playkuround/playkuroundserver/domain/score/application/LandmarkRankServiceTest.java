@@ -165,7 +165,7 @@ class LandmarkRankServiceTest {
                 .thenReturn(rankData);
 
         User user = TestUtil.createUser();
-        user.updateRepresentBadge(BadgeType.ATTENDANCE_CHRISTMAS_DAY);
+        user.updateProfileBadge(BadgeType.ATTENDANCE_CHRISTMAS_DAY);
         when(adventureRepository.findMyRankByLandmarkId(user, landmarkId, now.atStartOfDay()))
                 .thenReturn(Optional.of(new RankAndScore(2, 7)));
 
@@ -175,13 +175,13 @@ class LandmarkRankServiceTest {
 
         // then
         assertThat(result.getRank()).hasSize(2)
-                .extracting("nickname", "badgeType", "score")
+                .extracting("nickname", "profileBadge", "score")
                 .containsExactly(
                         tuple("user1", BadgeType.ATTENDANCE_1.name(), 10),
                         tuple("user2", BadgeType.MONTHLY_RANKING_1.name(), 5)
                 );
         assertThat(result.getMyRank().getScore()).isEqualTo(7);
         assertThat(result.getMyRank().getRanking()).isEqualTo(2);
-        assertThat(result.getMyRank().getBadgeType()).isEqualTo(BadgeType.ATTENDANCE_CHRISTMAS_DAY.name());
+        assertThat(result.getMyRank().getProfileBadge()).isEqualTo(BadgeType.ATTENDANCE_CHRISTMAS_DAY.name());
     }
 }

@@ -25,7 +25,7 @@ public class WithMockCustomUserSecurityContextFactory implements WithSecurityCon
 
     public SecurityContext createSecurityContext(WithMockCustomUser annotation) {
         User user = User.create(annotation.email(), annotation.nickname(), annotation.major(), annotation.role());
-        user.updateRepresentBadge(annotation.badgeType());
+        user.updateProfileBadge(annotation.badgeType());
         userRepository.save(user);
 
         String roleName = user.getRole().toString();

@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public interface AdventureRepository extends JpaRepository<Adventure, Long> {
 
-    @Query("SELECT new com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScoreAndBadgeType(a.user.nickname, cast(SUM(a.score) as integer), a.user.representBadge) " +
+    @Query("SELECT new com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScoreAndBadgeType(a.user.nickname, cast(SUM(a.score) as integer), a.user.profileBadge) " +
             "FROM Adventure a " +
             "where a.landmark.id=:landmark AND a.createdAt >= :from " +
             "GROUP BY a.user.id " +

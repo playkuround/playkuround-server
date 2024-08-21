@@ -30,7 +30,7 @@ public class LandmarkScoreService {
         LandmarkHighestScoreUser highestScoreUser = new LandmarkHighestScoreUser(
                 landmark.getHighestScore(),
                 firstUser.getNickname(),
-                firstUser.getRepresentBadge()
+                firstUser.getProfileBadge()
         );
         return Optional.of(highestScoreUser);
     }

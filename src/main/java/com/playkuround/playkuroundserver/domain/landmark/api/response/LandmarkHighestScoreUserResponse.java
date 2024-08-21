@@ -19,8 +19,8 @@ public class LandmarkHighestScoreUserResponse {
     @Schema(description = "최고 점수", example = "294")
     private Long score;
 
-    @Schema(description = "해당 사용자의 뱃지타입", example = "COLLEGE_OF_ENGINEERING")
-    private String badgeType;
+    @Schema(description = "해당 사용자의 프로필 뱃지", example = "COLLEGE_OF_ENGINEERING")
+    private String profileBadge;
 
     public static LandmarkHighestScoreUserResponse from(LandmarkHighestScoreUser firstUserData) {
         String badgeTypeName = firstUserData.badgeType() == null ? null : firstUserData.badgeType().name();

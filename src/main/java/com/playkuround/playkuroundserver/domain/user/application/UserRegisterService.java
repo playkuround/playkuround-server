@@ -38,7 +38,7 @@ public class UserRegisterService {
         Badge badge = new Badge(user, collageBadgeType);
         badgeRepository.save(badge);
 
-        user.updateRepresentBadge(collageBadgeType);
+        user.updateProfileBadge(collageBadgeType);
 
         return userLoginService.login(user.getEmail());
     }

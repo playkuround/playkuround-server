@@ -200,9 +200,9 @@ class TotalScoreServiceTest {
         User user2 = TestUtil.createUser("user2@konkuk.ac.kr", "user2", Major.건축학부);
         User user3 = TestUtil.createUser("user3@konkuk.ac.kr", "user3", Major.컴퓨터공학부);
 
-        user1.updateRepresentBadge(BadgeType.ATTENDANCE_CHRISTMAS_DAY);
-        user2.updateRepresentBadge(BadgeType.MONTHLY_RANKING_1);
-        user3.updateRepresentBadge(BadgeType.ATTENDANCE_1);
+        user1.updateProfileBadge(BadgeType.ATTENDANCE_CHRISTMAS_DAY);
+        user2.updateProfileBadge(BadgeType.MONTHLY_RANKING_1);
+        user3.updateProfileBadge(BadgeType.ATTENDANCE_1);
 
         userRepository.save(user1);
         userRepository.save(user2);
@@ -217,16 +217,16 @@ class TotalScoreServiceTest {
 
         // then
         assertThat(result.getRank()).hasSize(3)
-                .extracting("nickname", "badgeType", "score")
+                .extracting("nickname", "profileBadge", "score")
                 .containsExactly(
-                        tuple(user1.getNickname(), user1.getRepresentBadge().name(), 15),
-                        tuple(user3.getNickname(), user3.getRepresentBadge().name(), 10),
-                        tuple(user2.getNickname(), user2.getRepresentBadge().name(), 5)
+                        tuple(user1.getNickname(), user1.getProfileBadge().name(), 15),
+                        tuple(user3.getNickname(), user3.getProfileBadge().name(), 10),
+                        tuple(user2.getNickname(), user2.getProfileBadge().name(), 5)
 
                 );
         assertThat(result.getMyRank().getScore()).isEqualTo(15);
         assertThat(result.getMyRank().getRanking()).isEqualTo(1);
-        assertThat(result.getMyRank().getBadgeType()).isEqualTo(user1.getRepresentBadge().name());
+        assertThat(result.getMyRank().getProfileBadge()).isEqualTo(user1.getProfileBadge().name());
     }
 
 }

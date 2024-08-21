@@ -53,7 +53,7 @@ public class TotalScoreService {
         ScoreRankingResponse response = scoreRankService.createScoreRankingResponse(emailBindingNickname);
 
         RankAndScore myRank = getMyRank(user);
-        response.setMyRank(myRank.ranking(), myRank.score(), user.getRepresentBadge());
+        response.setMyRank(myRank.ranking(), myRank.score(), user.getProfileBadge());
 
         return response;
     }

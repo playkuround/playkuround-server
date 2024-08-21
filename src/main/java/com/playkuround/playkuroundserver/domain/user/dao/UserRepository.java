@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-    @Query("select new com.playkuround.playkuroundserver.domain.user.dto.EmailAndNicknameAndBadge(u.email, u.nickname, u.representBadge) " +
+    @Query("select new com.playkuround.playkuroundserver.domain.user.dto.EmailAndNicknameAndBadge(u.email, u.nickname, u.profileBadge) " +
             "from User u " +
             "where u.email in :emails")
     List<EmailAndNicknameAndBadge> findNicknameByEmailIn(List<String> emails);

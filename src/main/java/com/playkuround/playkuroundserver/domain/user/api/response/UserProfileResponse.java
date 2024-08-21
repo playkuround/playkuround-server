@@ -21,17 +21,17 @@ public class UserProfileResponse {
     @Schema(description = "학과", example = "컴퓨터공학부", requiredMode = RequiredMode.REQUIRED)
     private String major;
 
-    @Schema(description = "자신의 토탈 스코어 최고점(점수가 없다면 null 리턴)", example = "1500", requiredMode = RequiredMode.REQUIRED)
+    @Schema(description = "자신의 토탈 스코어 최고점(점수가 없다면 null 리턴)", example = "1500")
     private Long highestScore;
 
-    @Schema(description = "자신의 토탈 등수 최고점(등수가 없다면 null 리턴)", example = "13", requiredMode = RequiredMode.REQUIRED)
+    @Schema(description = "자신의 토탈 등수 최고점(등수가 없다면 null 리턴)", example = "13")
     private Long highestRank;
 
     @Schema(description = "출석한 횟수", example = "28", requiredMode = RequiredMode.REQUIRED)
     private int attendanceDays;
 
-    @Schema(description = "대표 뱃지(대표 뱃지가 없다면 null 리턴)", example = "MONTHLY_RANKING_1", requiredMode = RequiredMode.REQUIRED)
-    private String badge;
+    @Schema(description = "프로필 뱃지(프로필 뱃지가 없다면 null 리턴)", example = "MONTHLY_RANKING_1")
+    private String profileBadge;
 
     public static UserProfileResponse from(User user) {
         return UserProfileResponse.builder()
@@ -41,7 +41,7 @@ public class UserProfileResponse {
                 .attendanceDays(user.getAttendanceDays())
                 .highestScore(user.getHighestScore() == null ? null : user.getHighestScore().getHighestTotalScore())
                 .highestRank(user.getHighestScore() == null ? null : user.getHighestScore().getHighestTotalRank())
-                .badge(user.getRepresentBadge() == null ? null : user.getRepresentBadge().name())
+                .profileBadge(user.getProfileBadge() == null ? null : user.getProfileBadge().name())
                 .build();
     }
 }

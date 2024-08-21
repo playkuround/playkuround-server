@@ -31,8 +31,8 @@ public class LandmarkApi {
     @Operation(summary = "가장 가까운 랜드마크 찾기",
             description = "인식 반경 내에 있는 랜드마크 중 가장 가까운 랜드마크를 반환합니다. " +
                     "인식 반경에 랜드마크가 없을 경우 아무것도 반환하지 않습니다.")
-    public ApiResponse<NearestLandmarkResponse> LandmarkFindNear(@RequestParam @Latitude Double latitude,
-                                                                 @RequestParam @Longitude Double longitude) {
+    public ApiResponse<NearestLandmarkResponse> findNearestLandmark(@RequestParam @Latitude Double latitude,
+                                                                    @RequestParam @Longitude Double longitude) {
         Location location = new Location(latitude, longitude);
         NearestLandmark nearestLandmark = landmarkFindNearService.findNearestLandmark(location);
         return ApiUtils.success(NearestLandmarkResponse.from(nearestLandmark));

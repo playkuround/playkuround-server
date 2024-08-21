@@ -1,17 +1,13 @@
 package com.playkuround.playkuroundserver.domain.badge.api;
 
-import com.playkuround.playkuroundserver.domain.badge.api.request.RepresentationBadgeRequest;
 import com.playkuround.playkuroundserver.domain.badge.api.response.BadgeFindResponse;
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
-import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.domain.badge.exception.BadgeTypeNotFoundException;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,17 +38,6 @@ public class BadgeApi {
     public ApiResponse<Boolean> saveTheDreamOfDuckBadge(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         boolean response = badgeService.saveTheDreamOfDuckBadge(userDetails.getUser());
         return ApiUtils.success(response);
-    }
-
-    @PostMapping("/representation")
-    @Operation(summary = "대표 뱃지 설정", description = "사용자를 대표하는 뱃지를 설정합니다.")
-    public ApiResponse<Void> setRepresentationBadge(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                    @RequestBody @Valid RepresentationBadgeRequest request) {
-        BadgeType badgeType = BadgeType.fromString(request.getBadgeType())
-                .orElseThrow(BadgeTypeNotFoundException::new);
-
-        badgeService.representationBadge(userDetails.getUser(), badgeType);
-        return ApiUtils.success(null);
     }
 
 }

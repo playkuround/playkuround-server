@@ -93,7 +93,7 @@ class LandmarkApiTest {
         void success_1() throws Exception {
             // given
             User user = userRepository.findAll().get(0);
-            user.updateRepresentBadge(BadgeType.ATTENDANCE_50);
+            user.updateProfileBadge(BadgeType.ATTENDANCE_50);
             userRepository.save(user);
 
             Landmark landmark = landmarkRepository.findById(1L).get();
@@ -105,7 +105,7 @@ class LandmarkApiTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.response.score").value(1000))
                     .andExpect(jsonPath("$.response.nickname").value(user.getNickname()))
-                    .andExpect(jsonPath("$.response.badgeType").value(user.getRepresentBadge().name()))
+                    .andExpect(jsonPath("$.response.profileBadge").value(user.getProfileBadge().name()))
                     .andDo(print());
 
             // tear down

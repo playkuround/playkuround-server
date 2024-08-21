@@ -32,7 +32,7 @@ public class LandmarkRankService {
 
         RankAndScore rankAndScore = adventureRepository.findMyRankByLandmarkId(user, landmarkId, monthStartDateTime)
                 .orElseGet(() -> new RankAndScore(0, 0));
-        response.setMyRank(rankAndScore.ranking(), rankAndScore.score(), user.getRepresentBadge());
+        response.setMyRank(rankAndScore.ranking(), rankAndScore.score(), user.getProfileBadge());
         return response;
     }
 }

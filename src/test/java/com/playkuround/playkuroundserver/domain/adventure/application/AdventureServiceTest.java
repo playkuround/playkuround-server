@@ -7,9 +7,9 @@ import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
-import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
+import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFoundException;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -21,7 +21,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,22 +28,27 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 
 @IntegrationServiceTest
-@Sql(scripts = {"/data-mysql.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class AdventureServiceTest {
 
-    private final String redisSetKey = "ranking";
     @Autowired
     private BadgeRepository badgeRepository;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private AdventureRepository adventureRepository;
+
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+
     @Autowired
     private LandmarkRepository landmarkRepository;
+
     @Autowired
     private AdventureService adventureService;
+
+    private final String redisSetKey = "ranking";
 
     @AfterEach
     void clean() {
@@ -61,12 +65,14 @@ class AdventureServiceTest {
         // given
         User user = TestUtil.createUser();
 
-        Landmark landmark = landmarkRepository.findById(3L).get();
+        Landmark landmark = new Landmark(LandmarkType.경영관, 37.541, 127.079, 100);
+        landmarkRepository.save(landmark);
+
         Location location = new Location(landmark.getLatitude(), landmark.getLongitude());
         AdventureSaveDto adventureSaveDto = new AdventureSaveDto(user, landmark.getId(), location, 100, ScoreType.BOOK);
 
         // when
-        NewlyRegisteredBadge newlyRegisteredBadge = adventureService.saveAdventure(adventureSaveDto);
+        adventureService.saveAdventure(adventureSaveDto);
 
         // then
         // Total Score 저장 및 최고 점수 갱신
@@ -95,7 +101,9 @@ class AdventureServiceTest {
         // given
         User user = TestUtil.createUser();
 
-        Landmark landmark = landmarkRepository.findById(3L).get();
+        Landmark landmark = new Landmark(LandmarkType.경영관, 37.541, 127.079, 100);
+        landmarkRepository.save(landmark);
+
         Location location = new Location(landmark.getLatitude(), landmark.getLongitude());
         AdventureSaveDto adventureSaveDto = new AdventureSaveDto(user, -1L, location, 100, ScoreType.BOOK);
 
@@ -114,7 +122,9 @@ class AdventureServiceTest {
         // given
         User user = TestUtil.createUser();
 
-        Landmark landmark = landmarkRepository.findById(3L).get();
+        Landmark landmark = new Landmark(LandmarkType.경영관, 37.541, 127.079, 100);
+        landmarkRepository.save(landmark);
+
         Location location = new Location(0, 0);
         AdventureSaveDto adventureSaveDto = new AdventureSaveDto(user, landmark.getId(), location, 100, ScoreType.BOOK);
 
@@ -132,19 +142,20 @@ class AdventureServiceTest {
     void saveAdventure_4() {
         // given
         User user = TestUtil.createUser();
+
         User otherUser = TestUtil.createUser("other@test.com", "other", Major.건축학부);
         userRepository.saveAll(List.of(user, otherUser));
 
         long highestScore = 1000;
-        Landmark landmark = landmarkRepository.findById(3L).get();
+        Landmark landmark = new Landmark(LandmarkType.경영관, 37.541, 127.079, 100);
         landmark.updateFirstUser(otherUser, highestScore);
-        landmarkRepository.save(landmark); // update
+        landmarkRepository.save(landmark);
 
         Location location = new Location(landmark.getLatitude(), landmark.getLongitude());
         AdventureSaveDto adventureSaveDto = new AdventureSaveDto(user, landmark.getId(), location, 100, ScoreType.BOOK);
 
         // when
-        NewlyRegisteredBadge newlyRegisteredBadge = adventureService.saveAdventure(adventureSaveDto);
+        adventureService.saveAdventure(adventureSaveDto);
 
         // then
         Optional<Landmark> optionalLandmark = landmarkRepository.findById(landmark.getId());

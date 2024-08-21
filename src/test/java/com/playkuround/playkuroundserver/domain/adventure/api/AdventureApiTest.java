@@ -9,6 +9,7 @@ import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
+import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -20,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -34,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @IntegrationControllerTest
-@Sql(scripts = {"/data-mysql.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class AdventureApiTest {
 
     @Autowired
@@ -74,7 +73,8 @@ class AdventureApiTest {
     @DisplayName("탐험을 하게 되면 total score 증가, adventure 저장, 랜드마크별 최고기록과 유저별 게임 최고기록이 업데이트 된다.")
     void saveAdventure_1() throws Exception {
         // given
-        Landmark landmark = landmarkRepository.findById(3L).get();
+        Landmark landmark = new Landmark(LandmarkType.수의학관, 37.541, 127.079, 100);
+        landmarkRepository.save(landmark);
 
         AdventureSaveRequest adventureSaveRequest
                 = new AdventureSaveRequest(landmark.getId(), landmark.getLatitude(), landmark.getLongitude(), 100L, ScoreType.BOOK.name());
@@ -116,7 +116,8 @@ class AdventureApiTest {
     @DisplayName("랜드마크가 존재하지 않으면 에러가 발생한다.")
     void saveAdventure_2() throws Exception {
         // given
-        Landmark landmark = landmarkRepository.findById(3L).get();
+        Landmark landmark = new Landmark(LandmarkType.경영관, 37.541, 127.079, 100);
+        landmarkRepository.save(landmark);
 
         AdventureSaveRequest adventureSaveRequest
                 = new AdventureSaveRequest(-1L, landmark.getLatitude(), landmark.getLongitude(), 100L, ScoreType.BOOK.name());
@@ -141,7 +142,8 @@ class AdventureApiTest {
     @DisplayName("인식 거리 밖에 있으면 에러가 발생한다.")
     void saveAdventure_3() throws Exception {
         // given
-        Landmark landmark = landmarkRepository.findById(3L).get();
+        Landmark landmark = new Landmark(LandmarkType.경영관, 37.541, 127.079, 100);
+        landmarkRepository.save(landmark);
 
         AdventureSaveRequest adventureSaveRequest
                 = new AdventureSaveRequest(landmark.getId(), 0.0, 0.0, 100L, ScoreType.BOOK.name());
@@ -167,7 +169,8 @@ class AdventureApiTest {
     @DisplayName("정상적인 ScoreType이 아니면 에러가 발생한다.")
     void saveAdventure_4() throws Exception {
         // given
-        Landmark landmark = landmarkRepository.findById(3L).get();
+        Landmark landmark = new Landmark(LandmarkType.경영관, 37.541, 127.079, 100);
+        landmarkRepository.save(landmark);
 
         AdventureSaveRequest adventureSaveRequest
                 = new AdventureSaveRequest(landmark.getId(), landmark.getLatitude(), landmark.getLongitude(), 100L, "notFound");

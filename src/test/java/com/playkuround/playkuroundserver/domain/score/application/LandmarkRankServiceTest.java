@@ -2,10 +2,11 @@ package com.playkuround.playkuroundserver.domain.score.application;
 
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
-import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScore;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScoreAndBadgeType;
 import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
-import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +40,7 @@ class LandmarkRankServiceTest {
 
     @Test
     @DisplayName("랭킹 유저가 한명도 없을 때")
-    void getRankTop100ByLandmark1() {
+    void getRankTop100ByLandmark_1() {
         // given
         when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(List.of());
@@ -53,16 +55,16 @@ class LandmarkRankServiceTest {
 
         // then
         assertThat(result.getRank()).isEmpty();
-        assertThat(result.getMyRank().getRanking()).isEqualTo(0);
-        assertThat(result.getMyRank().getScore()).isEqualTo(0);
+        assertThat(result.getMyRank().getRanking()).isZero();
+        assertThat(result.getMyRank().getScore()).isZero();
     }
 
     @Test
     @DisplayName("전체 유저 100명 미만 + 내 랭킹은 없음")
-    void getRankTop100ByLandmark2() {
+    void getRankTop100ByLandmark_2() {
         // given
-        List<NicknameAndScore> nicknameAndScores = IntStream.rangeClosed(1, 50)
-                .mapToObj(i -> new NicknameAndScore("nickname" + (51 - i), 51 - i))
+        List<NicknameAndScoreAndBadgeType> nicknameAndScores = IntStream.rangeClosed(1, 50)
+                .mapToObj(i -> new NicknameAndScoreAndBadgeType("nickname" + (51 - i), 51 - i, null))
                 .toList();
         when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(nicknameAndScores);
@@ -83,16 +85,16 @@ class LandmarkRankServiceTest {
             assertThat(rankList.get(50 - i).getScore()).isEqualTo(i);
         }
 
-        assertThat(result.getMyRank().getRanking()).isEqualTo(0);
-        assertThat(result.getMyRank().getScore()).isEqualTo(0);
+        assertThat(result.getMyRank().getRanking()).isZero();
+        assertThat(result.getMyRank().getScore()).isZero();
     }
 
     @Test
     @DisplayName("전체 유저 100명 미만 + 내 랭킹 존재")
-    void getRankTop100ByLandmark3() {
+    void getRankTop100ByLandmark_3() {
         // given
-        List<NicknameAndScore> nicknameAndScores = IntStream.rangeClosed(1, 50)
-                .mapToObj(i -> new NicknameAndScore("nickname" + (51 - i), 51 - i))
+        List<NicknameAndScoreAndBadgeType> nicknameAndScores = IntStream.rangeClosed(1, 50)
+                .mapToObj(i -> new NicknameAndScoreAndBadgeType("nickname" + (51 - i), 51 - i, null))
                 .toList();
         when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(nicknameAndScores);
@@ -118,10 +120,10 @@ class LandmarkRankServiceTest {
 
     @Test
     @DisplayName("전체 유저 100명 초과 + 내 랭킹 중간에 존재")
-    void getRankTop100ByLandmark4() {
+    void getRankTop100ByLandmark_4() {
         // given
-        List<NicknameAndScore> nicknameAndScores = IntStream.rangeClosed(1, 101)
-                .mapToObj(i -> new NicknameAndScore("nickname" + (102 - i), 102 - i))
+        List<NicknameAndScoreAndBadgeType> nicknameAndScores = IntStream.rangeClosed(1, 101)
+                .mapToObj(i -> new NicknameAndScoreAndBadgeType("nickname" + (102 - i), 102 - i, null))
                 .toList();
         when(adventureRepository.findRankTop100DescByLandmarkId(any(Long.class), any(LocalDateTime.class)))
                 .thenReturn(nicknameAndScores);
@@ -143,5 +145,43 @@ class LandmarkRankServiceTest {
         }
         assertThat(result.getMyRank().getScore()).isEqualTo(62);
         assertThat(result.getMyRank().getRanking()).isEqualTo(40);
+    }
+
+    @Test
+    @DisplayName("랜드마크 랭킹 조회 결과에는 사용자 프로필 뱃지 데이터가 포함되어 있다.")
+    void getRankTop100ByLandmark_5() {
+        // given
+        LocalDate now = LocalDate.of(2024, 7, 1);
+        when(dateTimeService.getLocalDateNow())
+                .thenReturn(now);
+
+        List<NicknameAndScoreAndBadgeType> rankData = List.of(
+                new NicknameAndScoreAndBadgeType("user1", 10, BadgeType.ATTENDANCE_1),
+                new NicknameAndScoreAndBadgeType("user2", 5, BadgeType.MONTHLY_RANKING_1)
+        );
+
+        Long landmarkId = 1L;
+        when(adventureRepository.findRankTop100DescByLandmarkId(landmarkId, now.atStartOfDay()))
+                .thenReturn(rankData);
+
+        User user = TestUtil.createUser();
+        user.updateRepresentBadge(BadgeType.ATTENDANCE_CHRISTMAS_DAY);
+        when(adventureRepository.findMyRankByLandmarkId(user, landmarkId, now.atStartOfDay()))
+                .thenReturn(Optional.of(new RankAndScore(2, 7)));
+
+
+        // when
+        ScoreRankingResponse result = landmarkRankService.getRankTop100ByLandmark(user, landmarkId);
+
+        // then
+        assertThat(result.getRank()).hasSize(2)
+                .extracting("nickname", "badgeType", "score")
+                .containsExactly(
+                        tuple("user1", BadgeType.ATTENDANCE_1.name(), 10),
+                        tuple("user2", BadgeType.MONTHLY_RANKING_1.name(), 5)
+                );
+        assertThat(result.getMyRank().getScore()).isEqualTo(7);
+        assertThat(result.getMyRank().getRanking()).isEqualTo(2);
+        assertThat(result.getMyRank().getBadgeType()).isEqualTo(BadgeType.ATTENDANCE_CHRISTMAS_DAY.name());
     }
 }

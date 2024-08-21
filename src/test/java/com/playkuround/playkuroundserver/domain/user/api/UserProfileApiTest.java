@@ -5,6 +5,7 @@ import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.appversion.dao.AppVersionRepository;
 import com.playkuround.playkuroundserver.domain.appversion.domain.AppVersion;
 import com.playkuround.playkuroundserver.domain.appversion.domain.OperationSystem;
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.systemcheck.dao.SystemCheckRepository;
 import com.playkuround.playkuroundserver.domain.systemcheck.domain.SystemCheck;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -57,6 +58,7 @@ class UserProfileApiTest {
                 .andExpect(jsonPath("$.response.major").value(Major.컴퓨터공학부.name()))
                 .andExpect(jsonPath("$.response.nickname").value("tester"))
                 .andExpect(jsonPath("$.response.email").value("tester@konkuk.ac.kr"))
+                .andExpect(jsonPath("$.response.badge").value(BadgeType.COLLEGE_OF_ENGINEERING.name()))
                 .andDo(print());
     }
 

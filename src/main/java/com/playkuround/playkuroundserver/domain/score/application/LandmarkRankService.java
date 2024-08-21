@@ -2,9 +2,9 @@ package com.playkuround.playkuroundserver.domain.score.application;
 
 import com.playkuround.playkuroundserver.domain.adventure.dao.AdventureRepository;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
-import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScore;
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScoreAndBadgeType;
 import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
-import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +26,13 @@ public class LandmarkRankService {
         ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
         LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime(dateTimeService.getLocalDateNow());
 
-        List<NicknameAndScore> nicknameAndScores = adventureRepository.findRankTop100DescByLandmarkId(landmarkId, monthStartDateTime);
+        List<NicknameAndScoreAndBadgeType> nicknameAndScores = adventureRepository.findRankTop100DescByLandmarkId(landmarkId, monthStartDateTime);
         nicknameAndScores.forEach(nicknameAndScore ->
-                response.addRank(nicknameAndScore.nickname(), nicknameAndScore.score()));
+                response.addRank(nicknameAndScore.nickname(), nicknameAndScore.score(), nicknameAndScore.badgeType()));
 
         RankAndScore rankAndScore = adventureRepository.findMyRankByLandmarkId(user, landmarkId, monthStartDateTime)
                 .orElseGet(() -> new RankAndScore(0, 0));
-        response.setMyRank(rankAndScore.ranking(), rankAndScore.score());
+        response.setMyRank(rankAndScore.ranking(), rankAndScore.score(), user.getRepresentBadge());
         return response;
     }
 }

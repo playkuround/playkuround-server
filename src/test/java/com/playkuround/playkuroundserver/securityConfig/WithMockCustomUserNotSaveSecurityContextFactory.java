@@ -1,9 +1,7 @@
 package com.playkuround.playkuroundserver.securityConfig;
 
-import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,16 +16,11 @@ import java.util.Collection;
 import java.util.List;
 
 @Component
-public class WithMockCustomUserSecurityContextFactory implements WithSecurityContextFactory<WithMockCustomUser> {
+public class WithMockCustomUserNotSaveSecurityContextFactory
+        implements WithSecurityContextFactory<WithMockCustomUserNotSave> {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    public SecurityContext createSecurityContext(WithMockCustomUser annotation) {
+    public SecurityContext createSecurityContext(WithMockCustomUserNotSave annotation) {
         User user = User.create(annotation.email(), annotation.nickname(), annotation.major(), annotation.role());
-        user.updateRepresentBadge(annotation.badgeType());
-        userRepository.save(user);
-
         String roleName = user.getRole().toString();
         List<String> role = Arrays.stream(roleName.split(",")).toList();
         UserDetailsImpl userDetails = new UserDetailsImpl(user, "", role);

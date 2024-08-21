@@ -3,6 +3,12 @@ package com.playkuround.playkuroundserver.domain.badge.domain;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toMap;
+
 @Getter
 @RequiredArgsConstructor
 public enum BadgeType {
@@ -21,6 +27,12 @@ public enum BadgeType {
     ATTENDANCE_CHILDREN_DAY("05월 05일 어린이날에 출석"),
     ATTENDANCE_WHITE_DAY("03월 14일 화이트데이에 출석"),
     ATTENDANCE_DUCK_DAY("05월 02일 오리데이에 출석"),
+    // 가을학기 추가 뱃지
+    ATTENDANCE_CHUSEOK_DAY("09월 17일 추석날에 출석"),
+    ATTENDANCE_KOREAN_DAY("10월 09일 한글날에 출석"),
+    ATTENDANCE_DOKDO_DAY("10월 25일 독도의 날에 출석"),
+    ATTENDANCE_KIMCHI_DAY("11월 22일 김치의 날에 출석"),
+    ATTENDANCE_CHRISTMAS_DAY("12월 25일 성탄절에 출석"),
 
     // 대학별
     COLLEGE_OF_LIBERAL_ARTS("문과대학 1회 이상 탐험"),
@@ -35,6 +47,8 @@ public enum BadgeType {
     COLLEGE_OF_VETERINARY_MEDICINE("수의과대학 1회 이상 탐험"),
     COLLEGE_OF_ART_AND_DESIGN("예술디자인대학 1회 이상 탐험"),
     COLLEGE_OF_EDUCATION("사범대학 1회 이상 탐험"),
+    COLLEGE_OF_SANG_HUH("산학협동관 1회 이상 탐험"),
+    COLLEGE_OF_INTERNATIONAL("법학관 1회 이상 탐험"),
 
     // 경영대 특별
     COLLEGE_OF_BUSINESS_ADMINISTRATION_10("경영대학 10회 이상 탐험"),
@@ -60,8 +74,16 @@ public enum BadgeType {
     MONTHLY_RANKING_1("월간 랭킹 1등"), // 수동
     MONTHLY_RANKING_2("월간 랭킹 2등"), // 수동
     MONTHLY_RANKING_3("월간 랭킹 3등"), // 수동
-
     ;
 
     private final String description;
+
+    private static final Map<String, BadgeType> stringToEnum =
+            Stream.of(values())
+                    .collect(toMap(Object::toString, e -> e));
+
+    public static Optional<BadgeType> fromString(String source) {
+        return Optional.ofNullable(stringToEnum.get(source));
+    }
+
 }

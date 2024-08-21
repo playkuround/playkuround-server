@@ -7,7 +7,7 @@ import java.util.List;
 public class CollegeBadgeList {
 
     @Getter
-    private final static List<CollegeBadge> collegeBadges = List.of(
+    private static final List<CollegeBadge> collegeBadges = List.of(
             new LiberalArtsBadge(),
             new AdministrationBadge(),
             new EducationBadge(),
@@ -19,7 +19,9 @@ public class CollegeBadgeList {
             new VeterinaryMedicineBadge(),
             new BiologicalSciencesBadge(),
             new ArchitectureBadge(),
-            new InstituteTechnologyBadge()
+            new InstituteTechnologyBadge(),
+            new SangHuhBadge(),
+            new InternationalBadge()
     );
 
     private CollegeBadgeList() {

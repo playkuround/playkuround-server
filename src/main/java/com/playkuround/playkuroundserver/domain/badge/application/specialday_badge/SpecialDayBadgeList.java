@@ -7,12 +7,17 @@ import java.util.List;
 public class SpecialDayBadgeList {
 
     @Getter
-    private final static List<SpecialDayBadge> specialDayBadges = List.of(
+    private static final List<SpecialDayBadge> specialDayBadges = List.of(
             new FoundationDayBadge(),
             new ArborDayBadge(),
             new ChildrenDayBadge(),
             new DuckDayBadge(),
-            new WhiteDayBadge()
+            new WhiteDayBadge(),
+            new ChuseokDayBadge(),
+            new KoreanDayBadge(),
+            new DokdoDayBadge(),
+            new KimchiDayBadge(),
+            new ChristmasDayBadge()
     );
 
     private SpecialDayBadgeList() {

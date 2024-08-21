@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/landmarks")
 @RequiredArgsConstructor
@@ -41,7 +43,9 @@ public class LandmarkApi {
             description = "해당 랜드마크에서 가장 높은 점수를 획득한 사용자를 반환합니다. " +
                     "방문한 유저가 한명도 없으면 아무것도 반환하지 않습니다. 점수가 같은 유저가 있다면 먼저 해당 점수를 달성한 유저를 반환합니다.")
     public ApiResponse<LandmarkHighestScoreUserResponse> findHighestUserByLandmark(@PathVariable Long landmarkId) {
-        LandmarkHighestScoreUser highestScoreUserByLandmark = landmarkScoreService.findHighestScoreUserByLandmark(landmarkId);
-        return ApiUtils.success(LandmarkHighestScoreUserResponse.from(highestScoreUserByLandmark));
+        Optional<LandmarkHighestScoreUser> highestScoreUser = landmarkScoreService.findHighestScoreUserByLandmark(landmarkId);
+        return highestScoreUser
+                .map(user -> ApiUtils.success(LandmarkHighestScoreUserResponse.from(user)))
+                .orElseGet(() -> ApiUtils.success(LandmarkHighestScoreUserResponse.createEmptyResponse()));
     }
 }

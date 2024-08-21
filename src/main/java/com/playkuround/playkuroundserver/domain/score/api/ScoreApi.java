@@ -1,8 +1,8 @@
 package com.playkuround.playkuroundserver.domain.score.api;
 
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.score.application.LandmarkRankService;
 import com.playkuround.playkuroundserver.domain.score.application.TotalScoreService;
-import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;

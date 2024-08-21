@@ -6,6 +6,7 @@ import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
+import com.playkuround.playkuroundserver.domain.badge.exception.BadgeNotHaveException;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
@@ -38,6 +39,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -407,4 +409,39 @@ class BadgeServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("대표 뱃지 설정")
+    class representationBadge {
+
+        @Test
+        @DisplayName("사용자가 가지고 있는 뱃지는 정상적으로 대표 뱃지로 설정이 가능하다.")
+        void success_1() {
+            // given
+            User user = TestUtil.createUser();
+            BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
+            when(badgeRepository.existsByUserAndBadgeType(user, badgeType))
+                    .thenReturn(true);
+
+            // when
+            badgeService.representationBadge(user, badgeType);
+
+            // then
+            assertThat(user.getRepresentBadge()).isEqualTo(badgeType);
+        }
+
+        @Test
+        @DisplayName("사용자가 가지고 있지 않는 BadgeType이면 에러가 발생한다.")
+        void fail_1() {
+            // given
+            User user = TestUtil.createUser();
+            BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
+            when(badgeRepository.existsByUserAndBadgeType(user, badgeType))
+                    .thenReturn(false);
+
+            // expect
+            assertThatThrownBy(() -> {
+                badgeService.representationBadge(user, badgeType);
+            }).isInstanceOf(BadgeNotHaveException.class);
+        }
+    }
 }

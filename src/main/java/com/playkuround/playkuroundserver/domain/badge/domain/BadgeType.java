@@ -74,6 +74,11 @@ public enum BadgeType {
     MONTHLY_RANKING_1("월간 랭킹 1등"), // 수동
     MONTHLY_RANKING_2("월간 랭킹 2등"), // 수동
     MONTHLY_RANKING_3("월간 랭킹 3등"), // 수동
+
+    // 이벤트
+    BUSINESS_ARCHITECTURE_EVENT_BUSINESS("경영X건축 경영 뱃지"),
+    BUSINESS_ARCHITECTURE_EVENT_ARCHITECTURE("경영X건축 건축 뱃지"),
+
     ;
 
     private final String description;

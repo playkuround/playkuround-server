@@ -36,6 +36,15 @@ public class Landmark {
 
     private long highestScore;
 
+    public Landmark(LandmarkType landmarkType, double latitude, double longitude, int recognitionRadius) {
+        this.name = landmarkType;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.recognitionRadius = recognitionRadius;
+        this.firstUser = null;
+        this.highestScore = 0;
+    }
+
     public void updateFirstUser(User user, long score) {
         if (score == 0) return;
         if (firstUser == null || this.highestScore < score) {

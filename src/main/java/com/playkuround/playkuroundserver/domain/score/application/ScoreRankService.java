@@ -29,8 +29,8 @@ class ScoreRankService {
         ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
         rankDataList.forEach(rankData -> {
             NickNameAndBadge nickNameAndBadge = emailBindingData.get(rankData.email);
-            if (nickNameAndBadge.nickname() == null) {
-                throw new IllegalArgumentException("rank nickname is null");
+            if (nickNameAndBadge == null) {
+                throw new IllegalArgumentException("Not found nickname and badge for email: " + rankData.email);
             }
             response.addRank(nickNameAndBadge.nickname(), rankData.score, nickNameAndBadge.badgeType());
         });

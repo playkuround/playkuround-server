@@ -2,7 +2,10 @@ package com.playkuround.playkuroundserver.domain.event.application;
 
 import com.playkuround.playkuroundserver.domain.event.dao.EventRepository;
 import com.playkuround.playkuroundserver.domain.event.domain.Event;
+import com.playkuround.playkuroundserver.domain.event.dto.EventSaveDto;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -42,6 +45,25 @@ class EventServiceTest {
         // then
         assertThat(result).hasSize(2)
                 .containsExactlyInAnyOrderElementsOf(events);
+    }
+
+    @Test
+    @DisplayName("event 저장")
+    void saveEvent_1() {
+        // given
+        EventSaveDto eventSaveDto = new EventSaveDto("title", "imageUrl", "description", "referenceUrl", true);
+
+        // when
+        eventService.saveEvent(eventSaveDto);
+
+        // then
+        List<Event> result = eventRepository.findAll();
+        assertThat(result).hasSize(1)
+                .extracting("title", "imageUrl", "description", "referenceUrl", "display")
+                .containsExactly(
+                        Tuple.tuple(eventSaveDto.title(), eventSaveDto.imageUrl(), eventSaveDto.description(),
+                                eventSaveDto.referenceUrl(), eventSaveDto.display())
+                );
     }
 
 }

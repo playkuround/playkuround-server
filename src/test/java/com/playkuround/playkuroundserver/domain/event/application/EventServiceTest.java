@@ -3,12 +3,12 @@ package com.playkuround.playkuroundserver.domain.event.application;
 import com.playkuround.playkuroundserver.domain.event.dao.EventRepository;
 import com.playkuround.playkuroundserver.domain.event.domain.Event;
 import com.playkuround.playkuroundserver.domain.event.dto.EventSaveDto;
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EventServiceTest {
@@ -57,13 +57,12 @@ class EventServiceTest {
         eventService.saveEvent(eventSaveDto);
 
         // then
-        List<Event> result = eventRepository.findAll();
-        assertThat(result).hasSize(1)
+        ArgumentCaptor<Event> eventArgumentCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(eventRepository, times(1)).save(eventArgumentCaptor.capture());
+        assertThat(eventArgumentCaptor.getValue())
                 .extracting("title", "imageUrl", "description", "referenceUrl", "display")
-                .containsExactly(
-                        Tuple.tuple(eventSaveDto.title(), eventSaveDto.imageUrl(), eventSaveDto.description(),
-                                eventSaveDto.referenceUrl(), eventSaveDto.display())
-                );
+                .containsExactly(eventSaveDto.title(), eventSaveDto.imageUrl(), eventSaveDto.description(),
+                        eventSaveDto.referenceUrl(), eventSaveDto.display());
     }
 
 }

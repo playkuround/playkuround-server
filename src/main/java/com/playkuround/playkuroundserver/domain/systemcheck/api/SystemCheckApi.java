@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api")
 @RequiredArgsConstructor
-@Tag(name = "System Check")
+@Tag(name = "System Check", description = "Client APP에서는 호출할 필요가 없습니다.")
 public class SystemCheckApi {
 
     private final SystemCheckService systemCheckService;

@@ -48,3 +48,7 @@ application-local.yml
 
 application-dev-log.properties
 application-prod-log.properties
+
+AuthEmailSendServiceDevImpl.java
+AuthEmailVerifyServiceDevImpl.java
+DebugEmail.java

@@ -5,6 +5,7 @@ import com.playkuround.playkuroundserver.domain.auth.email.api.response.AuthEmai
 import com.playkuround.playkuroundserver.domain.auth.email.api.response.AuthVerifyEmailResponse;
 import com.playkuround.playkuroundserver.domain.auth.email.application.AuthEmailSendService;
 import com.playkuround.playkuroundserver.domain.auth.email.application.AuthEmailVerifyService;
+import com.playkuround.playkuroundserver.domain.auth.email.application.AuthEmailVerifyServiceImpl;
 import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthEmailInfo;
 import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthVerifyEmailResult;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;

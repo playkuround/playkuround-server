@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
 class AuthEmailSendServiceTest {
 
     @InjectMocks
-    private AuthEmailSendService authEmailSendService;
+    private AuthEmailSendServiceImpl authEmailSendService;
 
     @Mock
     private EmailService emailService;

@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 class AuthEmailVerifyServiceTest {
 
     @InjectMocks
-    private AuthEmailVerifyService authEmailVerifyService;
+    private AuthEmailVerifyServiceImpl authEmailVerifyService;
 
     @Mock
     private TokenService tokenService;

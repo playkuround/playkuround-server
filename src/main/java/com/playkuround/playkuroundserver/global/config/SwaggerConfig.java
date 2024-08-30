@@ -1,5 +1,6 @@
 package com.playkuround.playkuroundserver.global.config;
 
+import com.playkuround.playkuroundserver.domain.auth.token.domain.GrantType;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.models.Components;
@@ -13,25 +14,28 @@ import org.springframework.context.annotation.Profile;
 @OpenAPIDefinition(
         info = @Info(
                 title = "playkuround API 명세서",
-                description = "playkuround에 사용되는 API 명세서",
-                version = "v2"
+                version = "v2.0.7"
         )
 )
 @Configuration
 public class SwaggerConfig {
 
-    private static final String BEARER_TOKEN_PREFIX = "Bearer";
-
     @Bean
-    @Profile("!Prod")
+    @Profile("!prod")
     public OpenAPI openAPI() {
         String jwtSchemeName = "Authorization";
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
-        Components components = new Components()
-                .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
-                        .name(jwtSchemeName)
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme(BEARER_TOKEN_PREFIX));
+
+        SecurityRequirement securityRequirement = new SecurityRequirement();
+        securityRequirement.addList(jwtSchemeName);
+
+        SecurityScheme securityScheme = new SecurityScheme();
+        securityScheme.name(jwtSchemeName)
+                .type(SecurityScheme.Type.HTTP)
+                .scheme(GrantType.BEARER.getType());
+
+        Components components = new Components();
+        components.addSecuritySchemes(jwtSchemeName, securityScheme);
+
         return new OpenAPI()
                 .addSecurityItem(securityRequirement)
                 .components(components);

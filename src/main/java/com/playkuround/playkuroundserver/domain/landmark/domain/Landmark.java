@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -46,7 +48,6 @@ public class Landmark {
     }
 
     public void updateFirstUser(User user, long score) {
-        if (score == 0) return;
         if (firstUser == null || this.highestScore < score) {
             this.firstUser = user;
             this.highestScore = score;
@@ -63,5 +64,12 @@ public class Landmark {
         double distance = LocationDistanceUtils.distance(locationOfLandmark, location);
 
         return distance <= recognitionRadius;
+    }
+
+    public boolean isFirstUser(Long userId) {
+        if (this.firstUser == null) {
+            return false;
+        }
+        return Objects.equals(this.firstUser.getId(), userId);
     }
 }

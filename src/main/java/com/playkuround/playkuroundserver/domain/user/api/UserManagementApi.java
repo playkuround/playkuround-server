@@ -4,6 +4,7 @@ import com.playkuround.playkuroundserver.domain.auth.token.application.TokenServ
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.user.api.request.UserRegisterRequest;
 import com.playkuround.playkuroundserver.domain.user.api.response.UserRegisterResponse;
+import com.playkuround.playkuroundserver.domain.user.application.UserDeleteService;
 import com.playkuround.playkuroundserver.domain.user.application.UserLogoutService;
 import com.playkuround.playkuroundserver.domain.user.application.UserRegisterService;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
@@ -28,6 +29,7 @@ public class UserManagementApi {
     private final TokenService tokenService;
     private final UserLogoutService userLogoutService;
     private final UserRegisterService userRegisterService;
+    private final UserDeleteService userDeleteService;
 
     @PostMapping("/register")
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -47,6 +49,13 @@ public class UserManagementApi {
     @Operation(summary = "로그아웃", description = "서버에서 refresh token을 삭제합니다. 앱 내에서 accessToken을 지워야합니다.")
     public ApiResponse<Void> userLogout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         userLogoutService.logout(userDetails.getUser());
+        return ApiUtils.success(null);
+    }
+
+    @DeleteMapping
+    @Operation(summary = "회원 탈퇴", description = "회원 정보를 삭제합니다.")
+    public ApiResponse<Void> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userDeleteService.deleteUser(userDetails.getUser());
         return ApiUtils.success(null);
     }
 

@@ -12,4 +12,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     List<Attendance> findByUserAndAttendanceDateTimeAfter(User user, LocalDateTime localDateTime);
 
     boolean existsByUserAndAttendanceDateTimeAfter(User user, LocalDateTime localDateTime);
+
+    void deleteByUser(User user);
 }

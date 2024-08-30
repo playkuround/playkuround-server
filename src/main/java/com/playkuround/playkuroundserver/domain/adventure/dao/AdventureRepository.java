@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.adventure.dao;
 
 import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
+import com.playkuround.playkuroundserver.domain.adventure.dto.UserAndScore;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.score.dto.NicknameAndScoreAndBadgeType;
 import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
@@ -41,4 +42,16 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
                                            @Param(value = "from") LocalDateTime from);
 
     long countByUserAndLandmark(User user, Landmark requestSaveLandmark);
+
+    @Query("SELECT new com.playkuround.playkuroundserver.domain.adventure.dto.UserAndScore(a.user, cast(SUM(a.score) as long)) " +
+            "FROM Adventure a " +
+            "where a.landmark.id=:landmark AND a.createdAt >= :from " +
+            "GROUP BY a.user.id " +
+            "ORDER BY SUM(a.score) DESC, a.user.nickname DESC " +
+            "LIMIT :limit")
+    List<UserAndScore> findRankDescBy(@Param(value = "landmark") Long landmarkId,
+                                      @Param(value = "from") LocalDateTime from,
+                                      @Param(value = "limit") int limit);
+
+    void deleteByUser(User user);
 }

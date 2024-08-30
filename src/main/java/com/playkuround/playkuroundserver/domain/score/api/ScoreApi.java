@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/scores")
-@Tag(name = "Score", description = "Score API")
+@Tag(name = "Score", description = "랭킹 API")
 public class ScoreApi {
 
     private final TotalScoreService totalScoreService;

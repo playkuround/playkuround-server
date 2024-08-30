@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Tag(name = "User", description = "User API")
+@Tag(name = "User", description = "유저 API")
 public class UserManagementApi {
 
     private final TokenService tokenService;

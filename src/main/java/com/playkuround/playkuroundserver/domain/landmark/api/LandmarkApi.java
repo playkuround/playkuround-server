@@ -21,7 +21,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/landmarks")
 @RequiredArgsConstructor
-@Tag(name = "Landmark", description = "Landmark API")
+@Tag(name = "Landmark", description = "랜드마크 API")
 public class LandmarkApi {
 
     private final LandmarkScoreService landmarkScoreService;

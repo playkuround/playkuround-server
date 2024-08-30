@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/badges")
 @RequiredArgsConstructor
-@Tag(name = "Badge", description = "Badge API")
+@Tag(name = "Badge", description = "배지 API")
 public class BadgeApi {
 
     private final BadgeService badgeService;

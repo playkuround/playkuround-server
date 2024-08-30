@@ -29,7 +29,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Tag(name = "User", description = "User API")
+@Tag(name = "User")
 public class UserProfileApi {
 
     private final UserProfileService userProfileService;

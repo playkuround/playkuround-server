@@ -9,6 +9,7 @@ import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,9 @@ import static java.lang.Math.min;
 @RequiredArgsConstructor
 public class NewMonthUpdateService {
 
-    private final String redisSetKey = "ranking";
+    @Value("${redis-key}")
+    private String redisSetKey;
+
     private final RedisTemplate<String, String> redisTemplate;
     private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;

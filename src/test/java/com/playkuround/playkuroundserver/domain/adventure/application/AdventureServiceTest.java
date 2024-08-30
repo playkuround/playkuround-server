@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.List;
@@ -48,7 +49,8 @@ class AdventureServiceTest {
     @Autowired
     private AdventureService adventureService;
 
-    private final String redisSetKey = "ranking";
+    @Value("${redis-key}")
+    private String redisSetKey;
 
     @AfterEach
     void clean() {

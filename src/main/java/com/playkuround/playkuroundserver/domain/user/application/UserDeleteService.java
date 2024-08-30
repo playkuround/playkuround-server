@@ -13,7 +13,7 @@ import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +34,10 @@ public class UserDeleteService {
     private final AttendanceRepository attendanceRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    private final String redisSetKey = "ranking";
-    private final RedisTemplate<String, String> redisTemplate;
+    @Value("${redis-key}")
+    private String redisSetKey;
+    private final ZSetOperations<String, String> zSetOperations;
+
     private final DateTimeService dateTimeService;
 
     @Transactional
@@ -52,7 +54,6 @@ public class UserDeleteService {
     }
 
     private void deleteTotalScoreRank(User user) {
-        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
         zSetOperations.remove(redisSetKey, user.getEmail());
     }
 

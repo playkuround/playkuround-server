@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -37,9 +38,12 @@ class TotalScoreServiceTest {
     @Autowired
     private AdventureRepository adventureRepository;
 
+    @Value("${redis-key}")
+    private String redisSetKey;
+
     @AfterEach
     void tearDown() {
-        redisTemplate.delete("ranking");
+        redisTemplate.delete(redisSetKey);
         adventureRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();
     }

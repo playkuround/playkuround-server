@@ -6,7 +6,8 @@ import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.EmailAndNicknameAndBadge;
-import org.springframework.data.redis.core.RedisTemplate;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,17 +18,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TotalScoreService {
 
-    private final String redisSetKey;
+    @Value("${redis-key}")
+    private String redisSetKey;
+
     private final UserRepository userRepository;
     private final ZSetOperations<String, String> zSetOperations;
-
-    public TotalScoreService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate) {
-        this.redisSetKey = "ranking";
-        this.userRepository = userRepository;
-        this.zSetOperations = redisTemplate.opsForZSet();
-    }
 
     @Transactional
     public Long incrementTotalScore(User user, Long score) {

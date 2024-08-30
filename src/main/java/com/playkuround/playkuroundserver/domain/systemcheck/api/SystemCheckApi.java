@@ -16,14 +16,14 @@ public class SystemCheckApi {
 
     private final SystemCheckService systemCheckService;
 
-    @PostMapping("/admin/system-available")
+    @PostMapping("admin/system-available")
     @Operation(summary = "시스템 사용가능 여부 변경하기", description = "시스템 점검 유무를 변경합니다.", tags = "Admin")
     public ApiResponse<Void> changeSystemAvailable(@RequestParam("available") boolean appVersion) {
         systemCheckService.changeSystemAvailable(appVersion);
         return ApiUtils.success(null);
     }
 
-    @GetMapping("/system-available")
+    @GetMapping("system-available")
     @Operation(summary = "시스템 사용가능 여부 체크", description = "현재 서버의 상태를 점검합니다.", tags = "System Check")
     public ApiResponse<HealthCheckResponse> healthCheck() {
         HealthCheckDto healthCheckDto = systemCheckService.healthCheck();

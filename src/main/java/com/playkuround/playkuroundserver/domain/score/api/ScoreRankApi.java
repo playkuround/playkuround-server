@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/scores")
+@RequestMapping("api/scores/rank")
 @Tag(name = "Score", description = "랭킹 API")
-public class ScoreApi {
+public class ScoreRankApi {
 
     private final TotalScoreService totalScoreService;
     private final LandmarkRankService landmarkRankService;
 
-    @GetMapping("/rank")
+    @GetMapping
     @Operation(summary = "종합 점수 탑100 얻기",
             description = "토탈 점수 탑100과 내 점수, 등수를 반환합니다. 내 점수가 0점이면 등수는 0등으로 반환됩니다.")
     public ApiResponse<ScoreRankingResponse> getScoreTop100(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -32,7 +32,7 @@ public class ScoreApi {
         return ApiUtils.success(response);
     }
 
-    @GetMapping("/rank/{landmarkId}")
+    @GetMapping("{landmarkId}")
     @Operation(summary = "해당 랜드마크의 점수 탑100 얻기",
             description = "해당 랜드마크 점수 탑100과 내 점수, 등수를 반환합니다. 내 점수가 0점이면 등수는 0등으로 반환됩니다.")
     public ApiResponse<ScoreRankingResponse> getScoreTop100ByLandmark(@AuthenticationPrincipal UserDetailsImpl userDetails,

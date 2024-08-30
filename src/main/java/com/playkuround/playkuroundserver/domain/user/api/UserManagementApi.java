@@ -21,7 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("api/users")
 @RequiredArgsConstructor
 @Tag(name = "User", description = "유저 API")
 public class UserManagementApi {
@@ -31,7 +31,7 @@ public class UserManagementApi {
     private final UserRegisterService userRegisterService;
     private final UserDeleteService userDeleteService;
 
-    @PostMapping("/register")
+    @PostMapping("register")
     @ResponseStatus(value = HttpStatus.CREATED)
     @Operation(summary = "회원가입", description = "신규 회원가입 합니다.")
     public ApiResponse<UserRegisterResponse> registerUser(@RequestBody @Valid UserRegisterRequest request) {
@@ -45,7 +45,7 @@ public class UserManagementApi {
         return ApiUtils.success(UserRegisterResponse.from(tokenDto));
     }
 
-    @PostMapping("/logout")
+    @PostMapping("logout")
     @Operation(summary = "로그아웃", description = "서버에서 refresh token을 삭제합니다. 앱 내에서 accessToken을 지워야합니다.")
     public ApiResponse<Void> userLogout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         userLogoutService.logout(userDetails.getUser());

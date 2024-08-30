@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/landmarks")
+@RequestMapping("api/landmarks")
 @RequiredArgsConstructor
 @Tag(name = "Landmark", description = "랜드마크 API")
 public class LandmarkApi {
@@ -38,7 +38,7 @@ public class LandmarkApi {
         return ApiUtils.success(NearestLandmarkResponse.from(nearestLandmark));
     }
 
-    @GetMapping("/{landmarkId}/highest")
+    @GetMapping("{landmarkId}/highest")
     @Operation(summary = "해당 랜드마크의 최고점 사용자 찾기",
             description = "해당 랜드마크에서 가장 높은 점수를 획득한 사용자를 반환합니다. " +
                     "방문한 유저가 한명도 없으면 아무것도 반환하지 않습니다. 점수가 같은 유저가 있다면 먼저 해당 점수를 달성한 유저를 반환합니다.")

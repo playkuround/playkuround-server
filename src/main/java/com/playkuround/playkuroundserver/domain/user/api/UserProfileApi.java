@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("api/users")
 @RequiredArgsConstructor
 @Tag(name = "User")
 public class UserProfileApi {
@@ -42,21 +42,21 @@ public class UserProfileApi {
         return ApiUtils.success(UserProfileResponse.from(userDetails.getUser()));
     }
 
-    @GetMapping("/game-score")
+    @GetMapping("game-score")
     @Operation(summary = "게임별 최고 점수 얻기", description = "로그인 유저의 게임별 최고 점수를 얻습니다. 플레이한적이 없는 게임은 null이 반환됩니다.")
     public ApiResponse<UserGameHighestScoreResponse> getUserGameHighestScore(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         HighestScore userGameHighestScore = userProfileService.getUserGameHighestScore(userDetails.getUser());
         return ApiUtils.success(UserGameHighestScoreResponse.from(userGameHighestScore));
     }
 
-    @GetMapping("/availability")
+    @GetMapping("availability")
     @Operation(summary = "해당 닉네임이 사용 가능한지 체크", description = "사용 가능하다면 true가 반환됩니다.")
     public ApiResponse<Boolean> isAvailableNickname(@RequestParam("nickname") String nickname) {
         boolean isAvailable = userProfileService.isAvailableNickname(nickname);
         return ApiUtils.success(isAvailable);
     }
 
-    @PostMapping("/profile-badge")
+    @PostMapping("profile-badge")
     @Operation(summary = "프로필 배지 설정", description = "사용자 프로필 배지를 설정합니다.")
     public ApiResponse<Void> setProfileBadge(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                              @RequestBody @Valid ProfileBadgeRequest request) {
@@ -67,7 +67,7 @@ public class UserProfileApi {
         return ApiUtils.success(null);
     }
 
-    @GetMapping("/notification")
+    @GetMapping("notification")
     @Operation(summary = "유저 알림 얻기",
             description = "유저 개인 알림을 얻습니다. 저장된 메시지는 (정상적인) 호출 이후 삭제됩니다.<br>" +
                     "=== name 명 리스트(new_badge는 description도 중요) ===<br>" +

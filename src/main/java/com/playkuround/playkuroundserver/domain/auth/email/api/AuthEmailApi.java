@@ -5,7 +5,6 @@ import com.playkuround.playkuroundserver.domain.auth.email.api.response.AuthEmai
 import com.playkuround.playkuroundserver.domain.auth.email.api.response.AuthVerifyEmailResponse;
 import com.playkuround.playkuroundserver.domain.auth.email.application.AuthEmailSendService;
 import com.playkuround.playkuroundserver.domain.auth.email.application.AuthEmailVerifyService;
-import com.playkuround.playkuroundserver.domain.auth.email.application.AuthEmailVerifyServiceImpl;
 import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthEmailInfo;
 import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthVerifyEmailResult;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth/emails")
+@RequestMapping("api/auth/emails")
 @Tag(name = "Auth", description = "인증, 토큰 서비스")
 public class AuthEmailApi {
 

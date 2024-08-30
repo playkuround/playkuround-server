@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("api/admin")
 @RequiredArgsConstructor
 @Tag(name = "Admin", description = "Admin API(관리자 권한이 없는 경우 403 에러가 발생합니다.)")
 public class AdminApi {

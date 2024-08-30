@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/badges")
+@RequestMapping("api/badges")
 @RequiredArgsConstructor
 @Tag(name = "Badge", description = "배지 API")
 public class BadgeApi {
@@ -32,7 +32,7 @@ public class BadgeApi {
                 .toList());
     }
 
-    @PostMapping("/dream-of-duck")
+    @PostMapping("dream-of-duck")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "오리의꿈 배지 획득", description = "오리의 꿈 배지를 획득합니다. 이미 획득한 배지였다면 false를 반환합니다.")
     public ApiResponse<Boolean> saveTheDreamOfDuckBadge(@AuthenticationPrincipal UserDetailsImpl userDetails) {

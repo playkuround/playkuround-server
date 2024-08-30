@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/admin/app-version")
+@RequestMapping("api/admin/app-version")
 @RequiredArgsConstructor
 public class AppVersionApi {
 

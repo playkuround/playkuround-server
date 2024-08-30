@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/fake-door")
+@RequestMapping("api/fake-door")
 @RequiredArgsConstructor
 @Tag(name = "fakeDoor API", description = "광고보고 쿠라운드 응원하기 버튼 클릭 API")
 public class FakeDoorApi {

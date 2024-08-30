@@ -193,7 +193,7 @@ class TotalScoreServiceTest {
     }
 
     @Test
-    @DisplayName("전체 랭킹 조회 결과에는 사용자 프로필 뱃지 데이터가 포함되어 있다.")
+    @DisplayName("전체 랭킹 조회 결과에는 사용자 프로필 배지 데이터가 포함되어 있다.")
     void getRankTop100_6() {
         // given
         User user1 = TestUtil.createUser("user1@konkuk.ac.kr", "user1", Major.경영학과);

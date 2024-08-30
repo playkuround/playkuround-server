@@ -30,7 +30,7 @@ public class UserProfileResponse {
     @Schema(description = "출석한 횟수", example = "28", requiredMode = RequiredMode.REQUIRED)
     private int attendanceDays;
 
-    @Schema(description = "프로필 뱃지(프로필 뱃지가 없다면 null 리턴)", example = "MONTHLY_RANKING_1")
+    @Schema(description = "프로필 배지(프로필 배지가 없다면 null 리턴)", example = "MONTHLY_RANKING_1")
     private String profileBadge;
 
     public static UserProfileResponse from(User user) {

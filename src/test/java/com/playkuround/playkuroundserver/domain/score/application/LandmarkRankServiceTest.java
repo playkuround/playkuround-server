@@ -148,7 +148,7 @@ class LandmarkRankServiceTest {
     }
 
     @Test
-    @DisplayName("랜드마크 랭킹 조회 결과에는 사용자 프로필 뱃지 데이터가 포함되어 있다.")
+    @DisplayName("랜드마크 랭킹 조회 결과에는 사용자 프로필 배지 데이터가 포함되어 있다.")
     void getRankTop100ByLandmark_5() {
         // given
         LocalDate now = LocalDate.of(2024, 7, 1);

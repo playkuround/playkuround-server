@@ -31,7 +31,7 @@ public class AttendanceApi {
 
     @PostMapping
     @Operation(summary = "출석하기", description = "오늘 출석을 저장합니다. 출석은 하루에 한번만 가능하며, " +
-            "새롭게 얻은 뱃지가 있을 시 반환됩니다. 뱃지는 DB에 자동 반영됩니다.")
+            "새롭게 얻은 배지가 있을 시 반환됩니다. 배지는 DB에 자동 반영됩니다.")
     public ApiResponse<AttendanceRegisterResponse> saveAttendance(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                   @Valid @RequestBody AttendanceRegisterRequest registerRequest) {
         Location location = new Location(registerRequest.getLatitude(), registerRequest.getLongitude());

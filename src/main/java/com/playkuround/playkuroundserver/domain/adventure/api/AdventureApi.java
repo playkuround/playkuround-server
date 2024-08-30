@@ -29,8 +29,8 @@ public class AdventureApi {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "탐험하기", description = "탐험 점수를 저장합니다. 새롭게 얻은 뱃지가 있을 시 반환됩니다. " +
-            "새로 추가된 뱃지는 DB에 자동 반영됩니다. scoreType은 별도 문서 참고")
+    @Operation(summary = "탐험하기", description = "탐험 점수를 저장합니다. 새롭게 얻은 배지가 있을 시 반환됩니다. " +
+            "새로 추가된 배지는 DB에 자동 반영됩니다. scoreType은 별도 문서 참고")
     public ApiResponse<AdventureSaveResponse> saveAdventure(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                             @RequestBody @Valid AdventureSaveRequest request) {
         ScoreType scoreType = ScoreType.fromString(request.getScoreType())

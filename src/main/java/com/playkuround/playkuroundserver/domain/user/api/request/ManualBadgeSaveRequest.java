@@ -17,11 +17,11 @@ public class ManualBadgeSaveRequest {
 
     @NotBlank(message = "이메일은 필수값입니다.")
     @Email(message = "올바른 이메일 형식이 아닙니다.")
-    @Schema(description = "뱃지를 부여할 유저 이메일", example = "tester@konkuk.ac.kr", requiredMode = RequiredMode.REQUIRED)
+    @Schema(description = "배지를 부여할 유저 이메일", example = "tester@konkuk.ac.kr", requiredMode = RequiredMode.REQUIRED)
     private String userEmail;
 
-    @ValidEnum(enumClass = BadgeType.class, message = "잘못된 뱃지타입입니다.")
-    @Schema(description = "뱃지타입. 뱃지타입명은 외부 문서 참고", example = "ATTENDANCE_FOUNDATION_DAY", requiredMode = RequiredMode.REQUIRED)
+    @ValidEnum(enumClass = BadgeType.class, message = "잘못된 배지타입입니다.")
+    @Schema(description = "배지타입. 배지타입명은 외부 문서 참고", example = "ATTENDANCE_FOUNDATION_DAY", requiredMode = RequiredMode.REQUIRED)
     private String badge;
 
     @Schema(description = "개인 메시지로 추가 여부", example = "true", defaultValue = "false")

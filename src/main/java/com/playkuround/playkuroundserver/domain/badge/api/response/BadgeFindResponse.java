@@ -14,14 +14,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class BadgeFindResponse {
 
-    @Schema(description = "뱃지 이름", example = "ATTENDANCE_7", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "배지 이름", example = "ATTENDANCE_7", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
-    @Schema(description = "뱃지 설명", example = "7일 연속 출석", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "배지 설명", example = "7일 연속 출석", requiredMode = Schema.RequiredMode.REQUIRED)
     private String description;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    @Schema(description = "뱃지를 획득한 날짜, 시각", example = "2023-12-20 11:13:21", type = "string", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "배지를 획득한 날짜, 시각", example = "2023-12-20 11:13:21", type = "string", requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createdAt;
 
     public static BadgeFindResponse from(Badge badge) {

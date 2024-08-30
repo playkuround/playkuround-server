@@ -259,7 +259,7 @@ class LandmarkScoreRankApiTest {
 
     @Test
     @WithMockCustomUser(email = "test@konkuk.ac.kr", badgeType = BadgeType.COLLEGE_OF_ENGINEERING)
-    @DisplayName("랭킹 조회 API에는 사용자 대표 뱃지 데이터가 포함되어 있다.")
+    @DisplayName("랭킹 조회 API에는 사용자 대표 배지 데이터가 포함되어 있다.")
     void getRankTop100ByLandmark_6() throws Exception {
         // given
         Landmark landmark = new Landmark(LandmarkType.경영관, 37.541, 127.079, 100);

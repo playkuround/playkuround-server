@@ -155,11 +155,11 @@ class UserProfileApiTest {
 
     @Nested
     @WithMockCustomUser
-    @DisplayName("프로필 뱃지 설정")
+    @DisplayName("프로필 배지 설정")
     class setProfileBadge {
 
         @Test
-        @DisplayName("사용자가 가지고 있는 뱃지는 정상적으로 프로필 뱃지로 설정이 가능하다.")
+        @DisplayName("사용자가 가지고 있는 배지는 정상적으로 프로필 배지로 설정이 가능하다.")
         void success_1() throws Exception {
             // given
             User user = userRepository.findAll().get(0);

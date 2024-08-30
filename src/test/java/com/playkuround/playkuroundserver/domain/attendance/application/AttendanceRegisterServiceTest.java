@@ -51,7 +51,7 @@ class AttendanceRegisterServiceTest {
     private DateTimeService dateTimeService;
 
     @Test
-    @DisplayName("출석 시 뱃지와 출석정보가 저장되고 유저의 출석횟수가 증가한다")
+    @DisplayName("출석 시 배지와 출석정보가 저장되고 유저의 출석횟수가 증가한다")
     void registerAttendance_1() {
         // given
         when(attendanceRepository.existsByUserAndAttendanceDateTimeAfter(any(User.class), any(LocalDateTime.class)))

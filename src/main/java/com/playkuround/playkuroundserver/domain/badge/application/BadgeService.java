@@ -42,7 +42,7 @@ public class BadgeService {
 
         NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
 
-        // 출석일 기준 뱃지
+        // 출석일 기준 배지
         AttendanceBadgeList.getAttendanceBadges().stream()
                 .filter(attendanceBadge -> attendanceBadge.supports(userBadgeSet, user))
                 .forEach(attendanceBadge -> {
@@ -51,7 +51,7 @@ public class BadgeService {
                     newlyRegisteredBadge.addBadge(badgeType);
                 });
 
-        // 기념일 기준 뱃지
+        // 기념일 기준 배지
         SpecialDayBadgeList.getSpecialDayBadges().stream()
                 .filter(specialDayBadge -> specialDayBadge.supports(userBadgeSet, dateTimeService.getLocalDateNow()))
                 .forEach(specialDayBadge -> {
@@ -81,7 +81,7 @@ public class BadgeService {
                     }
                 });
 
-        // 단과대 특별 뱃지
+        // 단과대 특별 배지
         collegeSpecialBadgeFactory.getBadgeType(user, userBadgeSet, requestSaveLandmark)
                 .ifPresent(badgeType -> {
                     newlyRegisteredBadge.addBadge(badgeType);

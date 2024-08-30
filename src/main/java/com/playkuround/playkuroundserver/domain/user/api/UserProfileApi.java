@@ -57,7 +57,7 @@ public class UserProfileApi {
     }
 
     @PostMapping("/profile-badge")
-    @Operation(summary = "프로필 뱃지 설정", description = "사용자 프로필 뱃지를 설정합니다.")
+    @Operation(summary = "프로필 배지 설정", description = "사용자 프로필 배지를 설정합니다.")
     public ApiResponse<Void> setProfileBadge(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                              @RequestBody @Valid ProfileBadgeRequest request) {
         BadgeType badgeType = BadgeType.fromString(request.getProfileBadge())
@@ -73,7 +73,7 @@ public class UserProfileApi {
                     "=== name 명 리스트(new_badge는 description도 중요) ===<br>" +
                     "1. 시스템 점검 중일 때(단독으로만 반환): system_check<br>" +
                     "2. 앱 버전 업데이트가 필요할 때(단독으로만 반환): update<br>" +
-                    "3. 새로운 뱃지 획득: new_badge(MONTHLY_RANKING_1, MONTHLY_RANKING_2, MONTHLY_RANKING_3, COLLEGE_OF_BUSINESS_ADMINISTRATION_100_AND_FIRST_PLACE)<br>" +
+                    "3. 새로운 배지 획득: new_badge(MONTHLY_RANKING_1, MONTHLY_RANKING_2, MONTHLY_RANKING_3, COLLEGE_OF_BUSINESS_ADMINISTRATION_100_AND_FIRST_PLACE)<br>" +
                     "4. 개인 알림: alarm",
             parameters = {
                     @Parameter(name = "version", description = "현재 앱 버전", example = "2.0.2", required = true),

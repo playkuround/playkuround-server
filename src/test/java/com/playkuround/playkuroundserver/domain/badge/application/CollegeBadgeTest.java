@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CollegeBadgeTest {
 
-    // 기획에서 정한 건물별 뱃지
+    // 기획에서 정한 건물별 배지
     private final List<CollegeBadgeRecord> answer = List.of(
             new CollegeBadgeRecord(LandmarkType.인문학관, BadgeType.COLLEGE_OF_LIBERAL_ARTS),
             new CollegeBadgeRecord(LandmarkType.과학관, BadgeType.COLLEGE_OF_SCIENCES),
@@ -40,7 +40,7 @@ class CollegeBadgeTest {
     );
 
     @ParameterizedTest
-    @DisplayName("랜드마크 탐험 뱃지 테스트")
+    @DisplayName("랜드마크 탐험 배지 테스트")
     @EnumSource(value = LandmarkType.class)
     void collegeBadge(LandmarkType landmarkType) {
         List<BadgeType> answerBadeType = answer.stream()

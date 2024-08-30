@@ -24,8 +24,8 @@ public class AdminApi {
 
     @PostMapping("badges/manual")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "수동 뱃지 등록", description = "수동으로 뱃지를 등록합니다. 이미 획득한 뱃지였다면 false를 반환합니다. " +
-            "설정에 따라 개인 메시지로 등록할 수 있습니다.")
+    @Operation(summary = "수동 배지 등록",
+            description = "수동으로 배지를 등록합니다. 이미 획득한 배지였다면 false를 반환합니다. 설정에 따라 개인 메시지로 등록할 수 있습니다.")
     public ApiResponse<Boolean> saveManualBadge(@RequestBody @Valid ManualBadgeSaveRequest request) {
         BadgeType badgeType = BadgeType.valueOf(request.getBadge());
         boolean response = badgeService.saveManualBadge(request.getUserEmail(), badgeType, request.isRegisterMessage());

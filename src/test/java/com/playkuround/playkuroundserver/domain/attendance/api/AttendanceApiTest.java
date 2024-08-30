@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.domain.attendance.api.request.AttendanceRegisterRequest;
-import com.playkuround.playkuroundserver.domain.attendance.application.AttendanceRegisterService;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
 import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
@@ -83,7 +82,7 @@ class AttendanceApiTest {
 
         @Test
         @WithMockCustomUser
-        @DisplayName("최초로 출석을 하면 뱃지를 받는다.")
+        @DisplayName("최초로 출석하면 BadgeType.ATTENDANCE_1 배지를 받는다.")
         void success_1() throws Exception {
             // given
             AttendanceRegisterRequest attendanceRegisterRequest = new AttendanceRegisterRequest(37.539927, 127.073006);
@@ -178,9 +177,6 @@ class AttendanceApiTest {
     @Nested
     @DisplayName("출석 조회하기")
     class searchAttendance {
-
-        @Autowired
-        private AttendanceRegisterService attendanceRegisterService;
 
         @Test
         @WithMockCustomUser

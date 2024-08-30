@@ -209,7 +209,7 @@ class ScoreTotalRankApiTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("랭킹 조회 API에는 사용자 대표 뱃지 데이터가 포함되어 있다.")
+    @DisplayName("랭킹 조회 API에는 사용자 대표 배지 데이터가 포함되어 있다.")
     void getRankTop100_6() throws Exception {
         // given
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();

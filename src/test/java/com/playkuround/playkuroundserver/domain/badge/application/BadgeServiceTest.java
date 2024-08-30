@@ -60,11 +60,11 @@ class BadgeServiceTest {
     private DateTimeService dateTimeService;
 
     @Nested
-    @DisplayName("뱃지 조회하기")
+    @DisplayName("배지 조회하기")
     class findBadge {
 
         @Test
-        @DisplayName("뱃지 개수가 0개이면 빈리스트가 반환된다")
+        @DisplayName("배지 개수가 0개이면 빈리스트가 반환된다")
         void success_1() {
             // given
             User user = TestUtil.createUser();
@@ -78,7 +78,7 @@ class BadgeServiceTest {
         }
 
         @Test
-        @DisplayName("뱃지 개수 3개 조회")
+        @DisplayName("배지 개수 3개 조회")
         void success_2() {
             // given
             User user = TestUtil.createUser();
@@ -104,7 +104,7 @@ class BadgeServiceTest {
     }
 
     @Nested
-    @DisplayName("출석에 따른 뱃지 부여")
+    @DisplayName("출석에 따른 배지 부여")
     class updateNewlyAttendanceBadges {
 
         static Stream<Arguments> generateAttendanceBadgeTestData() {
@@ -128,7 +128,7 @@ class BadgeServiceTest {
 
         @ParameterizedTest
         @MethodSource("generateAttendanceBadgeTestData")
-        @DisplayName("출석 횟수에 따른 뱃지 획득")
+        @DisplayName("출석 횟수에 따른 배지 획득")
         void success_1(int attendanceDay, List<String> expected) {
             // given
             User user = TestUtil.createUser();
@@ -161,7 +161,7 @@ class BadgeServiceTest {
         }
 
         @Test
-        @DisplayName("기념일 출석 뱃지")
+        @DisplayName("기념일 출석 배지")
         void success_2() {
             // given
             User user = TestUtil.createUser();
@@ -189,7 +189,7 @@ class BadgeServiceTest {
         }
 
         @Test
-        @DisplayName("이미 가지고 있는 뱃지는 부여하지 않는다")
+        @DisplayName("이미 가지고 있는 배지는 부여하지 않는다")
         void success_3() {
             // given
             User user = TestUtil.createUser();
@@ -232,7 +232,7 @@ class BadgeServiceTest {
     }
 
     @Nested
-    @DisplayName("탐험 대학에 따른 뱃지 부여")
+    @DisplayName("탐험 대학에 따른 배지 부여")
     class updateNewlyAdventureBadges {
 
         static Stream<Arguments> generateAdventureBadgeTestData() {
@@ -277,7 +277,7 @@ class BadgeServiceTest {
 
         @ParameterizedTest
         @MethodSource("generateAdventureBadgeTestData")
-        @DisplayName("대학별 뱃지")
+        @DisplayName("대학별 배지")
         void success_1(LandmarkType landmarkType, List<String> badgeTypeList) throws Exception {
             // given
             User user = TestUtil.createUser();
@@ -300,7 +300,7 @@ class BadgeServiceTest {
         }
 
         @Test
-        @DisplayName("단과대 특별 뱃지")
+        @DisplayName("단과대 특별 배지")
         void success_2() throws Exception {
             // given
             User user = TestUtil.createUser();
@@ -342,12 +342,12 @@ class BadgeServiceTest {
     }
 
     @Nested
-    @DisplayName("The Dream of Duck 뱃지 부여")
+    @DisplayName("The Dream of Duck 배지 부여")
     class saveTheDreamOfDuckBadge {
 
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
-        @DisplayName("정상 저장되었다면 true, 이미 저장된 뱃지였으면 false를 반환한다.")
+        @DisplayName("정상 저장되었다면 true, 이미 저장된 배지였으면 false를 반환한다.")
         void success_1(boolean hasBadge) {
             // given
             User user = TestUtil.createUser();
@@ -363,12 +363,12 @@ class BadgeServiceTest {
     }
 
     @Nested
-    @DisplayName("뱃지 수동 등록")
+    @DisplayName("배지 수동 등록")
     class saveManualBadge {
 
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
-        @DisplayName("정상 저장되었다면 true, 이미 저장된 뱃지였으면 false를 반환한다.")
+        @DisplayName("정상 저장되었다면 true, 이미 저장된 배지였으면 false를 반환한다.")
         void success_1(boolean hasBadge) {
             // given
             User user = TestUtil.createUser();

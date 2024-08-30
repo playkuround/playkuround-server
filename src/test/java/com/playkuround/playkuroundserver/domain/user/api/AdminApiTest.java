@@ -50,12 +50,12 @@ class AdminApiTest {
     }
 
     @Nested
-    @DisplayName("뱃지 수동 등록")
+    @DisplayName("배지 수동 등록")
     class saveManualBadge {
 
         @Test
         @WithMockCustomUser(role = Role.ROLE_ADMIN)
-        @DisplayName("정상 뱃지 수동 등록 : 개인 메시지 저장 안함")
+        @DisplayName("정상 배지 수동 등록 : 개인 메시지 저장 안함")
         void success_1() throws Exception {
             // given
             User user = TestUtil.createUser("aa@konkuk.ac.kr", "newNickname", Major.건축학부);
@@ -82,7 +82,7 @@ class AdminApiTest {
 
         @Test
         @WithMockCustomUser(role = Role.ROLE_ADMIN)
-        @DisplayName("정상 뱃지 수동 등록 : 개인 메시지 저장")
+        @DisplayName("정상 배지 수동 등록 : 개인 메시지 저장")
         void success_2() throws Exception {
             // given
             User user = TestUtil.createUser("aa@konkuk.ac.kr", "test", Major.건축학부);
@@ -113,7 +113,7 @@ class AdminApiTest {
 
         @Test
         @WithMockCustomUser(role = Role.ROLE_ADMIN)
-        @DisplayName("이미 가지고 있는 뱃지면 false를 반환한다")
+        @DisplayName("이미 가지고 있는 배지면 false를 반환한다")
         void fail_1() throws Exception {
             // given
             User user = TestUtil.createUser("aa@konkuk.ac.kr", "test", Major.건축학부);

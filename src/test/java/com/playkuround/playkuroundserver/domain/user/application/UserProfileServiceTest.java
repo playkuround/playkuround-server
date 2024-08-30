@@ -110,7 +110,7 @@ class UserProfileServiceTest {
         }
 
         @Test
-        @DisplayName("뱃지 알림이 1개인 경우")
+        @DisplayName("배지 알림이 1개인 경우")
         void success_2() {
             // given
             User user = TestUtil.createUser();
@@ -127,7 +127,7 @@ class UserProfileServiceTest {
         }
 
         @Test
-        @DisplayName("뱃지 알림이 2개 이상인 경우")
+        @DisplayName("배지 알림이 2개 이상인 경우")
         void success_3() {
             // given
             User user = TestUtil.createUser();
@@ -147,11 +147,11 @@ class UserProfileServiceTest {
     }
 
     @Nested
-    @DisplayName("프로필 뱃지 설정")
+    @DisplayName("프로필 배지 설정")
     class setProfileBadge {
 
         @Test
-        @DisplayName("사용자가 가지고 있는 뱃지는 정상적으로 프로필 뱃지로 설정이 가능하다.")
+        @DisplayName("사용자가 가지고 있는 배지는 정상적으로 프로필 배지로 설정이 가능하다.")
         void success_1() {
             // given
             User user = TestUtil.createUser();

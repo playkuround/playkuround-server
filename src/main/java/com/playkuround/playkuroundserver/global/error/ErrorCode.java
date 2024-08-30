@@ -49,7 +49,7 @@ public enum ErrorCode {
 
     // Badge
     INVALID_BADGE_TYPE(HttpStatus.BAD_REQUEST, "B001", "올바르지 않은 BadgeType입니다."),
-    NOT_HAVE_BADGE(HttpStatus.BAD_REQUEST, "B002", "사용자가 가지고 있지 않은 뱃지입니다."),
+    NOT_HAVE_BADGE(HttpStatus.BAD_REQUEST, "B002", "사용자가 가지고 있지 않은 배지입니다."),
 
     // Attendance
     DUPLICATE_ATTENDANCE(HttpStatus.BAD_REQUEST, "AT01", "이미 오늘 출석한 회원입니다."),

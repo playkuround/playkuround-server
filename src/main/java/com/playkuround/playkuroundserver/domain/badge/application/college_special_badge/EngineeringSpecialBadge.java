@@ -10,11 +10,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
-class EngineeringBadgeService implements CollegeSpecialBadgeService {
+class EngineeringSpecialBadge implements CollegeSpecialBadgeService {
 
     private final Map<LandmarkType, BadgeAndRequiredCount> landmarkTypeAndBadge = Map.of(
             LandmarkType.공학관A, new BadgeAndRequiredCount(BadgeType.COLLEGE_OF_ENGINEERING_A, 10),
@@ -26,20 +25,19 @@ class EngineeringBadgeService implements CollegeSpecialBadgeService {
 
     @Override
     public boolean supports(LandmarkType landmarkType) {
-        return LandmarkType.공학관A.equals(landmarkType) ||
-                LandmarkType.공학관B.equals(landmarkType) ||
-                LandmarkType.공학관C.equals(landmarkType);
+        return landmarkTypeAndBadge.containsKey(landmarkType);
     }
 
     @Override
-    public Optional<BadgeType> getBadgeType(User user, Set<BadgeType> userHadBadgeSet, Landmark landmark) {
+    public Optional<BadgeType> getBadgeType(User user, Landmark landmark) {
         BadgeAndRequiredCount badgeAndRequiredCount = landmarkTypeAndBadge.get(landmark.getName());
         if (badgeAndRequiredCount != null) {
-            if (!userHadBadgeSet.contains(badgeAndRequiredCount.badgeType) &&
-                    adventureRepository.countByUserAndLandmark(user, landmark) == badgeAndRequiredCount.requiredCount) {
+            long visitedNumber = adventureRepository.countByUserAndLandmark(user, landmark);
+            if (visitedNumber == badgeAndRequiredCount.requiredCount) {
                 return Optional.of(badgeAndRequiredCount.badgeType);
             }
         }
+
         return Optional.empty();
     }
 

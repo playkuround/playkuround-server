@@ -3,9 +3,9 @@ package com.playkuround.playkuroundserver.domain.badge.application.college;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 
-public class RealEstateBadge implements CollegeBadge {
+class RealEstateBadge implements CollegeBadge {
 
-    protected RealEstateBadge() {
+    RealEstateBadge() {
     }
 
     @Override

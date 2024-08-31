@@ -10,11 +10,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
-class BusinessAdministrationBadgeService implements CollegeSpecialBadgeService {
+class BusinessAdministrationSpecialBadge implements CollegeSpecialBadgeService {
+
+    private final AdventureRepository adventureRepository;
 
     private final List<BadgeAndRequiredCount> badgeAndRequiredCounts = List.of(
             new BadgeAndRequiredCount(BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_10, 10),
@@ -23,22 +24,18 @@ class BusinessAdministrationBadgeService implements CollegeSpecialBadgeService {
             new BadgeAndRequiredCount(BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION_70, 70)
     );
 
-    private final AdventureRepository adventureRepository;
-
     @Override
     public boolean supports(LandmarkType landmarkType) {
-        return LandmarkType.경영관.equals(landmarkType);
+        return LandmarkType.경영관 == landmarkType;
     }
 
     @Override
-    public Optional<BadgeType> getBadgeType(User user, Set<BadgeType> userHadBadgeSet, Landmark landmark) {
-        for (BadgeAndRequiredCount badgeAndRequiredCount : badgeAndRequiredCounts) {
-            if (!userHadBadgeSet.contains(badgeAndRequiredCount.badgeType) &&
-                    adventureRepository.countByUserAndLandmark(user, landmark) == badgeAndRequiredCount.requiredCount) {
-                return Optional.of(badgeAndRequiredCount.badgeType);
-            }
-        }
-        return Optional.empty();
+    public Optional<BadgeType> getBadgeType(User user, Landmark landmark) {
+        long visitedNumber = adventureRepository.countByUserAndLandmark(user, landmark);
+        return badgeAndRequiredCounts.stream()
+                .filter(badgeAndRequiredCount -> badgeAndRequiredCount.requiredCount == visitedNumber)
+                .findFirst()
+                .map(BadgeAndRequiredCount::badgeType);
     }
 
     private record BadgeAndRequiredCount(BadgeType badgeType, int requiredCount) {

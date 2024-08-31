@@ -41,7 +41,7 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
                                            @Param(value = "landmark") Landmark landmark,
                                            @Param(value = "from") LocalDateTime from);
 
-    long countByUserAndLandmark(User user, Landmark requestSaveLandmark);
+    long countByUserAndLandmark(User user, Landmark landmark);
 
     @Query("SELECT new com.playkuround.playkuroundserver.domain.adventure.dto.UserAndScore(a.user, cast(SUM(a.score) as long)) " +
             "FROM Adventure a " +

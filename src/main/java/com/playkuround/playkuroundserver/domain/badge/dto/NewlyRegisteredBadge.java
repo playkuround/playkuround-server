@@ -16,6 +16,10 @@ public class NewlyRegisteredBadge {
         newlyBadges.add(badgeInfo);
     }
 
+    public void addBadges(List<BadgeType> newCollegeBadges) {
+        newCollegeBadges.forEach(this::addBadge);
+    }
+
     public record BadgeInfo(String name, String description) {
     }
 }

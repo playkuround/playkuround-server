@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.badge.application;
 
 import com.playkuround.playkuroundserver.TestUtil;
-import com.playkuround.playkuroundserver.domain.badge.application.college_special_badge.CollegeSpecialBadgeFactory;
+import com.playkuround.playkuroundserver.domain.badge.application.college_special_badge.CollegeSpecialBadge;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
@@ -34,7 +34,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +53,7 @@ class BadgeServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private CollegeSpecialBadgeFactory collegeSpecialBadgeFactory;
+    private CollegeSpecialBadge collegeSpecialBadge;
 
     @Mock
     private DateTimeService dateTimeService;
@@ -283,8 +282,8 @@ class BadgeServiceTest {
             User user = TestUtil.createUser();
             when(badgeRepository.findByUser(user))
                     .thenReturn(new ArrayList<>());
-            when(collegeSpecialBadgeFactory.getBadgeType(any(User.class), any(Set.class), any(Landmark.class)))
-                    .thenReturn(Optional.empty());
+            when(collegeSpecialBadge.getBadgeTypes(any(User.class), any(Landmark.class)))
+                    .thenReturn(List.of());
 
             Landmark landmark = createLandmark(landmarkType);
 
@@ -306,8 +305,8 @@ class BadgeServiceTest {
             User user = TestUtil.createUser();
             when(badgeRepository.findByUser(user))
                     .thenReturn(new ArrayList<>());
-            when(collegeSpecialBadgeFactory.getBadgeType(any(User.class), any(Set.class), any(Landmark.class)))
-                    .thenReturn(Optional.of(BadgeType.COLLEGE_OF_ENGINEERING_A));
+            when(collegeSpecialBadge.getBadgeTypes(any(User.class), any(Landmark.class)))
+                    .thenReturn(List.of(BadgeType.COLLEGE_OF_ENGINEERING_A));
 
             Landmark landmark = createLandmark(LandmarkType.공학관A);
 

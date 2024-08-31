@@ -1,8 +1,11 @@
 package com.playkuround.playkuroundserver.domain.badge.application;
 
+import com.playkuround.playkuroundserver.domain.badge.application.attendance_badge.AttendanceBadge;
 import com.playkuround.playkuroundserver.domain.badge.application.attendance_badge.AttendanceBadgeList;
+import com.playkuround.playkuroundserver.domain.badge.application.college.CollegeBadge;
 import com.playkuround.playkuroundserver.domain.badge.application.college.CollegeBadgeList;
-import com.playkuround.playkuroundserver.domain.badge.application.college_special_badge.CollegeSpecialBadgeFactory;
+import com.playkuround.playkuroundserver.domain.badge.application.college_special_badge.CollegeSpecialBadge;
+import com.playkuround.playkuroundserver.domain.badge.application.specialday_badge.SpecialDayBadge;
 import com.playkuround.playkuroundserver.domain.badge.application.specialday_badge.SpecialDayBadgeList;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
@@ -18,77 +21,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class BadgeService {
 
     private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;
     private final DateTimeService dateTimeService;
-    private final CollegeSpecialBadgeFactory collegeSpecialBadgeFactory;
+    private final CollegeSpecialBadge collegeSpecialBadge;
 
     @Transactional(readOnly = true)
     public List<Badge> findBadgeByEmail(User user) {
         return badgeRepository.findByUser(user);
-    }
-
-    @Transactional
-    public NewlyRegisteredBadge updateNewlyAttendanceBadges(User user) {
-        Set<BadgeType> userBadgeSet = getUserBadgeSet(user);
-
-        NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
-
-        // 출석일 기준 배지
-        AttendanceBadgeList.getAttendanceBadges().stream()
-                .filter(attendanceBadge -> attendanceBadge.supports(userBadgeSet, user))
-                .forEach(attendanceBadge -> {
-                    BadgeType badgeType = attendanceBadge.getBadgeType();
-                    badgeRepository.save(Badge.createBadge(user, badgeType));
-                    newlyRegisteredBadge.addBadge(badgeType);
-                });
-
-        // 기념일 기준 배지
-        SpecialDayBadgeList.getSpecialDayBadges().stream()
-                .filter(specialDayBadge -> specialDayBadge.supports(userBadgeSet, dateTimeService.getLocalDateNow()))
-                .forEach(specialDayBadge -> {
-                    BadgeType badgeType = specialDayBadge.getBadgeType();
-                    badgeRepository.save(Badge.createBadge(user, badgeType));
-                    newlyRegisteredBadge.addBadge(badgeType);
-                });
-
-        return newlyRegisteredBadge;
-    }
-
-    @Transactional
-    public NewlyRegisteredBadge updateNewlyAdventureBadges(User user, Landmark requestSaveLandmark) {
-        Set<BadgeType> userBadgeSet = getUserBadgeSet(user);
-        LandmarkType requestLandmarkType = requestSaveLandmark.getName();
-
-        NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
-
-        // 대학별
-        CollegeBadgeList.getCollegeBadges().stream()
-                .filter(collegeBadge -> collegeBadge.supports(requestLandmarkType))
-                .forEach(collegeBadge -> {
-                    BadgeType badge = collegeBadge.getBadge();
-                    if (!userBadgeSet.contains(badge)) {
-                        newlyRegisteredBadge.addBadge(badge);
-                        badgeRepository.save(Badge.createBadge(user, badge));
-                    }
-                });
-
-        // 단과대 특별 배지
-        collegeSpecialBadgeFactory.getBadgeType(user, userBadgeSet, requestSaveLandmark)
-                .ifPresent(badgeType -> {
-                    newlyRegisteredBadge.addBadge(badgeType);
-                    badgeRepository.save(Badge.createBadge(user, badgeType));
-                });
-
-        return newlyRegisteredBadge;
     }
 
     private Set<BadgeType> getUserBadgeSet(User user) {
@@ -97,7 +48,94 @@ public class BadgeService {
                 .collect(Collectors.toSet());
     }
 
-    @Transactional
+    public NewlyRegisteredBadge updateNewlyAttendanceBadges(User user) {
+        NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
+
+        Set<BadgeType> userBadgeSet = getUserBadgeSet(user);
+
+        List<BadgeType> attendanceBadges = saveAttendanceBadges(user, userBadgeSet);
+        newlyRegisteredBadge.addBadges(attendanceBadges);
+
+        List<BadgeType> specialDayBadges = saveSpecialDayBadges(user, userBadgeSet);
+        newlyRegisteredBadge.addBadges(specialDayBadges);
+
+        return newlyRegisteredBadge;
+    }
+
+    private List<BadgeType> saveAttendanceBadges(User user, Set<BadgeType> userBadgeSet) {
+        List<BadgeType> newBadges = new ArrayList<>();
+
+        AttendanceBadgeList.getAttendanceBadges().stream()
+                .filter(attendanceBadge -> attendanceBadge.supports(user.getAttendanceDays()))
+                .map(AttendanceBadge::getBadgeType)
+                .filter(badgeType -> !userBadgeSet.contains(badgeType))
+                .forEach(badgeType -> {
+                    newBadges.add(badgeType);
+                    badgeRepository.save(Badge.createBadge(user, badgeType));
+                });
+
+        return newBadges;
+    }
+
+    private List<BadgeType> saveSpecialDayBadges(User user, Set<BadgeType> userBadgeSet) {
+        List<BadgeType> newBadges = new ArrayList<>();
+        LocalDate now = dateTimeService.getLocalDateNow();
+
+        SpecialDayBadgeList.getSpecialDayBadges().stream()
+                .filter(specialDayBadge -> specialDayBadge.supports(now))
+                .map(SpecialDayBadge::getBadgeType)
+                .filter(badgeType -> !userBadgeSet.contains(badgeType))
+                .forEach(badgeType -> {
+                    newBadges.add(badgeType);
+                    badgeRepository.save(Badge.createBadge(user, badgeType));
+                });
+
+        return newBadges;
+    }
+
+    public NewlyRegisteredBadge updateNewlyAdventureBadges(User user, Landmark requestSaveLandmark) {
+        NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
+
+        Set<BadgeType> userBadgeSet = getUserBadgeSet(user);
+
+        List<BadgeType> collegeBadges = saveCollegeBadges(user, requestSaveLandmark.getName(), userBadgeSet);
+        newlyRegisteredBadge.addBadges(collegeBadges);
+
+        List<BadgeType> collegeSpecialBadges = saveCollegeSpecialBadges(user, requestSaveLandmark, userBadgeSet);
+        newlyRegisteredBadge.addBadges(collegeSpecialBadges);
+
+        return newlyRegisteredBadge;
+    }
+
+    private List<BadgeType> saveCollegeBadges(User user, LandmarkType requestLandmarkType, Set<BadgeType> userBadgeSet) {
+        List<BadgeType> newBadges = new ArrayList<>();
+
+        CollegeBadgeList.getCollegeBadges().stream()
+                .filter(collegeBadge -> collegeBadge.supports(requestLandmarkType))
+                .map(CollegeBadge::getBadge)
+                .filter(badgeType -> !userBadgeSet.contains(badgeType))
+                .forEach(badgeType -> {
+                    newBadges.add(badgeType);
+                    badgeRepository.save(Badge.createBadge(user, badgeType));
+                });
+
+        return newBadges;
+    }
+
+    private List<BadgeType> saveCollegeSpecialBadges(User user, Landmark requestSaveLandmark, Set<BadgeType> userBadgeSet) {
+        List<BadgeType> newBadges = new ArrayList<>();
+
+        List<BadgeType> candidates = collegeSpecialBadge.getBadgeTypes(user, requestSaveLandmark);
+        candidates.stream()
+                .filter(badgeType -> !userBadgeSet.contains(badgeType))
+                .forEach(badgeType -> {
+                    newBadges.add(badgeType);
+                    badgeRepository.save(Badge.createBadge(user, badgeType));
+                });
+
+        return newBadges;
+    }
+
     public boolean saveTheDreamOfDuckBadge(User user) {
         if (badgeRepository.existsByUserAndBadgeType(user, BadgeType.THE_DREAM_OF_DUCK)) {
             return false;
@@ -107,7 +145,6 @@ public class BadgeService {
         return true;
     }
 
-    @Transactional
     public boolean saveManualBadge(String userEmail, BadgeType badgeType, boolean registerMessage) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(UserNotFoundException::new);

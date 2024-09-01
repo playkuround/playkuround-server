@@ -30,7 +30,6 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Major major;
 
-    @Column(nullable = false)
     private int attendanceDays;
 
     @Enumerated(EnumType.STRING)

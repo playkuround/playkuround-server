@@ -1,4 +1,5 @@
 -- 랜드마크 초기 데이터입니다. mysql, mariadb 문법에 맞춰져 있습니다.
+-- landmark
 insert into landmark (id, latitude, longitude, recognition_radius, name, user_id, highest_score)
 values (1, 37.539765, 127.073215, 40, '산학협동관', NULL, 0);
 insert into landmark (id, latitude, longitude, recognition_radius, name, user_id, highest_score)
@@ -87,3 +88,33 @@ insert into landmark (id, latitude, longitude, recognition_radius, name, user_id
 values (43, 37.541584, 127.082226, 15, '구의역쪽문', NULL, 0);
 insert into landmark (id, latitude, longitude, recognition_radius, name, user_id, highest_score)
 values (44, 37.539255, 127.076741, 20, '기숙사쪽문', NULL, 0);
+
+-- event
+-- insert into event (id, title, image_url, description, reference_url, display, created_at, updated_at) values (1, '이미지+설명+링크', 'https://health.chosun.com/site/data/img_dir/2023/07/17/2023071701753_0.jpg', '설명설명', 'https://naver.com', true, NOW(), NOW());
+-- insert into event (id, title, image_url, description, reference_url, display, created_at, updated_at) values (2, '설명+링크', null, '설명설명', 'https://naver.com', true, NOW(), NOW());
+-- insert into event (id, title, image_url, description, reference_url, display, created_at, updated_at) values (3, '설명', null, '설명설명', null, true, NOW(), NOW());
+-- insert into event (id, title, image_url, description, reference_url, display, created_at, updated_at) values (4, '이미지+링크', 'https://health.chosun.com/site/data/img_dir/2023/07/17/2023071701753_0.jpg', null,'https://naver.com', true, NOW(), NOW());
+-- insert into event (id, title, image_url, description, reference_url, display, created_at, updated_at) values (5, '이미지', 'https://health.chosun.com/site/data/img_dir/2023/07/17/2023071701753_0.jpg', null, null, true, NOW(),NOW());
+-- insert into event (id, title, image_url, description, reference_url, display, created_at, updated_at) values (6, '이미지+설명', 'https://health.chosun.com/site/data/img_dir/2023/07/17/2023071701753_0.jpg', '설명설명', null, true, NOW(), NOW());
+-- insert into event (id, title, image_url, description, reference_url, display, created_at, updated_at) values (7, 'non display', null, '이 이벤트는 반환되면 안됩니다.', null, false, NOW(), NOW());
+
+-- system_check
+insert into SYSTEM_CHECK (id, available, created_at, updated_at)
+values (1, true, NOW(), NOW());
+
+-- app_version
+insert into APP_VERSION (id, os, version, created_at, updated_at)
+values (1, 'ANDROID', '2.0.4', NOW(), NOW());
+insert into APP_VERSION (id, os, version, created_at, updated_at)
+values (2, 'IOS', '2.0.4', NOW(), NOW());
+
+-- insert into badge(id, user_id, badge_type, created_at, updated_at) values (8, 2, 'BUSINESS_ARCHITECTURE_EVENT_BUSINESS', NOW(), NOW());
+-- insert into badge(id, user_id, badge_type, created_at, updated_at) values (9, 2, 'COLLEGE_OF_ENGINEERING_A', NOW(), NOW());
+-- insert into badge(id, user_id, badge_type, created_at, updated_at) values (10, 2, 'MONTHLY_RANKING_2', NOW(), NOW());
+-- insert into badge(id, user_id, badge_type, created_at, updated_at) values (11, 2, 'COLLEGE_OF_BUSINESS_ADMINISTRATION_100_AND_FIRST_PLACE', NOW(), NOW());
+-- insert into badge(id, user_id, badge_type, created_at, updated_at) values (12, 2, 'COLLEGE_OF_INTERNATIONAL', NOW(), NOW());
+-- insert into badge(id, user_id, badge_type, created_at, updated_at) values (13, 2, 'COLLEGE_OF_REAL_ESTATE', NOW(), NOW());
+-- insert into badge(id, user_id, badge_type, created_at, updated_at) values (14, 2, 'THE_DREAM_OF_DUCK', NOW(), NOW());
+-- insert into badge(id, user_id, badge_type, created_at, updated_at) values (15, 2, 'BUSINESS_ARCHITECTURE_EVENT_ARCHITECTURE', NOW(), NOW());
+-- insert into badge(id, user_id, badge_type, created_at, updated_at) values (16, 2, 'COLLEGE_OF_SOCIAL_SCIENCES', NOW(), NOW());
+-- insert into badge(id, user_id, badge_type, created_at, updated_at) values (17, 2, 'ATTENDANCE_CHRISTMAS_DAY', NOW(), NOW());

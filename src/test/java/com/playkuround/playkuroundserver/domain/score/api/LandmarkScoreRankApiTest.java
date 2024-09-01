@@ -82,7 +82,7 @@ class LandmarkScoreRankApiTest {
             User user = TestUtil.createUser("user" + i + "@konkuk.ac.kr", "user" + i, Major.건축학부);
             userRepository.save(user);
 
-            Adventure adventure = new Adventure(user, landmark, ScoreType.CATCH, (long) i);
+            Adventure adventure = new Adventure(user, landmark, ScoreType.CATCH, i);
             adventureRepository.save(adventure);
         }
 
@@ -119,12 +119,12 @@ class LandmarkScoreRankApiTest {
             User user = TestUtil.createUser("user" + i + "@konkuk.ac.kr", "user" + i, Major.건축학부);
             userRepository.save(user);
 
-            Adventure adventure = new Adventure(user, landmark, ScoreType.CATCH, (long) i);
+            Adventure adventure = new Adventure(user, landmark, ScoreType.CATCH, i);
             adventureRepository.save(adventure);
         }
 
         User me = userRepository.findByEmail("test@konkuk.ac.kr").get();
-        Adventure adventure = new Adventure(me, landmark, ScoreType.CATCH, 37L);
+        Adventure adventure = new Adventure(me, landmark, ScoreType.CATCH, 37);
         adventureRepository.save(adventure);
 
         // when
@@ -170,12 +170,12 @@ class LandmarkScoreRankApiTest {
             User user = TestUtil.createUser("user" + i + "@konkuk.ac.kr", "user" + i, Major.건축학부);
             userRepository.save(user);
 
-            Adventure adventure = new Adventure(user, landmark, ScoreType.CATCH, (long) i);
+            Adventure adventure = new Adventure(user, landmark, ScoreType.CATCH, i);
             adventureRepository.save(adventure);
         }
 
         User me = userRepository.findByEmail("test@konkuk.ac.kr").get();
-        Adventure adventure = new Adventure(me, landmark, ScoreType.CATCH, 62L);
+        Adventure adventure = new Adventure(me, landmark, ScoreType.CATCH, 62);
         adventureRepository.save(adventure);
 
         // when
@@ -220,12 +220,12 @@ class LandmarkScoreRankApiTest {
             User user = TestUtil.createUser("user" + i + "@konkuk.ac.kr", "user" + i, Major.건축학부);
             userRepository.save(user);
 
-            adventureRepository.save(new Adventure(user, landmark, ScoreType.CATCH, (long) i));
-            adventureRepository.save(new Adventure(user, landmark, ScoreType.BOOK, 1L));
+            adventureRepository.save(new Adventure(user, landmark, ScoreType.CATCH, i));
+            adventureRepository.save(new Adventure(user, landmark, ScoreType.BOOK, 1));
         }
 
         User me = userRepository.findByEmail("test@konkuk.ac.kr").get();
-        adventureRepository.save(new Adventure(me, landmark, ScoreType.CATCH, 62L));
+        adventureRepository.save(new Adventure(me, landmark, ScoreType.CATCH, 62));
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/scores/rank/{landmarkId}", landmark.getId()))
@@ -266,19 +266,19 @@ class LandmarkScoreRankApiTest {
         landmarkRepository.save(landmark);
         {
             User me = userRepository.findByEmail("test@konkuk.ac.kr").get();
-            adventureRepository.save(new Adventure(me, landmark, ScoreType.CATCH, 10L));
+            adventureRepository.save(new Adventure(me, landmark, ScoreType.CATCH, 10));
         }
         {
             User user1 = TestUtil.createUser("user1@konkuk.ac.kr", "user1", Major.건축학부);
             user1.updateProfileBadge(BadgeType.ATTENDANCE_1);
             userRepository.save(user1);
-            adventureRepository.save(new Adventure(user1, landmark, ScoreType.CATCH, 5L));
+            adventureRepository.save(new Adventure(user1, landmark, ScoreType.CATCH, 5));
         }
         {
             User user2 = TestUtil.createUser("user2@konkuk.ac.kr", "user2", Major.컴퓨터공학부);
             user2.updateProfileBadge(BadgeType.MONTHLY_RANKING_1);
             userRepository.save(user2);
-            adventureRepository.save(new Adventure(user2, landmark, ScoreType.CATCH, 15L));
+            adventureRepository.save(new Adventure(user2, landmark, ScoreType.CATCH, 15));
         }
 
         // when

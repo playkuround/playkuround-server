@@ -26,14 +26,13 @@ public class Adventure extends BaseTimeEntity {
     @JoinColumn(name = "landmark_id")
     private Landmark landmark;
 
-    @Column(nullable = false)
-    private Long score;
+    private long score;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ScoreType scoreType;
 
-    public Adventure(User user, Landmark landmark, ScoreType scoreType, Long score) {
+    public Adventure(User user, Landmark landmark, ScoreType scoreType, long score) {
         this.user = user;
         this.landmark = landmark;
         this.scoreType = scoreType;

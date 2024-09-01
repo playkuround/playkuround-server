@@ -23,13 +23,8 @@ public class Landmark {
     @Enumerated(EnumType.STRING)
     private LandmarkType name;
 
-    @Column(nullable = false)
     private double latitude;
-
-    @Column(nullable = false)
     private double longitude;
-
-    @Column(nullable = false)
     private int recognitionRadius;
 
     @ManyToOne(fetch = FetchType.LAZY)

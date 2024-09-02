@@ -34,12 +34,14 @@ public interface AdventureRepository extends JpaRepository<Adventure, Long> {
                                                   @Param(value = "landmark") Long landmarkId,
                                                   @Param(value = "from") LocalDateTime from);
 
-    @Query("SELECT SUM(a.score) " +
-            "FROM Adventure a " +
-            "WHERE a.user.id=:#{#user.id} AND a.landmark.id=:#{#landmark.id} AND a.createdAt >= :from")
-    long getSumScoreByUserAndLandmarkAfter(@Param(value = "user") User user,
-                                           @Param(value = "landmark") Landmark landmark,
-                                           @Param(value = "from") LocalDateTime from);
+    @Query("""
+            SELECT SUM(a.score)
+            FROM Adventure a
+            WHERE a.user.id=:#{#user.id} AND a.landmark.id=:#{#landmark.id} AND a.createdAt >= :from
+            """)
+    long sumScoreByUserAndLandmarkAfter(@Param(value = "user") User user,
+                                        @Param(value = "landmark") Landmark landmark,
+                                        @Param(value = "from") LocalDateTime from);
 
     long countByUserAndLandmark(User user, Landmark landmark);
 

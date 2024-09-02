@@ -13,6 +13,7 @@ import com.playkuround.playkuroundserver.domain.landmark.exception.LandmarkNotFo
 import com.playkuround.playkuroundserver.domain.score.application.TotalScoreService;
 import com.playkuround.playkuroundserver.domain.score.domain.ScoreType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.HighestScore;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
 import com.playkuround.playkuroundserver.global.util.Location;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -40,10 +42,13 @@ public class AdventureService {
         validateLocation(landmark, adventureSaveDto.requestLocation());
 
         User user = adventureSaveDto.user();
+        ScoreType scoreType = adventureSaveDto.scoreType();
+        long score = adventureSaveDto.score();
 
-        updateUserScore(user, adventureSaveDto.scoreType(), adventureSaveDto.score());
-        saveAdventure(user, landmark, adventureSaveDto.scoreType(), adventureSaveDto.score());
+        updateUserScore(user, scoreType, score);
+        saveAdventure(user, landmark, scoreType, score);
         updateLandmarkHighestScore(user, landmark);
+
         return badgeService.updateNewlyAdventureBadges(user, landmark);
     }
 
@@ -54,10 +59,11 @@ public class AdventureService {
     }
 
     private void updateUserScore(User user, ScoreType scoreType, long score) {
-        totalScoreService.incrementTotalScore(user, score);
-        user.getHighestScore()
-                .updateGameHighestScore(scoreType, score);
+        HighestScore highestScore = user.getHighestScore();
+        highestScore.updateGameHighestScore(scoreType, score);
         userRepository.save(user);
+
+        totalScoreService.incrementTotalScore(user, score);
     }
 
     private void saveAdventure(User user, Landmark landmark, ScoreType scoreType, long score) {
@@ -66,8 +72,10 @@ public class AdventureService {
     }
 
     private void updateLandmarkHighestScore(User user, Landmark landmark) {
-        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime(dateTimeService.getLocalDateNow());
-        long sumScore = adventureRepository.getSumScoreByUserAndLandmarkAfter(user, landmark, monthStartDateTime);
+        LocalDate now = dateTimeService.getLocalDateNow();
+        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime(now);
+
+        long sumScore = adventureRepository.sumScoreByUserAndLandmarkAfter(user, landmark, monthStartDateTime);
         landmark.updateFirstUser(user, sumScore);
     }
 }

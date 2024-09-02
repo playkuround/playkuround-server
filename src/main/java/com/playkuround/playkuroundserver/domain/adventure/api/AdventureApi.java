@@ -40,6 +40,7 @@ public class AdventureApi {
                 = new AdventureSaveDto(userDetails.getUser(), request.getLandmarkId(), location, request.getScore(), scoreType);
 
         NewlyRegisteredBadge newlyRegisteredBadge = adventureService.saveAdventure(adventureSaveDto);
+
         return ApiUtils.success(AdventureSaveResponse.from(newlyRegisteredBadge));
     }
 

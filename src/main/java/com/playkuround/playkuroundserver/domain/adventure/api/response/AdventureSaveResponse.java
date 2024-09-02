@@ -17,7 +17,7 @@ public class AdventureSaveResponse {
     private AdventureSaveResponse(NewlyRegisteredBadge newlyRegisteredBadge) {
         this.newBadges = newlyRegisteredBadge.getNewlyBadges().stream()
                 .map(badgeInfo -> BadgeType.valueOf(badgeInfo.name()))
-                .map(it -> new BadgeInfo(it.name(), it.getDescription()))
+                .map(badgeType -> new BadgeInfo(badgeType.name(), badgeType.getDescription()))
                 .toList();
     }
 

@@ -5,7 +5,6 @@ import com.playkuround.playkuroundserver.domain.badge.application.college_specia
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
@@ -109,26 +108,26 @@ class BadgeServiceTest {
         static Stream<Arguments> generateAttendanceBadgeTestData() {
             return Stream.of(
                     Arguments.of(1,
-                            List.of(BadgeType.ATTENDANCE_1.name())),
+                            List.of(BadgeType.ATTENDANCE_1)),
                     Arguments.of(5,
-                            List.of(BadgeType.ATTENDANCE_1.name(),
-                                    BadgeType.ATTENDANCE_5.name())),
+                            List.of(BadgeType.ATTENDANCE_1,
+                                    BadgeType.ATTENDANCE_5)),
                     Arguments.of(10,
-                            List.of(BadgeType.ATTENDANCE_1.name(),
-                                    BadgeType.ATTENDANCE_5.name(),
-                                    BadgeType.ATTENDANCE_10.name())),
+                            List.of(BadgeType.ATTENDANCE_1,
+                                    BadgeType.ATTENDANCE_5,
+                                    BadgeType.ATTENDANCE_10)),
                     Arguments.of(30,
-                            List.of(BadgeType.ATTENDANCE_1.name(),
-                                    BadgeType.ATTENDANCE_5.name(),
-                                    BadgeType.ATTENDANCE_10.name(),
-                                    BadgeType.ATTENDANCE_30.name()))
+                            List.of(BadgeType.ATTENDANCE_1,
+                                    BadgeType.ATTENDANCE_5,
+                                    BadgeType.ATTENDANCE_10,
+                                    BadgeType.ATTENDANCE_30))
             );
         }
 
         @ParameterizedTest
         @MethodSource("generateAttendanceBadgeTestData")
         @DisplayName("출석 횟수에 따른 배지 획득")
-        void success_1(int attendanceDay, List<String> expected) {
+        void success_1(int attendanceDay, List<BadgeType> expected) {
             // given
             User user = TestUtil.createUser();
             for (int i = 0; i < attendanceDay; i++) {
@@ -139,7 +138,7 @@ class BadgeServiceTest {
             when(dateTimeService.getLocalDateNow())
                     .thenReturn(LocalDate.of(2024, 7, 1));
 
-            List<NewlyRegisteredBadge.BadgeInfo> result;
+            List<BadgeType> result;
             try (MockedStatic<DateTimeUtils> mockedStatic = Mockito.mockStatic(DateTimeUtils.class)) {
                 mockedStatic.when(() -> DateTimeUtils.isDuckDay(any())).thenReturn(false);
                 mockedStatic.when(() -> DateTimeUtils.isArborDay(any())).thenReturn(false);
@@ -148,15 +147,11 @@ class BadgeServiceTest {
                 mockedStatic.when(() -> DateTimeUtils.isFoundationDay(any())).thenReturn(false);
 
                 // when
-                NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAttendanceBadges(user);
-                result = newlyRegisteredBadge.getNewlyBadges();
+                result = badgeService.updateNewlyAttendanceBadges(user);
             }
 
             // then
-            List<String> target = result.stream()
-                    .map(NewlyRegisteredBadge.BadgeInfo::name)
-                    .toList();
-            assertThat(target).isEqualTo(expected);
+            assertThat(result).isEqualTo(expected);
         }
 
         @Test
@@ -169,7 +164,7 @@ class BadgeServiceTest {
             when(dateTimeService.getLocalDateNow())
                     .thenReturn(LocalDate.of(2024, 7, 1));
 
-            List<NewlyRegisteredBadge.BadgeInfo> result;
+            List<BadgeType> result;
             try (MockedStatic<DateTimeUtils> mockedStatic = Mockito.mockStatic(DateTimeUtils.class)) {
                 mockedStatic.when(() -> DateTimeUtils.isDuckDay(any())).thenReturn(false);
                 mockedStatic.when(() -> DateTimeUtils.isArborDay(any())).thenReturn(false);
@@ -178,13 +173,12 @@ class BadgeServiceTest {
                 mockedStatic.when(() -> DateTimeUtils.isFoundationDay(any())).thenReturn(false);
 
                 // when
-                NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAttendanceBadges(user);
-                result = newlyRegisteredBadge.getNewlyBadges();
+                result = badgeService.updateNewlyAttendanceBadges(user);
             }
 
             // then
-            assertThat(result).hasSize(1);
-            assertThat(result.get(0).name()).isEqualTo(BadgeType.ATTENDANCE_CHILDREN_DAY.name());
+            assertThat(result).hasSize(1)
+                    .containsExactly(BadgeType.ATTENDANCE_CHILDREN_DAY);
         }
 
         @Test
@@ -204,7 +198,7 @@ class BadgeServiceTest {
             when(dateTimeService.getLocalDateNow())
                     .thenReturn(LocalDate.of(2024, 7, 1));
 
-            List<NewlyRegisteredBadge.BadgeInfo> result;
+            List<BadgeType> result;
             try (MockedStatic<DateTimeUtils> mockedStatic = Mockito.mockStatic(DateTimeUtils.class)) {
                 mockedStatic.when(() -> DateTimeUtils.isDuckDay(any())).thenReturn(false);
                 mockedStatic.when(() -> DateTimeUtils.isArborDay(any())).thenReturn(false);
@@ -213,20 +207,12 @@ class BadgeServiceTest {
                 mockedStatic.when(() -> DateTimeUtils.isFoundationDay(any())).thenReturn(false);
 
                 // when
-                NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAttendanceBadges(user);
-                result = newlyRegisteredBadge.getNewlyBadges();
+                result = badgeService.updateNewlyAttendanceBadges(user);
             }
 
             // then
-            assertThat(result).hasSize(2);
-
-            List<String> target = result.stream()
-                    .map(NewlyRegisteredBadge.BadgeInfo::name)
-                    .toList();
-            assertThat(target).containsOnly(
-                    BadgeType.ATTENDANCE_5.name(),
-                    BadgeType.ATTENDANCE_30.name()
-            );
+            assertThat(result).hasSize(2)
+                    .containsExactlyInAnyOrder(BadgeType.ATTENDANCE_5, BadgeType.ATTENDANCE_30);
         }
     }
 
@@ -237,47 +223,47 @@ class BadgeServiceTest {
         static Stream<Arguments> generateAdventureBadgeTestData() {
             return Stream.of(
                     Arguments.of(LandmarkType.인문학관,
-                            List.of(BadgeType.COLLEGE_OF_LIBERAL_ARTS.name())),
+                            List.of(BadgeType.COLLEGE_OF_LIBERAL_ARTS)),
                     Arguments.of(LandmarkType.과학관,
-                            List.of(BadgeType.COLLEGE_OF_SCIENCES.name())),
+                            List.of(BadgeType.COLLEGE_OF_SCIENCES)),
                     Arguments.of(LandmarkType.건축관,
-                            List.of(BadgeType.COLLEGE_OF_ARCHITECTURE.name())),
+                            List.of(BadgeType.COLLEGE_OF_ARCHITECTURE)),
                     Arguments.of(LandmarkType.공학관A,
-                            List.of(BadgeType.COLLEGE_OF_ENGINEERING.name(),
-                                    BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY.name())),
+                            List.of(BadgeType.COLLEGE_OF_ENGINEERING,
+                                    BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY)),
                     Arguments.of(LandmarkType.공학관B,
-                            List.of(BadgeType.COLLEGE_OF_ENGINEERING.name(),
-                                    BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY.name())),
+                            List.of(BadgeType.COLLEGE_OF_ENGINEERING,
+                                    BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY)),
                     Arguments.of(LandmarkType.공학관C,
-                            List.of(BadgeType.COLLEGE_OF_ENGINEERING.name(),
-                                    BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY.name())),
+                            List.of(BadgeType.COLLEGE_OF_ENGINEERING,
+                                    BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY)),
                     Arguments.of(LandmarkType.신공학관,
-                            List.of(BadgeType.COLLEGE_OF_ENGINEERING.name())),
+                            List.of(BadgeType.COLLEGE_OF_ENGINEERING)),
                     Arguments.of(LandmarkType.상허연구관,
-                            List.of(BadgeType.COLLEGE_OF_SOCIAL_SCIENCES.name())),
+                            List.of(BadgeType.COLLEGE_OF_SOCIAL_SCIENCES)),
                     Arguments.of(LandmarkType.경영관,
-                            List.of(BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION.name())),
+                            List.of(BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION)),
                     Arguments.of(LandmarkType.부동산학관,
-                            List.of(BadgeType.COLLEGE_OF_REAL_ESTATE.name())),
+                            List.of(BadgeType.COLLEGE_OF_REAL_ESTATE)),
                     Arguments.of(LandmarkType.생명과학관,
-                            List.of(BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY.name())),
+                            List.of(BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY)),
                     Arguments.of(LandmarkType.동물생명과학관,
-                            List.of(BadgeType.COLLEGE_OF_BIOLOGICAL_SCIENCES.name())),
+                            List.of(BadgeType.COLLEGE_OF_BIOLOGICAL_SCIENCES)),
                     Arguments.of(LandmarkType.수의학관,
-                            List.of(BadgeType.COLLEGE_OF_VETERINARY_MEDICINE.name())),
+                            List.of(BadgeType.COLLEGE_OF_VETERINARY_MEDICINE)),
                     Arguments.of(LandmarkType.예디대,
-                            List.of(BadgeType.COLLEGE_OF_ART_AND_DESIGN.name())),
+                            List.of(BadgeType.COLLEGE_OF_ART_AND_DESIGN)),
                     Arguments.of(LandmarkType.공예관,
-                            List.of(BadgeType.COLLEGE_OF_ART_AND_DESIGN.name())),
+                            List.of(BadgeType.COLLEGE_OF_ART_AND_DESIGN)),
                     Arguments.of(LandmarkType.교육과학관,
-                            List.of(BadgeType.COLLEGE_OF_EDUCATION.name()))
+                            List.of(BadgeType.COLLEGE_OF_EDUCATION))
             );
         }
 
         @ParameterizedTest
         @MethodSource("generateAdventureBadgeTestData")
         @DisplayName("대학별 배지")
-        void success_1(LandmarkType landmarkType, List<String> badgeTypeList) throws Exception {
+        void success_1(LandmarkType landmarkType, List<BadgeType> badgeTypeList) throws Exception {
             // given
             User user = TestUtil.createUser();
             when(badgeRepository.findByUser(user))
@@ -288,14 +274,10 @@ class BadgeServiceTest {
             Landmark landmark = createLandmark(landmarkType);
 
             // when
-            NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAdventureBadges(user, landmark);
+            List<BadgeType> newlyRegisteredBadge = badgeService.updateNewlyAdventureBadges(user, landmark);
 
             // then
-            List<NewlyRegisteredBadge.BadgeInfo> result = newlyRegisteredBadge.getNewlyBadges();
-            List<String> target = result.stream()
-                    .map(NewlyRegisteredBadge.BadgeInfo::name)
-                    .toList();
-            assertThat(target).isEqualTo(badgeTypeList);
+            assertThat(newlyRegisteredBadge).containsExactlyInAnyOrderElementsOf(badgeTypeList);
         }
 
         @Test
@@ -311,17 +293,13 @@ class BadgeServiceTest {
             Landmark landmark = createLandmark(LandmarkType.공학관A);
 
             // when
-            NewlyRegisteredBadge newlyRegisteredBadge = badgeService.updateNewlyAdventureBadges(user, landmark);
+            List<BadgeType> result = badgeService.updateNewlyAdventureBadges(user, landmark);
 
             // then
-            List<NewlyRegisteredBadge.BadgeInfo> result = newlyRegisteredBadge.getNewlyBadges();
-            List<String> target = result.stream()
-                    .map(NewlyRegisteredBadge.BadgeInfo::name)
-                    .toList();
-            assertThat(target).containsOnly(
-                    BadgeType.COLLEGE_OF_ENGINEERING.name(),
-                    BadgeType.COLLEGE_OF_ENGINEERING_A.name(),
-                    BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY.name()
+            assertThat(result).containsExactlyInAnyOrder(
+                    BadgeType.COLLEGE_OF_ENGINEERING,
+                    BadgeType.COLLEGE_OF_ENGINEERING_A,
+                    BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY
             );
         }
 

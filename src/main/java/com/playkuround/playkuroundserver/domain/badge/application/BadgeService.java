@@ -10,7 +10,6 @@ import com.playkuround.playkuroundserver.domain.badge.application.specialday_bad
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
@@ -48,16 +47,16 @@ public class BadgeService {
                 .collect(Collectors.toSet());
     }
 
-    public NewlyRegisteredBadge updateNewlyAttendanceBadges(User user) {
-        NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
+    public List<BadgeType> updateNewlyAttendanceBadges(User user) {
+        List<BadgeType> newlyRegisteredBadge = new ArrayList<>();
 
         Set<BadgeType> userBadgeSet = getUserBadgeSet(user);
 
         List<BadgeType> attendanceBadges = saveAttendanceBadges(user, userBadgeSet);
-        newlyRegisteredBadge.addBadges(attendanceBadges);
+        newlyRegisteredBadge.addAll(attendanceBadges);
 
         List<BadgeType> specialDayBadges = saveSpecialDayBadges(user, userBadgeSet);
-        newlyRegisteredBadge.addBadges(specialDayBadges);
+        newlyRegisteredBadge.addAll(specialDayBadges);
 
         return newlyRegisteredBadge;
     }
@@ -93,16 +92,16 @@ public class BadgeService {
         return newBadges;
     }
 
-    public NewlyRegisteredBadge updateNewlyAdventureBadges(User user, Landmark requestSaveLandmark) {
-        NewlyRegisteredBadge newlyRegisteredBadge = new NewlyRegisteredBadge();
+    public List<BadgeType> updateNewlyAdventureBadges(User user, Landmark requestSaveLandmark) {
+        List<BadgeType> newlyRegisteredBadge = new ArrayList<>();
 
         Set<BadgeType> userBadgeSet = getUserBadgeSet(user);
 
         List<BadgeType> collegeBadges = saveCollegeBadges(user, requestSaveLandmark.getName(), userBadgeSet);
-        newlyRegisteredBadge.addBadges(collegeBadges);
+        newlyRegisteredBadge.addAll(collegeBadges);
 
         List<BadgeType> collegeSpecialBadges = saveCollegeSpecialBadges(user, requestSaveLandmark, userBadgeSet);
-        newlyRegisteredBadge.addBadges(collegeSpecialBadges);
+        newlyRegisteredBadge.addAll(collegeSpecialBadges);
 
         return newlyRegisteredBadge;
     }

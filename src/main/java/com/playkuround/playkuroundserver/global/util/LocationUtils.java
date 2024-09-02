@@ -57,8 +57,8 @@ public class LocationUtils {
         polygonKU.closePath();
     }
 
-    public static boolean isLocatedInKU(Location location) {
-        return polygonKU.contains(location.latitude(), location.longitude());
+    public static boolean isNotLocatedInKU(Location location) {
+        return !polygonKU.contains(location.latitude(), location.longitude());
     }
 
 }

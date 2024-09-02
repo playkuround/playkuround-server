@@ -88,12 +88,10 @@ class AppVersionApiTest {
         @DisplayName("기존에 지원하던 앱 버전을 완전히 덮어쓴다.")
         void success_2() throws Exception {
             // given
-            appVersionRepository.saveAll(
-                    List.of(
-                            new AppVersion(OperationSystem.ANDROID, "2.0.3"),
-                            new AppVersion(OperationSystem.IOS, "1.4.3")
-                    )
-            );
+            appVersionRepository.saveAll(List.of(
+                    new AppVersion(OperationSystem.ANDROID, "2.0.3"),
+                    new AppVersion(OperationSystem.IOS, "1.4.3")
+            ));
 
             List<UpdateAppVersionRequest.OsAndVersion> osAndVersions = List.of(
                     new UpdateAppVersionRequest.OsAndVersion("android", "2.0.3"),

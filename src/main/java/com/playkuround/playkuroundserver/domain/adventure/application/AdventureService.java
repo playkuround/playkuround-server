@@ -5,7 +5,7 @@ import com.playkuround.playkuroundserver.domain.adventure.domain.Adventure;
 import com.playkuround.playkuroundserver.domain.adventure.dto.AdventureSaveDto;
 import com.playkuround.playkuroundserver.domain.adventure.exception.InvalidLandmarkLocationException;
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
-import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.landmark.dao.LandmarkRepository;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class AdventureService {
     private final DateTimeService dateTimeService;
 
     @Transactional
-    public NewlyRegisteredBadge saveAdventure(AdventureSaveDto adventureSaveDto) {
+    public List<BadgeType> saveAdventure(AdventureSaveDto adventureSaveDto) {
         Landmark landmark = landmarkRepository.findById(adventureSaveDto.landmarkId())
                 .orElseThrow(() -> new LandmarkNotFoundException(adventureSaveDto.landmarkId()));
         validateLocation(landmark, adventureSaveDto.requestLocation());

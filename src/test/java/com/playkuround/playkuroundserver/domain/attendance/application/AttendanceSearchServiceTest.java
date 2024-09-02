@@ -17,11 +17,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,38 +34,37 @@ class AttendanceSearchServiceTest {
     private DateTimeService dateTimeService;
 
     @Test
-    @DisplayName("한달동안의 출석정보가 정렬되어 반환된다")
+    @DisplayName("30일 동안의 출석정보가 정렬되어 반환된다")
     void findAttendanceForMonth_1() {
         // given
+        LocalDate localDate = LocalDate.of(2024, 7, 1);
         when(dateTimeService.getLocalDateNow())
-                .thenReturn(LocalDate.of(2024, 7, 1));
+                .thenReturn(localDate);
 
-        Random random = new Random();
-        LocalDateTime now = LocalDateTime.of(2024, 7, 1, 0, 0);
         User user = TestUtil.createUser();
+        LocalDateTime localDateTime = localDate.atStartOfDay();
         Location location = new Location(37.539927, 127.073006);
+        List<Attendance> attendances = List.of(
+                Attendance.of(user, location, localDateTime.minusDays(1)),
+                Attendance.of(user, location, localDateTime.minusDays(2)),
+                Attendance.of(user, location, localDateTime.minusDays(15)),
+                Attendance.of(user, location, localDateTime.minusDays(29)),
+                Attendance.of(user, location, localDateTime.minusDays(30))
+        );
 
-        List<Attendance> attendances = new ArrayList<>();
-        List<LocalDateTime> expected = new ArrayList<>();
-        IntStream.iterate(1, x -> x + 1)
-                .limit(30)
-                .map(x -> random.nextInt(30))
-                .distinct()
-                .sorted()
-                .forEach(x -> {
-                    Attendance attendance = Attendance.of(user, location, now.plusDays(x));
-
-                    attendances.add(attendance);
-                    expected.add(attendance.getAttendanceDateTime());
-                });
-        when(attendanceRepository.findByUserAndAttendanceDateTimeAfter(any(User.class), any(LocalDateTime.class)))
+        int agoDays = 30;
+        LocalDateTime agoDateTime = localDate.minusDays(agoDays).atStartOfDay();
+        when(attendanceRepository.findByUserAndAttendanceDateTimeGreaterThanEqual(user, agoDateTime))
                 .thenReturn(attendances);
 
-
         // when
-        List<LocalDateTime> result = attendanceSearchService.findAttendance(user, 30);
+        List<LocalDateTime> result = attendanceSearchService.findAttendance(user, agoDays);
 
         // then
+        List<LocalDateTime> expected = attendances.stream()
+                .map(Attendance::getAttendanceDateTime)
+                .sorted()
+                .toList();
         assertThat(result).isEqualTo(expected);
     }
 
@@ -76,16 +72,21 @@ class AttendanceSearchServiceTest {
     @DisplayName("출석정보가 없으면 빈리스트가 반환된다")
     void findAttendanceForMonth_2() {
         // given
+        LocalDate localDate = LocalDate.of(2024, 7, 1);
         when(dateTimeService.getLocalDateNow())
-                .thenReturn(LocalDate.of(2024, 7, 1));
-        when(attendanceRepository.findByUserAndAttendanceDateTimeAfter(any(User.class), any(LocalDateTime.class)))
+                .thenReturn(localDate);
+
+        User user = TestUtil.createUser();
+        int agoDays = 30;
+        LocalDateTime agoDateTime = localDate.minusDays(agoDays).atStartOfDay();
+        when(attendanceRepository.findByUserAndAttendanceDateTimeGreaterThanEqual(user, agoDateTime))
                 .thenReturn(new ArrayList<>());
 
         // when
-        User user = TestUtil.createUser();
-        List<LocalDateTime> result = attendanceSearchService.findAttendance(user, 30);
+        List<LocalDateTime> result = attendanceSearchService.findAttendance(user, agoDays);
 
         // then
         assertThat(result).isEmpty();
     }
+
 }

@@ -83,7 +83,8 @@ public class UserProfileApi {
     public ApiResponse<List<UserNotificationResponse>> getNotification(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                        @RequestParam("version") String appVersion,
                                                                        @RequestParam(name = "os", required = false, defaultValue = "android") String os) {
-        OperationSystem operationSystem = OperationSystem.fromString(os.toUpperCase());
+        OperationSystem operationSystem = OperationSystem.fromString(os.toUpperCase())
+                .orElseThrow(UnsupportedOperationException::new);
 
         List<UserNotificationResponse> response;
         if (!systemCheckService.isSystemAvailable()) {

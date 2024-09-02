@@ -1,7 +1,6 @@
 package com.playkuround.playkuroundserver.domain.attendance.api.response;
 
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
-import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,16 +12,13 @@ public class AttendanceRegisterResponse {
 
     private final List<BadgeInfo> newBadges;
 
-    private AttendanceRegisterResponse(NewlyRegisteredBadge newlyRegisteredBadge) {
-        this.newBadges = newlyRegisteredBadge.getNewlyBadges().stream()
-                .map(badgeInfo -> {
-                    BadgeType badgeType = BadgeType.valueOf(badgeInfo.name());
-                    return new BadgeInfo(badgeType.name(), badgeType.getDescription());
-                })
+    private AttendanceRegisterResponse(List<BadgeType> newlyRegisteredBadge) {
+        this.newBadges = newlyRegisteredBadge.stream()
+                .map(badgeType -> new BadgeInfo(badgeType.name(), badgeType.getDescription()))
                 .toList();
     }
 
-    public static AttendanceRegisterResponse from(NewlyRegisteredBadge newlyRegisteredBadge) {
+    public static AttendanceRegisterResponse from(List<BadgeType> newlyRegisteredBadge) {
         return new AttendanceRegisterResponse(newlyRegisteredBadge);
     }
 

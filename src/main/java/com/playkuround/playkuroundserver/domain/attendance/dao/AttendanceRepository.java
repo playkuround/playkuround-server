@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
-    List<Attendance> findByUserAndAttendanceDateTimeAfter(User user, LocalDateTime localDateTime);
+    List<Attendance> findByUserAndAttendanceDateTimeGreaterThanEqual(User user, LocalDateTime localDateTime);
 
-    boolean existsByUserAndAttendanceDateTimeAfter(User user, LocalDateTime localDateTime);
+    boolean existsByUserAndAttendanceDateTimeGreaterThanEqual(User user, LocalDateTime localDateTime);
 
     void deleteByUser(User user);
 }

@@ -5,7 +5,7 @@ import com.playkuround.playkuroundserver.domain.attendance.domain.Attendance;
 import com.playkuround.playkuroundserver.domain.attendance.exception.DuplicateAttendanceException;
 import com.playkuround.playkuroundserver.domain.attendance.exception.InvalidAttendanceLocationException;
 import com.playkuround.playkuroundserver.domain.badge.application.BadgeService;
-import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.score.application.TotalScoreService;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
@@ -15,6 +15,10 @@ import com.playkuround.playkuroundserver.global.util.LocationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +32,7 @@ public class AttendanceRegisterService {
     private final long attendanceScore = 10;
 
     @Transactional
-    public NewlyRegisteredBadge registerAttendance(User user, Location location) {
+    public List<BadgeType> registerAttendance(User user, Location location) {
         validateAttendance(user, location);
 
         saveAttendance(user, location);
@@ -45,20 +49,25 @@ public class AttendanceRegisterService {
     }
 
     private void validateLocation(Location location) {
-        boolean isLocatedInKU = LocationUtils.isLocatedInKU(location);
-        if (!isLocatedInKU) {
+        boolean isNotLocatedInKU = LocationUtils.isNotLocatedInKU(location);
+        if (isNotLocatedInKU) {
             throw new InvalidAttendanceLocationException();
         }
     }
 
     private void validateDuplicateAttendance(User user) {
-        if (attendanceRepository.existsByUserAndAttendanceDateTimeAfter(user, dateTimeService.getLocalDateNow().atStartOfDay())) {
+        LocalDate now = dateTimeService.getLocalDateNow();
+        LocalDateTime startTimeOfNow = now.atStartOfDay();
+
+        boolean isAlreadyAttendance = attendanceRepository.existsByUserAndAttendanceDateTimeGreaterThanEqual(user, startTimeOfNow);
+        if (isAlreadyAttendance) {
             throw new DuplicateAttendanceException();
         }
     }
 
     private void saveAttendance(User user, Location location) {
-        Attendance attendance = Attendance.of(user, location, dateTimeService.getLocalDateTimeNow());
+        LocalDateTime now = dateTimeService.getLocalDateTimeNow();
+        Attendance attendance = Attendance.of(user, location, now);
         attendanceRepository.save(attendance);
     }
 

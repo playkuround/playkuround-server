@@ -1,7 +1,6 @@
 package com.playkuround.playkuroundserver.domain.attendance.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.domain.attendance.api.request.AttendanceRegisterRequest;
 import com.playkuround.playkuroundserver.domain.attendance.dao.AttendanceRepository;
@@ -26,12 +25,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,6 +66,8 @@ class AttendanceApiTest {
     @Value("${redis-key}")
     private String redisSetKey;
 
+    private final Location locationInKU = new Location(37.539927, 127.073006);
+
     @AfterEach
     void clean() {
         attendanceRepository.deleteAllInBatch();
@@ -79,15 +77,15 @@ class AttendanceApiTest {
     }
 
     @Nested
+    @WithMockCustomUser
     @DisplayName("출석 저장하기")
     class saveAttendance {
 
         @Test
-        @WithMockCustomUser
         @DisplayName("최초로 출석하면 BadgeType.ATTENDANCE_1 배지를 받는다.")
         void success_1() throws Exception {
             // given
-            AttendanceRegisterRequest attendanceRegisterRequest = new AttendanceRegisterRequest(37.539927, 127.073006);
+            AttendanceRegisterRequest attendanceRegisterRequest = new AttendanceRegisterRequest(locationInKU.latitude(), locationInKU.longitude());
             String request = objectMapper.writeValueAsString(attendanceRegisterRequest);
 
             // expected
@@ -120,17 +118,15 @@ class AttendanceApiTest {
         }
 
         @Test
-        @WithMockCustomUser
         @DisplayName("출석은 하루에 한번만 가능하다.")
         void fail_1() throws Exception {
             // given
+            LocalDate localDate = LocalDate.of(2024, 7, 1);
             when(dateTimeService.getLocalDateNow())
-                    .thenReturn(LocalDate.of(2024, 7, 1));
+                    .thenReturn(localDate);
 
-            Attendance attendance = Attendance.of(
-                    userRepository.findAll().get(0),
-                    new Location(37.539927, 127.073006),
-                    LocalDateTime.of(2024, 7, 1, 1, 0));
+            User user = userRepository.findAll().get(0);
+            Attendance attendance = Attendance.of(user, locationInKU, localDate.atStartOfDay());
             attendanceRepository.save(attendance);
 
             AttendanceRegisterRequest attendanceRegisterRequest = new AttendanceRegisterRequest(37.539927, 127.073006);
@@ -152,7 +148,6 @@ class AttendanceApiTest {
         }
 
         @Test
-        @WithMockCustomUser
         @DisplayName("출석은 건대 내부에서 해야한다.")
         void fail_2() throws Exception {
             // given
@@ -177,40 +172,40 @@ class AttendanceApiTest {
 
 
     @Nested
+    @WithMockCustomUser
     @DisplayName("출석 조회하기")
     class searchAttendance {
 
         @Test
-        @WithMockCustomUser
-        @DisplayName("지난 한달 출석 조회")
+        @DisplayName("최근 30일 출석 조회")
         void attendanceSearch() throws Exception {
-            // TODO : need refactoring
             // given
-            User user = userRepository.findAll().get(0);
-            Location location = new Location(37.539927, 127.073006);
-
             LocalDateTime todayLocalDate = LocalDateTime.of(2024, 7, 1, 0, 0);
-            List<String> dateList = new ArrayList<>();
-            for (int i = 29; i > 0; i -= 2) {
-                LocalDateTime thatLocalDateTime = todayLocalDate.minusDays(i);
-                String formatDate = thatLocalDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                dateList.add(formatDate);
-
-                attendanceRepository.save(Attendance.of(user, location, thatLocalDateTime));
-            }
-
             when(dateTimeService.getLocalDateNow())
                     .thenReturn(todayLocalDate.toLocalDate());
 
+            User user = userRepository.findAll().get(0);
+            List<Attendance> attendances = List.of(
+                    Attendance.of(user, locationInKU, todayLocalDate),
+                    Attendance.of(user, locationInKU, todayLocalDate.minusDays(1)),
+                    Attendance.of(user, locationInKU, todayLocalDate.minusDays(2)),
+                    Attendance.of(user, locationInKU, todayLocalDate.minusDays(29)),
+                    Attendance.of(user, locationInKU, todayLocalDate.minusDays(30)),
+                    Attendance.of(user, locationInKU, todayLocalDate.minusDays(31))
+            );
+            attendanceRepository.saveAll(attendances);
+
             // expected
-            MvcResult mvcResult = mockMvc.perform(get("/api/attendances"))
+            mockMvc.perform(get("/api/attendances"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.isSuccess").value(true))
-                    .andDo(print())
-                    .andReturn();
-            String json = mvcResult.getResponse().getContentAsString();
-            List<String> target = JsonPath.parse(json).read("$.response.attendances");
-            assertThat(target).isEqualTo(dateList);
+                    .andExpect(jsonPath("$.response.attendances.size()").value(5))
+                    .andExpect(jsonPath("$.response.attendances[0]").value("2024-06-01"))
+                    .andExpect(jsonPath("$.response.attendances[1]").value("2024-06-02"))
+                    .andExpect(jsonPath("$.response.attendances[2]").value("2024-06-29"))
+                    .andExpect(jsonPath("$.response.attendances[3]").value("2024-06-30"))
+                    .andExpect(jsonPath("$.response.attendances[4]").value("2024-07-01"))
+                    .andDo(print());
         }
     }
 }

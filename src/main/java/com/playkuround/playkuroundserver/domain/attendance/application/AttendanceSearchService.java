@@ -21,10 +21,10 @@ public class AttendanceSearchService {
     @Transactional(readOnly = true)
     public List<LocalDateTime> findAttendance(User user, int agoDays) {
         LocalDateTime monthAgo = dateTimeService.getLocalDateNow()
-                .minusMonths(agoDays)
+                .minusDays(agoDays)
                 .atStartOfDay();
 
-        List<Attendance> attendances = attendanceRepository.findByUserAndAttendanceDateTimeAfter(user, monthAgo);
+        List<Attendance> attendances = attendanceRepository.findByUserAndAttendanceDateTimeGreaterThanEqual(user, monthAgo);
         return attendances.stream()
                 .map(Attendance::getAttendanceDateTime)
                 .sorted()

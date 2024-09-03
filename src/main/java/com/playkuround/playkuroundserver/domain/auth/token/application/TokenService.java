@@ -19,20 +19,20 @@ public class TokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthVerifyTokenRepository authVerifyTokenRepository;
 
-    public void registerRefreshToken(String username, String sRefreshToken) {
+    public void saveRefreshToken(String username, String sRefreshToken) {
         refreshTokenRepository.deleteByUserEmail(username);
 
         RefreshToken refreshToken = tokenManager.createRefreshTokenEntity(username, sRefreshToken);
         refreshTokenRepository.save(refreshToken);
     }
 
-    public void deleteRefreshTokenByUser(User user) {
-        refreshTokenRepository.deleteByUserEmail(user.getEmail());
-    }
-
-    public AuthVerifyToken registerAuthVerifyToken() {
+    public AuthVerifyToken saveAuthVerifyToken() {
         AuthVerifyToken authVerifyToken = tokenManager.createAuthVerifyTokenEntity();
         return authVerifyTokenRepository.save(authVerifyToken);
+    }
+
+    public void deleteRefreshTokenByUser(User user) {
+        refreshTokenRepository.deleteByUserEmail(user.getEmail());
     }
 
     @Transactional(readOnly = true)

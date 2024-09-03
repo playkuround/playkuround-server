@@ -13,7 +13,7 @@ import com.playkuround.playkuroundserver.domain.auth.token.domain.AuthVerifyToke
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
-import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthEmailVerifyServiceImpl implements AuthEmailVerifyService {
 
     private final TokenService tokenService;
-    private final UserRepository userRepository;
     private final UserLoginService userLoginService;
     private final AuthEmailRepository authEmailRepository;
     private final DateTimeService dateTimeService;
@@ -38,13 +37,11 @@ public class AuthEmailVerifyServiceImpl implements AuthEmailVerifyService {
         validateEmailAndCode(authEmail, code);
         authEmail.changeInvalidate();
 
-        boolean existsUser = userRepository.existsByEmail(email);
-        if (existsUser) {
+        try {
             TokenDto tokenDto = userLoginService.login(email);
             return new TokenDtoResult(tokenDto);
-        }
-        else {
-            AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
+        } catch (UserNotFoundException e) {
+            AuthVerifyToken authVerifyToken = tokenService.saveAuthVerifyToken();
             return new AuthVerifyTokenResult(authVerifyToken.getAuthVerifyToken());
         }
     }

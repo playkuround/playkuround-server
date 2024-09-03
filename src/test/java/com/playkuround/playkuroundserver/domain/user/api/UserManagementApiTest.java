@@ -69,7 +69,7 @@ class UserManagementApiTest {
     @DisplayName("회원 등록 성공")
     void userRegisterSuccess() throws Exception {
         // given
-        AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
+        AuthVerifyToken authVerifyToken = tokenService.saveAuthVerifyToken();
 
         // when
         UserRegisterRequest registerRequest
@@ -105,7 +105,7 @@ class UserManagementApiTest {
         assertThat(user.getMajor()).isEqualTo(major);
         assertThat(user.getNickname()).isEqualTo(nickname);
         assertThat(user.getRole()).isEqualTo(Role.ROLE_USER);
-        assertThat(user.getAttendanceDays()).isEqualTo(0);
+        assertThat(user.getAttendanceDays()).isZero();
     }
 
     @Test
@@ -128,7 +128,7 @@ class UserManagementApiTest {
                 .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_TOKEN.getStatus().value()))
                 .andDo(print());
         List<User> users = userRepository.findAll();
-        assertThat(users).hasSize(0);
+        assertThat(users).isEmpty();
     }
 
     @Test
@@ -137,7 +137,7 @@ class UserManagementApiTest {
         // given
         User user = User.create(email, nickname, major, Role.ROLE_USER);
         userRepository.save(user);
-        AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
+        AuthVerifyToken authVerifyToken = tokenService.saveAuthVerifyToken();
 
         // when
         UserRegisterRequest registerRequest
@@ -165,7 +165,7 @@ class UserManagementApiTest {
         // given
         User user = User.create(email, nickname, major, Role.ROLE_USER);
         userRepository.save(user);
-        AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
+        AuthVerifyToken authVerifyToken = tokenService.saveAuthVerifyToken();
 
         // when
         UserRegisterRequest registerRequest

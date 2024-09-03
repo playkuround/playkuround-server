@@ -11,14 +11,11 @@ public class CodeGenerator {
 
         String characters = createCharacters(codeTypeSet);
 
-        StringBuilder codeBuilder = new StringBuilder();
         Random random = new Random();
-        for (int i = 0; i < codeLength; i++) {
-            int index = random.nextInt(characters.length());
-            char randomChar = characters.charAt(index);
-            codeBuilder.append(randomChar);
-        }
-        return codeBuilder.toString();
+        return random.ints(codeLength, 0, characters.length())
+                .mapToObj(characters::charAt)
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString();
     }
 
     private void validateParameters(Set<CodeType> codeTypeSet, long codeLength) {

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
 
@@ -152,9 +153,9 @@ public class TokenManager {
     }
 
     public AuthVerifyToken createAuthVerifyTokenEntity() {
-        String key = UUID.randomUUID().toString();
+        String token = UUID.randomUUID().toString();
         LocalDateTime now = dateTimeService.getLocalDateTimeNow();
-        return new AuthVerifyToken(key, now.plusSeconds(authVerifyTokenValidityInSeconds));
+        return new AuthVerifyToken(token, now.plusSeconds(authVerifyTokenValidityInSeconds));
     }
 
     public RefreshToken createRefreshTokenEntity(String username, String refreshToken) {
@@ -162,7 +163,7 @@ public class TokenManager {
         return RefreshToken.builder()
                 .userEmail(username)
                 .refreshToken(refreshToken)
-                .expiredAt(now.plusSeconds(refreshTokenValidityInMilliseconds / 1000))
+                .expiredAt(now.plus(refreshTokenValidityInMilliseconds, ChronoUnit.MILLIS))
                 .build();
     }
 }

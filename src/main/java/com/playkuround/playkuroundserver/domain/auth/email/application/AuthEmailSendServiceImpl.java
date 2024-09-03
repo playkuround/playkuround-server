@@ -5,6 +5,7 @@ import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
 import com.playkuround.playkuroundserver.domain.auth.email.dto.AuthEmailInfo;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.NotKUEmailException;
 import com.playkuround.playkuroundserver.domain.auth.email.exception.SendingLimitExceededException;
+import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.infra.email.EmailService;
 import com.playkuround.playkuroundserver.infra.email.Mail;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class AuthEmailSendServiceImpl implements AuthEmailSendService {
 
     private final EmailService emailService;
     private final AuthEmailRepository authEmailRepository;
+    private final DateTimeService dateTimeService;
     private final TemplateEngine templateEngine;
 
     @Value("${authentication.email.domain}")
@@ -62,8 +64,9 @@ public class AuthEmailSendServiceImpl implements AuthEmailSendService {
     }
 
     private long validateSendingCount(String target) {
-        LocalDateTime today = LocalDate.now().atStartOfDay();
-        long sendingCount = authEmailRepository.countByTargetAndCreatedAtAfter(target, today);
+        LocalDate today = dateTimeService.getLocalDateNow();
+        LocalDateTime startOfToday = today.atStartOfDay();
+        long sendingCount = authEmailRepository.countByTargetAndCreatedAtGreaterThanEqual(target, startOfToday);
         if (sendingCount >= maxSendingCount) {
             throw new SendingLimitExceededException();
         }
@@ -71,7 +74,9 @@ public class AuthEmailSendServiceImpl implements AuthEmailSendService {
     }
 
     private LocalDateTime saveAuthEmail(String target, String authenticationCode) {
-        LocalDateTime expiredAt = LocalDateTime.now().plusSeconds(codeExpirationSeconds);
+        LocalDateTime now = dateTimeService.getLocalDateTimeNow();
+        LocalDateTime expiredAt = now.plusSeconds(codeExpirationSeconds);
+
         AuthEmail authEmail = AuthEmail.createAuthEmail(target, authenticationCode, expiredAt);
         authEmailRepository.save(authEmail);
         return expiredAt;

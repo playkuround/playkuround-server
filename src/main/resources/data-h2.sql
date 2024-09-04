@@ -32,7 +32,7 @@ values (15, 37.544319, 127.076184, 40, '경영관', NULL, 0);
 insert into "landmark" ("id", "latitude", "longitude", "recognition_radius", "name", "user_id", "highest_score")
 values (16, 37.543374, 127.077314, 40, '새천년관', NULL, 0);
 insert into "landmark" ("id", "latitude", "longitude", "recognition_radius", "name", "user_id", "highest_score")
-values (17, 37.543732, 127.078482, 25, '건축관', NULL, 0);
+values (17, 37.5438662, 127.0787897, 60, '건축관', NULL, 0);
 insert into "landmark" ("id", "latitude", "longitude", "recognition_radius", "name", "user_id", "highest_score")
 values (18, 37.543283, 127.078093, 25, '부동산학관', NULL, 0);
 insert into "landmark" ("id", "latitude", "longitude", "recognition_radius", "name", "user_id", "highest_score")

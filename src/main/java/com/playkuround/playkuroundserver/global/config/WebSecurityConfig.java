@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -36,26 +37,23 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
                                 //PathRequest.toH2Console(),
-                                PathRequest.toStaticResources().atCommonLocations()
+                                PathRequest.toStaticResources().atCommonLocations(),
+                                AntPathRequestMatcher.antMatcher("/"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/users/register"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/users/login"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/users/availability"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/auth/tokens"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/auth/emails"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/auth/emails"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/auth/reissue"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui/**"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui.html"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api-docs/**"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/system-available"),
+                                AntPathRequestMatcher.antMatcher("/actu/**")
                         ).permitAll()
                         .requestMatchers(
-                                HttpMethod.GET,
-                                "/", "/swagger-ui/**", "/api-docs/**", "/actu/**",
-                                "/api/users/availability",
-                                "/api/auth/emails",
-                                "/api/system-available"
-                        ).permitAll()
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/", "/actu/**",
-                                "/api/users/register",
-                                "/api/users/login",
-                                "/api/auth/tokens",
-                                "/api/auth/emails",
-                                "/api/auth/reissue"
-                        ).permitAll()
-                        .requestMatchers(
-                                "/api/admin/**"
+                                AntPathRequestMatcher.antMatcher("/api/admin/**")
                         ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

@@ -24,15 +24,17 @@ public class LandmarkRankService {
     @Transactional(readOnly = true)
     public ScoreRankingResponse getRankTop100ByLandmark(User user, Long landmarkId) {
         ScoreRankingResponse response = ScoreRankingResponse.createEmptyResponse();
-        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime(dateTimeService.getLocalDateNow());
 
+        LocalDateTime monthStartDateTime = DateTimeUtils.getMonthStartDateTime(dateTimeService.getLocalDateNow());
         List<NicknameAndScoreAndBadgeType> nicknameAndScores = adventureRepository.findRankTop100DescByLandmarkId(landmarkId, monthStartDateTime);
-        nicknameAndScores.forEach(nicknameAndScore ->
-                response.addRank(nicknameAndScore.nickname(), nicknameAndScore.score(), nicknameAndScore.badgeType()));
+        for (NicknameAndScoreAndBadgeType nicknameAndScore : nicknameAndScores) {
+            response.addRank(nicknameAndScore.nickname(), nicknameAndScore.score(), nicknameAndScore.badgeType());
+        }
 
         RankAndScore rankAndScore = adventureRepository.findMyRankByLandmarkId(user, landmarkId, monthStartDateTime)
                 .orElseGet(() -> new RankAndScore(0, 0));
         response.setMyRank(rankAndScore.ranking(), rankAndScore.score(), user.getProfileBadge());
+
         return response;
     }
 }

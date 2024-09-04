@@ -9,11 +9,9 @@ public class NearestLandmark {
     private String name;
     private Long landmarkId;
     private double distance;
-    private boolean hasResult = false;
 
     public void update(Landmark landmark, double distance) {
-        this.hasResult = true;
-        if (landmarkId == null || this.distance > distance) {
+        if (this.landmarkId == null || this.distance > distance) {
             this.distance = distance;
             this.landmarkId = landmark.getId();
             this.name = landmark.getName().name();

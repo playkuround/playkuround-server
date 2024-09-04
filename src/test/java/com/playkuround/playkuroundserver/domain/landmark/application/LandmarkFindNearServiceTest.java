@@ -28,57 +28,53 @@ class LandmarkFindNearServiceTest {
     private LandmarkRepository landmarkRepository;
 
     @Test
-    @DisplayName("가장 가까운 랜드마크 조회")
+    @DisplayName("인식 반경 내에 여러 랜드마크가 있다면, 중심 좌표와 더 가까운 랜드마크가 반환된다.")
     void findNearestLandmark() {
         // given
         Landmark mockLandmark1 = mock(Landmark.class);
         when(mockLandmark1.getId()).thenReturn(1L);
-        when(mockLandmark1.getLatitude()).thenReturn(37.539927);
         when(mockLandmark1.getName()).thenReturn(LandmarkType.중문);
+        when(mockLandmark1.getLatitude()).thenReturn(37.539927);
         when(mockLandmark1.getLongitude()).thenReturn(127.073006);
         when(mockLandmark1.getRecognitionRadius()).thenReturn(20);
 
         Landmark mockLandmark2 = mock(Landmark.class);
-        when(mockLandmark2.getLatitude()).thenReturn(37.0);
-        when(mockLandmark2.getLongitude()).thenReturn(127.0);
-        when(mockLandmark2.getRecognitionRadius()).thenReturn(20);
+        when(mockLandmark2.getLatitude()).thenReturn(37.53992);
+        when(mockLandmark2.getLongitude()).thenReturn(127.07300);
+        when(mockLandmark2.getRecognitionRadius()).thenReturn(100);
 
         List<Landmark> landmarks = List.of(mockLandmark1, mockLandmark2);
         when(landmarkRepository.findAll()).thenReturn(landmarks);
 
+        Location location = new Location(mockLandmark1.getLatitude(), mockLandmark1.getLongitude());
+
         // when
-        Location location = new Location(37.539927, 127.073006);
         NearestLandmark nearestLandmark = landmarkFindNearService.findNearestLandmark(location);
 
         // then
-        assertThat(nearestLandmark.isHasResult()).isTrue();
-        assertThat(nearestLandmark.getLandmarkId()).isEqualTo(1L);
-        assertThat(nearestLandmark.getName()).isEqualTo(LandmarkType.중문.name());
+        assertThat(nearestLandmark.getLandmarkId()).isEqualTo(mockLandmark1.getId());
+        assertThat(nearestLandmark.getName()).isEqualTo(mockLandmark1.getName().name());
     }
 
     @Test
-    @DisplayName("인식 반경에 랜드마크가 없다면 결과 데이터가 없다.")
+    @DisplayName("인식 반경 내에 랜드마크가 없다면 결과 데이터가 없다.")
     void findNearestLandmarkEmpty() {
         // given
-        Landmark mockLandmark1 = mock(Landmark.class);
-        when(mockLandmark1.getLatitude()).thenReturn(37.539927);
-        when(mockLandmark1.getLongitude()).thenReturn(127.073006);
-        when(mockLandmark1.getRecognitionRadius()).thenReturn(5);
+        Landmark mockLandmark = mock(Landmark.class);
+        when(mockLandmark.getLatitude()).thenReturn(37.539927);
+        when(mockLandmark.getLongitude()).thenReturn(127.073006);
+        when(mockLandmark.getRecognitionRadius()).thenReturn(5);
 
-        Landmark mockLandmark2 = mock(Landmark.class);
-        when(mockLandmark2.getLatitude()).thenReturn(37.0);
-        when(mockLandmark2.getLongitude()).thenReturn(127.0);
-        when(mockLandmark2.getRecognitionRadius()).thenReturn(3);
-
-        List<Landmark> landmarks = List.of(mockLandmark1, mockLandmark2);
+        List<Landmark> landmarks = List.of(mockLandmark);
         when(landmarkRepository.findAll()).thenReturn(landmarks);
 
+        Location location = new Location(0, 0);
+
         // when
-        Location location = new Location(37.539, 127.0736);
         NearestLandmark nearestLandmark = landmarkFindNearService.findNearestLandmark(location);
 
         // then
-        assertThat(nearestLandmark.isHasResult()).isFalse();
+        assertThat(nearestLandmark.getLandmarkId()).isNull();
     }
 
 }

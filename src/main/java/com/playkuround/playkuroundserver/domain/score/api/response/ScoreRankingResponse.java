@@ -20,13 +20,13 @@ public class ScoreRankingResponse {
         return new ScoreRankingResponse();
     }
 
-    public void addRank(String nickname, int score, BadgeType badgeType) {
-        String badgeTypeName = badgeType != null ? badgeType.name() : null;
+    public void addRank(String nickname, int score, BadgeType profileBadgeType) {
+        String badgeTypeName = profileBadgeType != null ? profileBadgeType.name() : null;
         this.rank.add(new RankList(nickname, badgeTypeName, score));
     }
 
-    public void setMyRank(int ranking, int score, BadgeType badgeType) {
-        String badgeTypeName = badgeType != null ? badgeType.name() : null;
+    public void setMyRank(int ranking, int score, BadgeType profileBadgeType) {
+        String badgeTypeName = profileBadgeType != null ? profileBadgeType.name() : null;
         this.myRank = new MyRank(ranking, score, badgeTypeName);
     }
 

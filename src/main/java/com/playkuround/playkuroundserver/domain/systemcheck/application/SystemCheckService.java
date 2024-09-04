@@ -20,6 +20,7 @@ public class SystemCheckService {
     private final AppVersionRepository appVersionRepository;
     private final SystemCheckRepository systemCheckRepository;
 
+    @Transactional(readOnly = true)
     public boolean isSystemAvailable() {
         Optional<SystemCheck> optionalSystemCheck = systemCheckRepository.findTopByOrderByUpdatedAtDesc();
         return optionalSystemCheck.map(SystemCheck::isAvailable)
@@ -33,10 +34,11 @@ public class SystemCheckService {
         systemCheckRepository.save(systemCheck);
     }
 
+    @Transactional(readOnly = true)
     public HealthCheckDto healthCheck() {
         boolean systemAvailable = isSystemAvailable();
-        List<AppVersion> supportAppVersionList = appVersionRepository.findAll();
 
+        List<AppVersion> supportAppVersionList = appVersionRepository.findAll();
         List<OSAndVersion> list = supportAppVersionList.stream()
                 .map(appVersion -> new OSAndVersion(appVersion.getOs(), appVersion.getVersion()))
                 .distinct()

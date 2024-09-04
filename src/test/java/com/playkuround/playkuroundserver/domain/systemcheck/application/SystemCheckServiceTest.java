@@ -100,26 +100,26 @@ class SystemCheckServiceTest {
             // given
             when(systemCheckRepository.findTopByOrderByUpdatedAtDesc())
                     .thenReturn(Optional.of(new SystemCheck(true)));
+
+            List<AppVersion> supportedAppVersion = List.of(
+                    new AppVersion(OperationSystem.ANDROID, "1.0.0"),
+                    new AppVersion(OperationSystem.ANDROID, "1.0.1"),
+                    new AppVersion(OperationSystem.IOS, "1.0.3")
+            );
             when(appVersionRepository.findAll())
-                    .thenReturn(
-                            List.of(
-                                    new AppVersion(OperationSystem.ANDROID, "1.0.0"),
-                                    new AppVersion(OperationSystem.ANDROID, "1.0.1"),
-                                    new AppVersion(OperationSystem.IOS, "1.0.3")
-                            )
-                    );
+                    .thenReturn(supportedAppVersion);
 
             // when
             HealthCheckDto healthCheckDto = systemCheckService.healthCheck();
 
             // then
             assertThat(healthCheckDto.systemAvailable()).isTrue();
-            assertThat(healthCheckDto.supportAppVersionList())
-                    .containsExactlyInAnyOrder(
-                            new OSAndVersion(OperationSystem.ANDROID, "1.0.0"),
-                            new OSAndVersion(OperationSystem.ANDROID, "1.0.1"),
-                            new OSAndVersion(OperationSystem.IOS, "1.0.3")
-                    );
+
+            List<OSAndVersion> expected = supportedAppVersion.stream()
+                    .map(appVersion -> new OSAndVersion(appVersion.getOs(), appVersion.getVersion()))
+                    .toList();
+            assertThat(healthCheckDto.supportAppVersionList()).hasSize(3)
+                    .containsExactlyInAnyOrderElementsOf(expected);
         }
     }
 

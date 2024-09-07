@@ -13,20 +13,6 @@ import java.io.IOException;
 @Slf4j
 public class LoggingFilter extends OncePerRequestFilter {
 
-    private static void logRequest(HttpServletRequest request) {
-        if (request.getRequestURI() != null &&
-                (request.getRequestURI().contains("/prometheus") || request.getRequestURI().equals("/api/system-available"))) {
-            return;
-        }
-        String queryString = request.getQueryString();
-        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        log.info("Request : {} uri=[{}] content-type=[{}] token=[{}]",
-                request.getMethod(),
-                queryString == null ? request.getRequestURI() : request.getRequestURI() + queryString,
-                request.getContentType(),
-                bearerToken);
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (!isAsyncDispatch(request)) {
@@ -34,6 +20,29 @@ public class LoggingFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
+
+    private void logRequest(HttpServletRequest request) {
+        if (isNotLogFilterTarget(request)) {
+            return;
+        }
+
+        String queryString = request.getQueryString();
+        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        log.info("Request : {} uri=[{}] content-type=[{}] token=[{}]",
+                request.getMethod(),
+                queryString == null ? request.getRequestURI() : request.getRequestURI() + "?" + queryString,
+                request.getContentType(),
+                bearerToken);
+    }
+
+    private boolean isNotLogFilterTarget(HttpServletRequest request) {
+        if (request.getRequestURI() == null) {
+            return false;
+        }
+        String requestURI = request.getRequestURI();
+        return requestURI.contains("/prometheus") || requestURI.equals("/api/system-available");
+    }
+
 
 }
 

@@ -1,8 +1,16 @@
 package com.playkuround.playkuroundserver.domain.user.domain;
 
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toMap;
 
 @SuppressWarnings("NonAsciiCharacters")
+@RequiredArgsConstructor
 public enum Major {
 
     // 문과대학
@@ -99,14 +107,25 @@ public enum Major {
 
     private final Collage collage;
 
-    Major(Collage collage) {
-        this.collage = collage;
+    private static final Map<String, Major> stringToEnum =
+            Stream.of(values())
+                    .collect(toMap(Object::toString, e -> e));
+
+    public static Optional<Major> fromString(String source) {
+        if ("산업경영공학부 산업공학과".equals(source)) {
+            return Optional.of(Major.산업경영공학부_산업공학과);
+        }
+        if ("산업경영공학부 신산업융합학과".equals(source)) {
+            return Optional.of(Major.산업경영공학부_신산업융합학과);
+        }
+        return Optional.ofNullable(stringToEnum.get(source));
     }
 
     public BadgeType getCollageBadgeType() {
         return collage.collageBadgeType;
     }
 
+    @RequiredArgsConstructor
     enum Collage {
         문과대학(BadgeType.COLLEGE_OF_LIBERAL_ARTS),
         이과대학(BadgeType.COLLEGE_OF_SCIENCES),
@@ -125,9 +144,6 @@ public enum Major {
 
         private final BadgeType collageBadgeType;
 
-        Collage(BadgeType collageBadgeType) {
-            this.collageBadgeType = collageBadgeType;
-        }
     }
 
 }

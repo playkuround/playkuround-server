@@ -37,8 +37,10 @@ public class UserManagementApi {
     public ApiResponse<UserRegisterResponse> registerUser(@RequestBody @Valid UserRegisterRequest request) {
         tokenService.validateAuthVerifyToken(request.getAuthVerifyToken());
 
+        Major major = Major.fromString(request.getMajor())
+                .orElseThrow(() -> new IllegalArgumentException("잘못된 학과명입니다."));
         UserRegisterDto userRegisterDto
-                = new UserRegisterDto(request.getEmail(), request.getNickname(), Major.valueOf(request.getMajor()));
+                = new UserRegisterDto(request.getEmail(), request.getNickname(), major);
         TokenDto tokenDto = userRegisterService.registerUser(userRegisterDto);
 
         tokenService.deleteAuthVerifyToken(request.getAuthVerifyToken());

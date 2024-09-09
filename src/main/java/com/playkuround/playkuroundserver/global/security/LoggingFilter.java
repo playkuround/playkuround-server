@@ -30,7 +30,7 @@ public class LoggingFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         log.info("Request : {} uri=[{}] content-type=[{}] token=[{}]",
                 request.getMethod(),
-                queryString == null ? request.getRequestURI() : request.getRequestURI() + "?" + queryString,
+                queryString == null || queryString.isEmpty() ? request.getRequestURI() : request.getRequestURI() + "?" + queryString,
                 request.getContentType(),
                 bearerToken);
     }

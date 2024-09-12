@@ -9,9 +9,11 @@ import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.landmark.domain.Landmark;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.Notification;
 import com.playkuround.playkuroundserver.domain.user.domain.NotificationEnum;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.domain.user.exception.UserNotFoundException;
 import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,12 +34,12 @@ import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BadgeServiceTest {
@@ -343,44 +345,95 @@ class BadgeServiceTest {
     @DisplayName("배지 수동 등록")
     class saveManualBadge {
 
-        @ParameterizedTest
-        @ValueSource(booleans = {true, false})
-        @DisplayName("정상 저장되었다면 true, 이미 저장된 배지였으면 false를 반환한다.")
-        void success_1(boolean hasBadge) {
-            // given
-            User user = TestUtil.createUser();
-            BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
-            when(userRepository.findByEmail(user.getEmail()))
-                    .thenReturn(Optional.of(user));
-            when(badgeRepository.existsByUserAndBadgeType(user, badgeType))
-                    .thenReturn(hasBadge);
-
-            // when
-            boolean result = badgeService.saveManualBadge(user.getEmail(), badgeType, false);
-
-            // then
-            assertThat(result).isEqualTo(!hasBadge);
-            assertThat(user.getNotification()).isNull();
-        }
-
         @Test
-        @DisplayName("개인 메시지로 저장")
-        void success_2() {
+        @DisplayName("새롭게 정상 저장된 배지 개수를 반환한다.")
+        void success_1() {
             // given
-            User user = TestUtil.createUser();
+            List<User> users = List.of(
+                    TestUtil.createUser("user1@konkuk.ac.kr", "user1", Major.경영학과),
+                    TestUtil.createUser("user2@konkuk.ac.kr", "user2", Major.컴퓨터공학부),
+                    TestUtil.createUser("user3@konkuk.ac.kr", "user3", Major.국제무역학과)
+            );
+            List<String> emails = users.stream()
+                    .map(User::getEmail)
+                    .toList();
+            when(userRepository.findByEmailIn(emails))
+                    .thenReturn(users);
+
             BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
-            when(userRepository.findByEmail(user.getEmail()))
-                    .thenReturn(Optional.of(user));
-            when(badgeRepository.existsByUserAndBadgeType(user, badgeType))
+            when(badgeRepository.existsByUserAndBadgeType(users.get(0), badgeType))
+                    .thenReturn(true);
+            when(badgeRepository.existsByUserAndBadgeType(users.get(1), badgeType))
+                    .thenReturn(false);
+            when(badgeRepository.existsByUserAndBadgeType(users.get(2), badgeType))
                     .thenReturn(false);
 
             // when
-            boolean result = badgeService.saveManualBadge(user.getEmail(), badgeType, true);
+            int result = badgeService.saveManualBadge(emails, badgeType, false);
 
             // then
-            assertThat(result).isTrue();
-            assertThat(user.getNotification())
+            assertThat(result).isEqualTo(2);
+            verify(badgeRepository, times(2)).save(any(Badge.class));
+        }
+
+        @Test
+        @DisplayName("registerMessage 값을 true로 설정하면 user.notification에 원소가 추가된다.")
+        void success_2() {
+            // given
+            List<User> users = List.of(
+                    TestUtil.createUser("user1@konkuk.ac.kr", "user1", Major.경영학과),
+                    TestUtil.createUser("user2@konkuk.ac.kr", "user2", Major.컴퓨터공학부),
+                    TestUtil.createUser("user3@konkuk.ac.kr", "user3", Major.국제무역학과)
+            );
+            List<String> emails = users.stream()
+                    .map(User::getEmail)
+                    .toList();
+            when(userRepository.findByEmailIn(emails))
+                    .thenReturn(users);
+
+            BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
+            when(badgeRepository.existsByUserAndBadgeType(users.get(0), badgeType))
+                    .thenReturn(true);
+            when(badgeRepository.existsByUserAndBadgeType(users.get(1), badgeType))
+                    .thenReturn(false);
+            when(badgeRepository.existsByUserAndBadgeType(users.get(2), badgeType))
+                    .thenReturn(false);
+
+            // when
+            int result = badgeService.saveManualBadge(emails, badgeType, true);
+
+            // then
+            assertThat(result).isEqualTo(2);
+            verify(badgeRepository, times(2)).save(any(Badge.class));
+
+            assertThat(users.get(0).getNotification()).isEmpty();
+            assertThat(users.get(1).getNotification())
                     .containsOnly(new Notification(NotificationEnum.NEW_BADGE, badgeType.name()));
+            assertThat(users.get(2).getNotification())
+                    .containsOnly(new Notification(NotificationEnum.NEW_BADGE, badgeType.name()));
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 이메일이 하나라도 존재하면 예외를 던진다.")
+        void fail_1() {
+            // given
+            List<User> users = List.of(
+                    TestUtil.createUser("user1@konkuk.ac.kr", "user1", Major.경영학과),
+                    TestUtil.createUser("user2@konkuk.ac.kr", "user2", Major.컴퓨터공학부),
+                    TestUtil.createUser("user3@konkuk.ac.kr", "user3", Major.국제무역학과)
+            );
+            List<String> emails = users.subList(1, users.size()).stream()
+                    .map(User::getEmail)
+                    .toList();
+            when(userRepository.findByEmailIn(emails))
+                    .thenReturn(users);
+
+            BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
+
+            // expected
+            assertThatThrownBy(() -> badgeService.saveManualBadge(emails, badgeType, false))
+                    .isInstanceOf(UserNotFoundException.class);
+            verify(badgeRepository, times(0)).save(any(Badge.class));
         }
     }
 

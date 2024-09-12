@@ -50,6 +50,7 @@ public class User extends BaseTimeEntity {
         this.nickname = nickname;
         this.major = major;
         this.role = role;
+        this.notification = new HashSet<>();
     }
 
     public static User create(String email, String nickname, Major major, Role role) {

@@ -27,7 +27,7 @@ public class NearestLandmarkResponse {
     }
 
     public static NearestLandmarkResponse from(NearestLandmark nearestLandmark) {
-        if (nearestLandmark.isHasResult()) {
+        if (nearestLandmark.getLandmarkId() != null) {
             return new NearestLandmarkResponse(nearestLandmark.getName(), nearestLandmark.getDistance(), nearestLandmark.getLandmarkId());
         }
         return new NearestLandmarkResponse();

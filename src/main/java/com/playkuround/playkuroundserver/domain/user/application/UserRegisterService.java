@@ -1,7 +1,11 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
+import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
+import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.Role;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 import com.playkuround.playkuroundserver.domain.user.dto.UserRegisterDto;
@@ -19,6 +23,7 @@ public class UserRegisterService {
 
     private final UserRepository userRepository;
     private final UserLoginService userLoginService;
+    private final BadgeRepository badgeRepository;
 
     @Transactional
     public TokenDto registerUser(UserRegisterDto userRegisterDto) {
@@ -27,6 +32,13 @@ public class UserRegisterService {
 
         User user = User.create(userRegisterDto.email(), userRegisterDto.nickname(), userRegisterDto.major(), Role.ROLE_USER);
         userRepository.save(user);
+
+        Major major = userRegisterDto.major();
+        BadgeType collageBadgeType = major.getCollageBadgeType();
+        Badge badge = new Badge(user, collageBadgeType);
+        badgeRepository.save(badge);
+
+        user.updateProfileBadge(collageBadgeType);
 
         return userLoginService.login(user.getEmail());
     }

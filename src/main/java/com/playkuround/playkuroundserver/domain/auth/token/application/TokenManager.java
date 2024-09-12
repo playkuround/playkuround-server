@@ -6,6 +6,7 @@ import com.playkuround.playkuroundserver.domain.auth.token.domain.RefreshToken;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.TokenType;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
 import com.playkuround.playkuroundserver.domain.auth.token.exception.InvalidTokenException;
+import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
 
@@ -36,13 +38,15 @@ public class TokenManager {
     private final Long refreshTokenValidityInMilliseconds;
     private final Long authVerifyTokenValidityInSeconds;
     private final UserDetailsService userDetailsService;
+    private final DateTimeService dateTimeService;
 
     public TokenManager(@Value("${token.secret}") String secretKey,
                         @Value("${token.issuer}") String issuer,
                         @Value("${token.access-token-expiration-seconds}") Long accessTokenExpirationSeconds,
                         @Value("${token.refresh-token-expiration-seconds}") Long refreshTokenExpirationSeconds,
                         @Value("${token.authverify-token-expiration-seconds}") Long authVerifyTokenExpirationSeconds,
-                        UserDetailsService userDetailsService) {
+                        UserDetailsService userDetailsService,
+                        DateTimeService dateTimeService) {
         this.accessTokenValidityInMilliseconds = accessTokenExpirationSeconds * 1000;
         this.refreshTokenValidityInMilliseconds = refreshTokenExpirationSeconds * 1000;
         this.authVerifyTokenValidityInSeconds = authVerifyTokenExpirationSeconds;
@@ -51,6 +55,7 @@ public class TokenManager {
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.tokenTypeHeaderKey = "tokentype";
         this.userDetailsService = userDetailsService;
+        this.dateTimeService = dateTimeService;
     }
 
     public TokenDto createTokenDto(String username) {
@@ -148,17 +153,17 @@ public class TokenManager {
     }
 
     public AuthVerifyToken createAuthVerifyTokenEntity() {
-        String key = UUID.randomUUID().toString();
-        LocalDateTime now = LocalDateTime.now();
-        return new AuthVerifyToken(key, now.plusSeconds(authVerifyTokenValidityInSeconds));
+        String token = UUID.randomUUID().toString();
+        LocalDateTime now = dateTimeService.getLocalDateTimeNow();
+        return new AuthVerifyToken(token, now.plusSeconds(authVerifyTokenValidityInSeconds));
     }
 
     public RefreshToken createRefreshTokenEntity(String username, String refreshToken) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = dateTimeService.getLocalDateTimeNow();
         return RefreshToken.builder()
                 .userEmail(username)
                 .refreshToken(refreshToken)
-                .expiredAt(now.plusSeconds(refreshTokenValidityInMilliseconds / 1000))
+                .expiredAt(now.plus(refreshTokenValidityInMilliseconds, ChronoUnit.MILLIS))
                 .build();
     }
 }

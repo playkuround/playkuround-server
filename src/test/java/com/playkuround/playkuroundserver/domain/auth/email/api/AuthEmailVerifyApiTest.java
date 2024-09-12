@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.auth.email.api;
 
 import com.jayway.jsonpath.JsonPath;
+import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
 import com.playkuround.playkuroundserver.domain.auth.token.dao.AuthVerifyTokenRepository;
@@ -16,8 +17,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -30,8 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@SpringBootTest(properties = "spring.profiles.active=test")
+@IntegrationControllerTest
 class AuthEmailVerifyApiTest {
 
     @Autowired
@@ -51,10 +49,10 @@ class AuthEmailVerifyApiTest {
 
     @AfterEach
     void clean() {
-        authEmailRepository.deleteAll();
-        refreshTokenRepository.deleteAll();
-        authVerifyTokenRepository.deleteAll();
-        userRepository.deleteAll();
+        authEmailRepository.deleteAllInBatch();
+        refreshTokenRepository.deleteAllInBatch();
+        authVerifyTokenRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
     }
 
     @Test

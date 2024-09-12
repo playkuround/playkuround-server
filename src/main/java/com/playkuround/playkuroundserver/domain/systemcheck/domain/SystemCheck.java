@@ -24,7 +24,4 @@ public class SystemCheck extends BaseTimeEntity {
         this.available = available;
     }
 
-    public void updateAvailable(boolean available) {
-        this.available = available;
-    }
 }

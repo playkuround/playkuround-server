@@ -6,11 +6,10 @@ import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
 
 import java.util.Optional;
-import java.util.Set;
 
 public interface CollegeSpecialBadgeService {
 
     boolean supports(LandmarkType landmarkType);
 
-    Optional<BadgeType> getBadgeType(User user, Set<BadgeType> userHadBadgeSet, Landmark landmark);
+    Optional<BadgeType> getBadgeType(User user, Landmark landmark);
 }

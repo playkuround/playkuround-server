@@ -18,15 +18,16 @@ import java.util.Collection;
 import java.util.List;
 
 @Component
-public class WithMockCustomUserSecurityContextFactory
-        implements WithSecurityContextFactory<WithMockCustomUser> {
+public class WithMockCustomUserSecurityContextFactory implements WithSecurityContextFactory<WithMockCustomUser> {
 
     @Autowired
     private UserRepository userRepository;
 
     public SecurityContext createSecurityContext(WithMockCustomUser annotation) {
         User user = User.create(annotation.email(), annotation.nickname(), annotation.major(), annotation.role());
+        user.updateProfileBadge(annotation.badgeType());
         userRepository.save(user);
+
         String roleName = user.getRole().toString();
         List<String> role = Arrays.stream(roleName.split(",")).toList();
         UserDetailsImpl userDetails = new UserDetailsImpl(user, "", role);

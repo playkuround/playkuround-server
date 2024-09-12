@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth/emails")
+@RequestMapping("api/auth/emails")
 @Tag(name = "Auth", description = "인증, 토큰 서비스")
 public class AuthEmailApi {
 
@@ -26,7 +26,7 @@ public class AuthEmailApi {
 
     @PostMapping
     @Operation(summary = "인증메일 전송", description = "해당 메일로 숫자 6자리의 인증 코드를 전송합니다. " +
-            "인증 메일 전송은 자정을 기준으로 최대 5번까지 가능합니다. 또한 인증 유효시간은 5분입니다.")
+            "인증 메일 전송은 자정을 기준으로 이메일당 최대 5번까지 가능합니다. 또한 인증 유효시간은 5분입니다.")
     public ApiResponse<AuthEmailSendResponse> authEmailSend(@RequestBody @Valid AuthEmailSendRequest requestDto) {
         AuthEmailInfo authEmailInfo = authEmailSendService.sendAuthEmail(requestDto.getTarget().toLowerCase());
         return ApiUtils.success(AuthEmailSendResponse.from(authEmailInfo));

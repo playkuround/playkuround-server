@@ -17,14 +17,14 @@ public class TokenReissueService {
 
     @Transactional
     public TokenDto reissue(String refreshToken) {
-        String username = tokenManager.getUsernameFromToken(refreshToken);
-
-        if (!refreshTokenRepository.existsByUserEmail(username)) {
+        String userEmail = tokenManager.getUsernameFromToken(refreshToken);
+        if (!refreshTokenRepository.existsByUserEmail(userEmail)) {
             throw new InvalidRefreshTokenException();
         }
 
-        TokenDto tokenDto = tokenManager.createTokenDto(username);
-        tokenService.registerRefreshToken(username, tokenDto.getRefreshToken());
+        TokenDto tokenDto = tokenManager.createTokenDto(userEmail);
+        tokenService.saveRefreshToken(userEmail, tokenDto.getRefreshToken());
+
         return tokenDto;
     }
 }

@@ -2,6 +2,7 @@ package com.playkuround.playkuroundserver.domain.auth.email.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.domain.auth.email.api.request.AuthEmailSendRequest;
 import com.playkuround.playkuroundserver.domain.auth.email.dao.AuthEmailRepository;
 import com.playkuround.playkuroundserver.domain.auth.email.domain.AuthEmail;
@@ -15,8 +16,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,15 +27,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@SpringBootTest(properties = "spring.profiles.active=test")
+@IntegrationControllerTest
 class AuthEmailSendApiTest {
 
     @Autowired
@@ -56,16 +52,14 @@ class AuthEmailSendApiTest {
 
     @AfterEach
     void clean() {
-        authEmailRepository.deleteAll();
-        userRepository.deleteAll();
+        authEmailRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
     }
 
     @Test
     @DisplayName("이메일 인증 전송 성공")
     void sendAuthEmailSuccess() throws Exception {
         // given
-        doNothing().when(emailService).sendMail(any());
-
         String email = "test@konkuk.ac.kr";
         AuthEmailSendRequest attendanceRegisterRequest = new AuthEmailSendRequest(email);
         String request = objectMapper.writeValueAsString(attendanceRegisterRequest);
@@ -73,8 +67,7 @@ class AuthEmailSendApiTest {
         // expected
         MvcResult mvcResult = mockMvc.perform(post("/api/auth/emails")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request)
-                )
+                        .content(request))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))
                 .andExpect(jsonPath("$.response.expireAt").exists())

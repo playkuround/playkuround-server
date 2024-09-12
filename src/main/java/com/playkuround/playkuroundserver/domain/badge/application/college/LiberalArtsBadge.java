@@ -3,9 +3,9 @@ package com.playkuround.playkuroundserver.domain.badge.application.college;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 
-public class LiberalArtsBadge implements CollegeBadge {
+class LiberalArtsBadge implements CollegeBadge {
 
-    protected LiberalArtsBadge() {
+    LiberalArtsBadge() {
     }
 
     @Override

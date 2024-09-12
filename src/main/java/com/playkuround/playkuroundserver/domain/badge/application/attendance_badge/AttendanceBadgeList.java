@@ -7,7 +7,7 @@ import java.util.List;
 public class AttendanceBadgeList {
 
     @Getter
-    private final static List<AttendanceBadge> attendanceBadges = List.of(
+    private static final List<AttendanceBadge> attendanceBadges = List.of(
             new Attendance_1(),
             new Attendance_5(),
             new Attendance_10(),

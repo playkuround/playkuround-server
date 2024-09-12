@@ -2,11 +2,11 @@ package com.playkuround.playkuroundserver.domain.badge.application.specialday_ba
 
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 
-import java.util.Set;
+import java.time.LocalDate;
 
 public interface SpecialDayBadge {
 
-    boolean supports(Set<BadgeType> userBadgeSet);
+    boolean supports(LocalDate localDate);
 
     BadgeType getBadgeType();
 }

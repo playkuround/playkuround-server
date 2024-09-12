@@ -5,88 +5,58 @@ import com.playkuround.playkuroundserver.domain.badge.application.college.Colleg
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.landmark.domain.LandmarkType;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
-import java.util.Map;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CollegeBadgeTest {
 
-    @Test
-    @DisplayName("뱃지 개수가 0개이면 빈리스트가 반환된다")
-    void CollegeBadge() {
-        Map<LandmarkType, BadgeType> map = Map.ofEntries(
-                Map.entry(LandmarkType.인문학관, BadgeType.COLLEGE_OF_LIBERAL_ARTS),
-                Map.entry(LandmarkType.과학관, BadgeType.COLLEGE_OF_SCIENCES),
-                Map.entry(LandmarkType.건축관, BadgeType.COLLEGE_OF_ARCHITECTURE),
-                Map.entry(LandmarkType.신공학관, BadgeType.COLLEGE_OF_ENGINEERING),
-                Map.entry(LandmarkType.상허연구관, BadgeType.COLLEGE_OF_SOCIAL_SCIENCES),
-                Map.entry(LandmarkType.경영관, BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION),
-                Map.entry(LandmarkType.부동산학관, BadgeType.COLLEGE_OF_REAL_ESTATE),
-                Map.entry(LandmarkType.생명과학관, BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY),
-                Map.entry(LandmarkType.동물생명과학관, BadgeType.COLLEGE_OF_BIOLOGICAL_SCIENCES),
-                Map.entry(LandmarkType.수의학관, BadgeType.COLLEGE_OF_VETERINARY_MEDICINE),
-                Map.entry(LandmarkType.예디대, BadgeType.COLLEGE_OF_ART_AND_DESIGN),
-                Map.entry(LandmarkType.공예관, BadgeType.COLLEGE_OF_ART_AND_DESIGN),
-                Map.entry(LandmarkType.교육과학관, BadgeType.COLLEGE_OF_EDUCATION)
-        );
+    // 기획에서 정한 건물별 배지
+    private final List<CollegeBadgeRecord> answer = List.of(
+            new CollegeBadgeRecord(LandmarkType.인문학관, BadgeType.COLLEGE_OF_LIBERAL_ARTS),
+            new CollegeBadgeRecord(LandmarkType.과학관, BadgeType.COLLEGE_OF_SCIENCES),
+            new CollegeBadgeRecord(LandmarkType.건축관, BadgeType.COLLEGE_OF_ARCHITECTURE),
+            new CollegeBadgeRecord(LandmarkType.신공학관, BadgeType.COLLEGE_OF_ENGINEERING),
+            new CollegeBadgeRecord(LandmarkType.상허연구관, BadgeType.COLLEGE_OF_SOCIAL_SCIENCES),
+            new CollegeBadgeRecord(LandmarkType.경영관, BadgeType.COLLEGE_OF_BUSINESS_ADMINISTRATION),
+            new CollegeBadgeRecord(LandmarkType.부동산학관, BadgeType.COLLEGE_OF_REAL_ESTATE),
+            new CollegeBadgeRecord(LandmarkType.생명과학관, BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY),
+            new CollegeBadgeRecord(LandmarkType.동물생명과학관, BadgeType.COLLEGE_OF_BIOLOGICAL_SCIENCES),
+            new CollegeBadgeRecord(LandmarkType.수의학관, BadgeType.COLLEGE_OF_VETERINARY_MEDICINE),
+            new CollegeBadgeRecord(LandmarkType.예디대, BadgeType.COLLEGE_OF_ART_AND_DESIGN),
+            new CollegeBadgeRecord(LandmarkType.공예관, BadgeType.COLLEGE_OF_ART_AND_DESIGN),
+            new CollegeBadgeRecord(LandmarkType.교육과학관, BadgeType.COLLEGE_OF_EDUCATION),
+            new CollegeBadgeRecord(LandmarkType.산학협동관, BadgeType.COLLEGE_OF_SANG_HUH),
+            new CollegeBadgeRecord(LandmarkType.법학관, BadgeType.COLLEGE_OF_INTERNATIONAL),
+            new CollegeBadgeRecord(LandmarkType.공학관A, BadgeType.COLLEGE_OF_ENGINEERING),
+            new CollegeBadgeRecord(LandmarkType.공학관A, BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY),
+            new CollegeBadgeRecord(LandmarkType.공학관B, BadgeType.COLLEGE_OF_ENGINEERING),
+            new CollegeBadgeRecord(LandmarkType.공학관B, BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY),
+            new CollegeBadgeRecord(LandmarkType.공학관C, BadgeType.COLLEGE_OF_ENGINEERING),
+            new CollegeBadgeRecord(LandmarkType.공학관C, BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY)
+    );
 
-        // 공학관 A, B, C를 제외한 랜드마크 테스트
-        for (LandmarkType landmarkType : LandmarkType.values()) {
-            if (landmarkType == LandmarkType.공학관A ||
-                    landmarkType == LandmarkType.공학관B ||
-                    landmarkType == LandmarkType.공학관C) {
-                continue;
-            }
+    @ParameterizedTest
+    @DisplayName("랜드마크 탐험 배지 테스트")
+    @EnumSource(value = LandmarkType.class)
+    void collegeBadge(LandmarkType landmarkType) {
+        List<BadgeType> answerBadeType = answer.stream()
+                .filter(collegeBadgeRecord -> collegeBadgeRecord.landmarkType() == landmarkType)
+                .map(CollegeBadgeRecord::badgeType)
+                .toList();
 
-            int flag = 0;
-            for (CollegeBadge collegeBadge : CollegeBadgeList.getCollegeBadges()) {
-                if (collegeBadge.supports(landmarkType)) {
-                    BadgeType badge = collegeBadge.getBadge();
-                    assertThat(badge).isEqualTo(map.get(landmarkType));
-                    flag++;
-                }
-            }
+        List<BadgeType> badgeTypes = CollegeBadgeList.getCollegeBadges().stream()
+                .filter(collegeBadge -> collegeBadge.supports(landmarkType))
+                .map(CollegeBadge::getBadge)
+                .toList();
 
-            if (flag == 0) {
-                assertThat(map.get(landmarkType)).isNull();
-            }
-            else if (flag > 1) {
-                throw new IllegalStateException("뱃지가 2개 이상입니다.");
-            }
-        }
+        assertThat(badgeTypes).containsExactlyInAnyOrderElementsOf(answerBadeType);
+    }
 
-        // 공학관 A, B, C는 해당 뱃지가 2개이다.
-        int a = 0, b = 0, c = 0;
-        BadgeType[] badgeTypes = new BadgeType[6];
-
-        for (CollegeBadge collegeBadge : CollegeBadgeList.getCollegeBadges()) {
-            if (collegeBadge.supports(LandmarkType.공학관A)) {
-                badgeTypes[a] = collegeBadge.getBadge();
-                a++;
-            }
-            if (collegeBadge.supports(LandmarkType.공학관B)) {
-                badgeTypes[2 + b] = collegeBadge.getBadge();
-                b++;
-            }
-            if (collegeBadge.supports(LandmarkType.공학관C)) {
-                badgeTypes[4 + c] = collegeBadge.getBadge();
-                c++;
-            }
-        }
-        assertThat(a).isEqualTo(2);
-        assertThat(b).isEqualTo(2);
-        assertThat(c).isEqualTo(2);
-
-        for (int i = 0; i < 3; i++) {
-            boolean case1 = badgeTypes[i * 2] == BadgeType.COLLEGE_OF_ENGINEERING &&
-                    badgeTypes[i * 2 + 1] == BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY;
-            boolean case2 = badgeTypes[i * 2] == BadgeType.COLLEGE_OF_INSTITUTE_TECHNOLOGY &&
-                    badgeTypes[i * 2 + 1] == BadgeType.COLLEGE_OF_ENGINEERING;
-
-            assertThat(case1 | case2).isTrue();
-        }
+    private record CollegeBadgeRecord(LandmarkType landmarkType, BadgeType badgeType) {
     }
 
 }

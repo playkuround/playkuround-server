@@ -8,7 +8,6 @@ import static java.util.stream.Collectors.toMap;
 
 public enum ScoreType {
 
-    ATTENDANCE,
     QUIZ, TIME, MOON, BOOK, CATCH, CUPID, ALL_CLEAR, SURVIVE;
 
     private static final Map<String, ScoreType> stringToEnum =

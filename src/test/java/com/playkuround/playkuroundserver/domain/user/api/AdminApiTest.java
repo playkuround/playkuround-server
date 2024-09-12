@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
@@ -8,29 +9,29 @@ import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.user.api.request.ManualBadgeSaveRequest;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.*;
+import com.playkuround.playkuroundserver.global.error.ErrorCode;
 import com.playkuround.playkuroundserver.securityConfig.WithMockCustomUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@SpringBootTest(properties = "spring.profiles.active=test")
+@IntegrationControllerTest
 class AdminApiTest {
 
     @Autowired
@@ -47,115 +48,136 @@ class AdminApiTest {
 
     @AfterEach
     void clean() {
-        badgeRepository.deleteAll();
-        userRepository.deleteAll();
+        badgeRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
     }
 
     @Nested
-    @DisplayName("뱃지 수동 등록")
+    @WithMockCustomUser(role = Role.ROLE_ADMIN)
+    @DisplayName("배지 수동 등록")
     class saveManualBadge {
 
         @Test
-        @WithMockCustomUser(role = Role.ROLE_ADMIN)
-        @DisplayName("정상 뱃지 수동 등록 : 개인 메시지 저장 안함")
+        @DisplayName("기존에 가지고 있지 않는 배지인 경우만 저장된다.")
         void success_1() throws Exception {
             // given
-            User user = TestUtil.createUser("aa@konkuk.ac.kr", "newNickname", Major.건축학부);
-            userRepository.save(user);
+            List<User> users = List.of(
+                    TestUtil.createUser("user1@konkuk.ac.kr", "user1", Major.경영학과),
+                    TestUtil.createUser("user2@konkuk.ac.kr", "user2", Major.컴퓨터공학부),
+                    TestUtil.createUser("user3@konkuk.ac.kr", "user3", Major.국제무역학과)
+            );
+            userRepository.saveAll(users);
 
+            BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
+            badgeRepository.save(new Badge(users.get(0), BadgeType.MONTHLY_RANKING_1));
+
+            List<String> emails = users.stream()
+                    .map(User::getEmail)
+                    .toList();
             ManualBadgeSaveRequest manualBadgeSaveRequest
-                    = new ManualBadgeSaveRequest(user.getEmail(), BadgeType.MONTHLY_RANKING_1.name(), false);
+                    = new ManualBadgeSaveRequest(emails, badgeType.name(), false);
             String request = objectMapper.writeValueAsString(manualBadgeSaveRequest);
 
             // expect
             mockMvc.perform(post("/api/admin/badges/manual")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(request)
-                    )
+                            .content(request))
                     .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.response").value(true))
+                    .andExpect(jsonPath("$.response").value(2))
                     .andDo(print());
 
-            List<Badge> badges = badgeRepository.findByUser(user);
-            assertThat(badges).hasSize(1);
-            assertThat(badges.get(0).getBadgeType()).isEqualTo(BadgeType.MONTHLY_RANKING_1);
-            assertThat(user.getNotification()).isNull();
+            List<Badge> badges = badgeRepository.findAll();
+            assertThat(badges).hasSize(3)
+                    .extracting("user.id", "badgeType")
+                    .containsExactlyInAnyOrder(
+                            tuple(users.get(0).getId(), badgeType),
+                            tuple(users.get(1).getId(), badgeType),
+                            tuple(users.get(2).getId(), badgeType)
+                    );
         }
 
         @Test
-        @WithMockCustomUser(role = Role.ROLE_ADMIN)
-        @DisplayName("정상 뱃지 수동 등록 : 개인 메시지 저장")
+        @DisplayName("개인 메시지 저장 설정이 true인 경우, 새롭게 배지가 저장된 유저에게 메시지가 저장된다")
         void success_2() throws Exception {
             // given
-            User user = TestUtil.createUser("aa@konkuk.ac.kr", "test", Major.건축학부);
-            userRepository.save(user);
+            List<User> existUsers = List.of(
+                    TestUtil.createUser("user1@konkuk.ac.kr", "user1", Major.컴퓨터공학부),
+                    TestUtil.createUser("user2@konkuk.ac.kr", "user2", Major.국제무역학과)
+            );
+            List<User> notExistUsers = List.of(
+                    TestUtil.createUser("user3@konkuk.ac.kr", "user3", Major.건축학부),
+                    TestUtil.createUser("user4@konkuk.ac.kr", "user4", Major.국어국문학과)
+            );
 
+            List<User> allUsers = Stream.concat(existUsers.stream(), notExistUsers.stream()).toList();
+            userRepository.saveAll(allUsers);
+
+            BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
+            List<Badge> badges = existUsers.stream()
+                    .map(user -> new Badge(user, badgeType))
+                    .toList();
+            badgeRepository.saveAll(badges);
+
+            List<String> emails = allUsers.stream()
+                    .map(User::getEmail)
+                    .toList();
             ManualBadgeSaveRequest manualBadgeSaveRequest
-                    = new ManualBadgeSaveRequest(user.getEmail(), BadgeType.MONTHLY_RANKING_1.name(), true);
+                    = new ManualBadgeSaveRequest(emails, badgeType.name(), true);
             String request = objectMapper.writeValueAsString(manualBadgeSaveRequest);
 
             // expect
             mockMvc.perform(post("/api/admin/badges/manual")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(request)
-                    )
+                            .content(request))
                     .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.response").value(true))
+                    .andExpect(jsonPath("$.response").value(notExistUsers.size()))
                     .andDo(print());
 
-            List<Badge> badges = badgeRepository.findByUser(user);
-            assertThat(badges).hasSize(1);
-            assertThat(badges.get(0).getBadgeType()).isEqualTo(BadgeType.MONTHLY_RANKING_1);
+            List<String> notExistUserEmails = notExistUsers.stream()
+                    .map(User::getEmail)
+                    .toList();
+            notExistUsers = userRepository.findByEmailIn(notExistUserEmails);
+            assertThat(notExistUsers).hasSize(notExistUsers.size())
+                    .extracting("notification", Set.class)
+                    .allMatch(notifications -> notifications.contains(new Notification(NotificationEnum.NEW_BADGE, badgeType.name())));
 
-            Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
-            Set<Notification> notification = optionalUser.get().getNotification();
-            assertThat(notification)
-                    .containsOnly(new Notification(NotificationEnum.NEW_BADGE, BadgeType.MONTHLY_RANKING_1.name()));
+            List<String> existUserEmails = existUsers.stream()
+                    .map(User::getEmail)
+                    .toList();
+            existUsers = userRepository.findByEmailIn(existUserEmails);
+            assertThat(existUsers).hasSize(existUsers.size())
+                    .extracting("notification", Set.class)
+                    .allMatch(Set::isEmpty);
         }
 
         @Test
-        @WithMockCustomUser(role = Role.ROLE_ADMIN)
-        @DisplayName("이미 가지고 있는 뱃지면 false를 반환한다")
+        @DisplayName("존재하지 않는 이메일이 하나라도 존재하면 예외를 던진다.")
         void fail_1() throws Exception {
             // given
-            User user = TestUtil.createUser("aa@konkuk.ac.kr", "test", Major.건축학부);
-            userRepository.save(user);
-            badgeRepository.save(new Badge(user, BadgeType.MONTHLY_RANKING_1));
+            List<User> users = List.of(
+                    TestUtil.createUser("user1@konkuk.ac.kr", "user1", Major.경영학과),
+                    TestUtil.createUser("user2@konkuk.ac.kr", "user2", Major.컴퓨터공학부)
+            );
+            userRepository.saveAll(users);
 
+            List<String> emails = new ArrayList<>();
+            users.stream()
+                    .map(User::getEmail)
+                    .forEach(emails::add);
+            emails.add("notFoundUser@konkuk.ac.kr");
             ManualBadgeSaveRequest manualBadgeSaveRequest
-                    = new ManualBadgeSaveRequest(user.getEmail(), BadgeType.MONTHLY_RANKING_1.name(), true);
+                    = new ManualBadgeSaveRequest(emails, BadgeType.MONTHLY_RANKING_1.name(), false);
             String request = objectMapper.writeValueAsString(manualBadgeSaveRequest);
 
             // expect
             mockMvc.perform(post("/api/admin/badges/manual")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(request)
-                    )
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.response").value(false))
-                    .andDo(print());
-
-            List<Badge> badges = badgeRepository.findByUser(user);
-            assertThat(badges).hasSize(1);
-            assertThat(user.getNotification()).isNull();
-        }
-
-        @Test
-        @WithMockCustomUser(role = Role.ROLE_USER)
-        @DisplayName("admin 권한이 없으면 권한 에러가 발생한다")
-        void fail_2() throws Exception {
-            // given
-            ManualBadgeSaveRequest manualBadgeSaveRequest
-                    = new ManualBadgeSaveRequest("test@konkuk.ac.kr", BadgeType.MONTHLY_RANKING_1.name(), true);
-            String request = objectMapper.writeValueAsString(manualBadgeSaveRequest);
-
-            // expect
-            mockMvc.perform(post("/api/admin/badges/manual")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(request)
-                    )
-                    .andExpect(status().isForbidden())
+                            .content(request))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.USER_NOT_FOUND.getCode()))
+                    .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.USER_NOT_FOUND.getMessage()))
                     .andDo(print());
         }
+
     }
 }

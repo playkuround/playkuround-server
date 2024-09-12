@@ -1,4 +1,4 @@
-name: Spring Code deploy(home)
+name: Spring Code deploy 2
 
 on:
   workflow_dispatch:
@@ -53,11 +53,11 @@ jobs:
         run: ./gradlew clean build
 
       - name: Deliver JAR File
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST2 }}
           username: ${{ secrets.SSH_USERNAME2 }}
-          password: ${{ secrets.SSH_PASSWORD2 }}
+          key: ${{ secrets.SSH_PRVATE_KEY2 }}
           port: ${{ secrets.SSH_PORT2 }}
           source: "build/libs/*.jar"
           target: "source"
@@ -68,7 +68,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST2 }}
           username: ${{ secrets.SSH_USERNAME2 }}
-          password: ${{ secrets.SSH_PASSWORD2 }}
+          key: ${{ secrets.SSH_PRVATE_KEY2 }}
           port: ${{ secrets.SSH_PORT2 }}
           script: |
             SOURCE_DIR=source/build/libs

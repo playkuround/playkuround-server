@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.user.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenManager;
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
@@ -20,8 +21,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -35,8 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@SpringBootTest(properties = "spring.profiles.active=test")
+@IntegrationControllerTest
 class UserManagementApiTest {
 
     @Autowired
@@ -63,15 +61,15 @@ class UserManagementApiTest {
 
     @AfterEach
     void afterEach() {
-        userRepository.deleteAll();
-        refreshTokenRepository.deleteAll();
+        userRepository.deleteAllInBatch();
+        refreshTokenRepository.deleteAllInBatch();
     }
 
     @Test
     @DisplayName("회원 등록 성공")
     void userRegisterSuccess() throws Exception {
         // given
-        AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
+        AuthVerifyToken authVerifyToken = tokenService.saveAuthVerifyToken();
 
         // when
         UserRegisterRequest registerRequest
@@ -107,7 +105,7 @@ class UserManagementApiTest {
         assertThat(user.getMajor()).isEqualTo(major);
         assertThat(user.getNickname()).isEqualTo(nickname);
         assertThat(user.getRole()).isEqualTo(Role.ROLE_USER);
-        assertThat(user.getAttendanceDays()).isEqualTo(0);
+        assertThat(user.getAttendanceDays()).isZero();
     }
 
     @Test
@@ -130,7 +128,7 @@ class UserManagementApiTest {
                 .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_TOKEN.getStatus().value()))
                 .andDo(print());
         List<User> users = userRepository.findAll();
-        assertThat(users).hasSize(0);
+        assertThat(users).isEmpty();
     }
 
     @Test
@@ -139,7 +137,7 @@ class UserManagementApiTest {
         // given
         User user = User.create(email, nickname, major, Role.ROLE_USER);
         userRepository.save(user);
-        AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
+        AuthVerifyToken authVerifyToken = tokenService.saveAuthVerifyToken();
 
         // when
         UserRegisterRequest registerRequest
@@ -167,7 +165,7 @@ class UserManagementApiTest {
         // given
         User user = User.create(email, nickname, major, Role.ROLE_USER);
         userRepository.save(user);
-        AuthVerifyToken authVerifyToken = tokenService.registerAuthVerifyToken();
+        AuthVerifyToken authVerifyToken = tokenService.saveAuthVerifyToken();
 
         // when
         UserRegisterRequest registerRequest

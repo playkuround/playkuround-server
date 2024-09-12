@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class LandmarkScoreService {
@@ -16,14 +18,20 @@ public class LandmarkScoreService {
     private final LandmarkRepository landmarkRepository;
 
     @Transactional(readOnly = true)
-    public LandmarkHighestScoreUser findHighestScoreUserByLandmark(Long landmarkId) {
+    public Optional<LandmarkHighestScoreUser> findHighestScoreUserByLandmark(Long landmarkId) {
         Landmark landmark = landmarkRepository.findById(landmarkId)
                 .orElseThrow(() -> new LandmarkNotFoundException(landmarkId));
 
         User firstUser = landmark.getFirstUser();
         if (firstUser == null) {
-            return LandmarkHighestScoreUser.createEmpty();
+            return Optional.empty();
         }
-        return LandmarkHighestScoreUser.of(firstUser.getNickname(), landmark.getHighestScore());
+
+        LandmarkHighestScoreUser highestScoreUser = new LandmarkHighestScoreUser(
+                landmark.getHighestScore(),
+                firstUser.getNickname(),
+                firstUser.getProfileBadge()
+        );
+        return Optional.of(highestScoreUser);
     }
 }

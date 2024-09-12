@@ -1,7 +1,9 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.TestUtil;
+import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
+import com.playkuround.playkuroundserver.domain.badge.exception.BadgeNotHaveException;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Notification;
 import com.playkuround.playkuroundserver.domain.user.domain.NotificationEnum;
@@ -20,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +33,9 @@ class UserProfileServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private BadgeRepository badgeRepository;
 
     @Nested
     @DisplayName("닉네임 사용 가능 테스트")
@@ -104,7 +110,7 @@ class UserProfileServiceTest {
         }
 
         @Test
-        @DisplayName("뱃지 알림이 1개인 경우")
+        @DisplayName("배지 알림이 1개인 경우")
         void success_2() {
             // given
             User user = TestUtil.createUser();
@@ -121,7 +127,7 @@ class UserProfileServiceTest {
         }
 
         @Test
-        @DisplayName("뱃지 알림이 2개 이상인 경우")
+        @DisplayName("배지 알림이 2개 이상인 경우")
         void success_3() {
             // given
             User user = TestUtil.createUser();
@@ -138,6 +144,41 @@ class UserProfileServiceTest {
             );
             assertThat(user.getNotification()).isEmpty();
         }
+    }
 
+    @Nested
+    @DisplayName("프로필 배지 설정")
+    class setProfileBadge {
+
+        @Test
+        @DisplayName("사용자가 가지고 있는 배지는 정상적으로 프로필 배지로 설정이 가능하다.")
+        void success_1() {
+            // given
+            User user = TestUtil.createUser();
+            BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
+            when(badgeRepository.existsByUserAndBadgeType(user, badgeType))
+                    .thenReturn(true);
+
+            // when
+            userProfileService.setProfileBadge(user, badgeType);
+
+            // then
+            assertThat(user.getProfileBadge()).isEqualTo(badgeType);
+        }
+
+        @Test
+        @DisplayName("사용자가 가지고 있지 않는 BadgeType이면 에러가 발생한다.")
+        void fail_1() {
+            // given
+            User user = TestUtil.createUser();
+            BadgeType badgeType = BadgeType.MONTHLY_RANKING_1;
+            when(badgeRepository.existsByUserAndBadgeType(user, badgeType))
+                    .thenReturn(false);
+
+            // expect
+            assertThatThrownBy(
+                    () -> userProfileService.setProfileBadge(user, badgeType)
+            ).isInstanceOf(BadgeNotHaveException.class);
+        }
     }
 }

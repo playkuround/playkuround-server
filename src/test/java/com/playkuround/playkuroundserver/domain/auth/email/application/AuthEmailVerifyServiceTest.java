@@ -12,9 +12,10 @@ import com.playkuround.playkuroundserver.domain.auth.email.exception.NotMatchAut
 import com.playkuround.playkuroundserver.domain.auth.token.application.TokenService;
 import com.playkuround.playkuroundserver.domain.auth.token.domain.AuthVerifyToken;
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.common.DateTimeService;
 import com.playkuround.playkuroundserver.domain.user.application.UserLoginService;
-import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
+import com.playkuround.playkuroundserver.domain.user.exception.UserNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,20 +28,16 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthEmailVerifyServiceTest {
 
     @InjectMocks
-    private AuthEmailVerifyService authEmailVerifyService;
+    private AuthEmailVerifyServiceImpl authEmailVerifyService;
 
     @Mock
     private TokenService tokenService;
-
-    @Mock
-    private UserRepository userRepository;
 
     @Mock
     private UserLoginService userLoginService;
@@ -48,18 +45,22 @@ class AuthEmailVerifyServiceTest {
     @Mock
     private AuthEmailRepository authEmailRepository;
 
+    @Mock
+    private DateTimeService dateTimeService;
+
     @Test
-    @DisplayName("이메일 인증 정상 처리 : 기존회원")
+    @DisplayName("이메일 인증 정상 처리 : 기존회원인 경우 TokenDto 반환")
     void authEmailSuccessExists() {
         // given
         User user = TestUtil.createUser();
         String target = user.getEmail();
         String code = "123456";
-        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
+        LocalDateTime expiredAt = LocalDateTime.of(2024, 7, 1, 0, 0);
         AuthEmail authEmail = AuthEmail.createAuthEmail(target, code, expiredAt);
         when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(target))
                 .thenReturn(Optional.of(authEmail));
-        when(userRepository.existsByEmail(target)).thenReturn(true);
+        when(dateTimeService.getLocalDateTimeNow())
+                .thenReturn(expiredAt.minusHours(1));
 
         TokenDto tokenDto = new TokenDto("Bearer", "accessToken", "refreshToken", null, null);
         when(userLoginService.login(target)).thenReturn(tokenDto);
@@ -76,21 +77,24 @@ class AuthEmailVerifyServiceTest {
     }
 
     @Test
-    @DisplayName("이메일 인증 정상 처리 : 신규회원")
+    @DisplayName("이메일 인증 정상 처리 : 신규회원인 경우 authVerifyToken 반환")
     void authEmailSuccessNewUser() {
         // given
         User user = TestUtil.createUser();
         String target = user.getEmail();
         String code = "123456";
         String authVerify = "authVerifyToken";
-        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
+        LocalDateTime expiredAt = LocalDateTime.of(2024, 7, 1, 0, 0);
         AuthEmail authEmail = AuthEmail.createAuthEmail(target, code, expiredAt);
         when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(target))
                 .thenReturn(Optional.of(authEmail));
-        when(userRepository.existsByEmail(target)).thenReturn(false);
+        when(dateTimeService.getLocalDateTimeNow())
+                .thenReturn(expiredAt.minusHours(1));
+        when(userLoginService.login(target))
+                .thenThrow(UserNotFoundException.class);
 
         AuthVerifyToken authVerifyToken = new AuthVerifyToken(authVerify, null);
-        when(tokenService.registerAuthVerifyToken()).thenReturn(authVerifyToken);
+        when(tokenService.saveAuthVerifyToken()).thenReturn(authVerifyToken);
 
         // when
         AuthVerifyEmailResult result = authEmailVerifyService.verifyAuthEmail(code, target);
@@ -102,55 +106,63 @@ class AuthEmailVerifyServiceTest {
     }
 
     @Test
-    @DisplayName("AuthEmail entity가 없으면 AuthEmailNotFoundException 발생")
+    @DisplayName("AuthEmail entity가 없으면 AuthEmailNotFoundException 발생한다.")
     void emptyAuthEmailEntity() {
         // given
-        when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(any(String.class)))
+        String target = "test@konkuk.ac.kr";
+        when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(target))
                 .thenReturn(Optional.empty());
 
         // expected
-        assertThatThrownBy(() -> authEmailVerifyService.verifyAuthEmail("code", "target"))
+        assertThatThrownBy(() -> authEmailVerifyService.verifyAuthEmail("code", target))
                 .isInstanceOf(AuthEmailNotFoundException.class);
     }
 
     @Test
-    @DisplayName("authEmail이 유효하지 않으면 AuthEmailNotFoundException 발생")
+    @DisplayName("authEmail이 유효하지 않으면 AuthEmailNotFoundException 발생한다.")
     void authEmailInvalidate() {
         // given
-        AuthEmail authEmail = AuthEmail.createAuthEmail("target", "code", LocalDateTime.now());
+        AuthEmail authEmail = AuthEmail.createAuthEmail("test@konkuk.ac.kr", "code", LocalDateTime.now());
         authEmail.changeInvalidate();
-        when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(any(String.class)))
+        when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(authEmail.getTarget()))
                 .thenReturn(Optional.of(authEmail));
 
         // expected
-        assertThatThrownBy(() -> authEmailVerifyService.verifyAuthEmail("code", "target"))
+        assertThatThrownBy(() -> authEmailVerifyService.verifyAuthEmail(authEmail.getCode(), authEmail.getTarget()))
                 .isInstanceOf(AuthEmailNotFoundException.class);
     }
 
     @Test
-    @DisplayName("authEmail이 만료되면 AuthCodeExpiredException 발생")
+    @DisplayName("authEmail이 만료되면 AuthCodeExpiredException 발생한다.")
     void authEmailExpired() {
         // given
-        AuthEmail authEmail = AuthEmail.createAuthEmail("target", "code", LocalDateTime.now().minusDays(1));
-        when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(any(String.class)))
+        LocalDateTime now = LocalDateTime.of(2024, 7, 1, 0, 0);
+        when(dateTimeService.getLocalDateTimeNow())
+                .thenReturn(now);
+
+        AuthEmail authEmail = AuthEmail.createAuthEmail("test@konkuk.ac.kr", "code", now.minusDays(1));
+        when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(authEmail.getTarget()))
                 .thenReturn(Optional.of(authEmail));
 
         // expected
-        assertThatThrownBy(() -> authEmailVerifyService.verifyAuthEmail("code", "target"))
+        assertThatThrownBy(() -> authEmailVerifyService.verifyAuthEmail(authEmail.getCode(), authEmail.getTarget()))
                 .isInstanceOf(AuthCodeExpiredException.class);
     }
 
     @Test
-    @DisplayName("authEmail의 code가 일치하지 않으면 NotMatchAuthCodeException 발생")
+    @DisplayName("authEmail의 code가 일치하지 않으면 NotMatchAuthCodeException 발생한다.")
     void authEmailCodeNotEquals() {
         // given
-        String code = "code";
-        AuthEmail authEmail = AuthEmail.createAuthEmail("target", code, LocalDateTime.now().plusMinutes(1));
-        when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(any(String.class)))
+        LocalDateTime now = LocalDateTime.now();
+        when(dateTimeService.getLocalDateTimeNow())
+                .thenReturn(now);
+
+        AuthEmail authEmail = AuthEmail.createAuthEmail("test@konkuk.ac.kr", "code", now.plusMinutes(1));
+        when(authEmailRepository.findFirstByTargetOrderByCreatedAtDesc(authEmail.getTarget()))
                 .thenReturn(Optional.of(authEmail));
 
         // expected
-        assertThatThrownBy(() -> authEmailVerifyService.verifyAuthEmail(code + "NotEqual", "target"))
+        assertThatThrownBy(() -> authEmailVerifyService.verifyAuthEmail(authEmail.getCode() + "NotEqual", authEmail.getTarget()))
                 .isInstanceOf(NotMatchAuthCodeException.class);
     }
 }

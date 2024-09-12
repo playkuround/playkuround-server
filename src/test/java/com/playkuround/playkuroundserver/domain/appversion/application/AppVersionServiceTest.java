@@ -16,7 +16,9 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AppVersionServiceTest {
@@ -37,32 +39,21 @@ class AppVersionServiceTest {
                 new AppVersion(OperationSystem.IOS, "2.0.0"),
                 new AppVersion(OperationSystem.IOS, "2.0.1")
         );
-
         when(appVersionRepository.findAll())
                 .thenReturn(appVersionList);
 
-        // when
         Set<OSAndVersion> osAndVersions = Set.of(
                 new OSAndVersion(OperationSystem.ANDROID, "1.0.1"),
                 new OSAndVersion(OperationSystem.ANDROID, "1.2.0"),
                 new OSAndVersion(OperationSystem.IOS, "2.0.2")
         );
 
+        // when
         appVersionService.changeSupportedList(osAndVersions);
 
         // then
-        ArgumentCaptor<AppVersion> saveArgument = ArgumentCaptor.forClass(AppVersion.class);
-        verify(appVersionRepository, times(2)).save(saveArgument.capture());
-        List<OSAndVersion> saveList = saveArgument.getAllValues().stream()
-                .map(appVersion -> new OSAndVersion(appVersion.getOs(), appVersion.getVersion()))
-                .toList();
-        assertThat(saveList).containsExactlyInAnyOrder(
-                new OSAndVersion(OperationSystem.ANDROID, "1.0.1"),
-                new OSAndVersion(OperationSystem.IOS, "2.0.2")
-        );
-
         ArgumentCaptor<AppVersion> deleteArgument = ArgumentCaptor.forClass(AppVersion.class);
-        verify(appVersionRepository, times(3)).delete(deleteArgument.capture());
+        then(appVersionRepository).should(times(3)).delete(deleteArgument.capture());
         List<OSAndVersion> deleteList = deleteArgument.getAllValues().stream()
                 .map(appVersion -> new OSAndVersion(appVersion.getOs(), appVersion.getVersion()))
                 .toList();
@@ -71,5 +62,17 @@ class AppVersionServiceTest {
                 new OSAndVersion(OperationSystem.IOS, "2.0.0"),
                 new OSAndVersion(OperationSystem.IOS, "2.0.1")
         );
+
+        ArgumentCaptor<List<AppVersion>> saveArgument = ArgumentCaptor.forClass(List.class);
+        then(appVersionRepository).should(times(1)).saveAll(saveArgument.capture());
+        List<OSAndVersion> saveList = saveArgument.getValue().stream()
+                .map(appVersion -> new OSAndVersion(appVersion.getOs(), appVersion.getVersion()))
+                .toList();
+        assertThat(saveList).containsExactlyInAnyOrder(
+                new OSAndVersion(OperationSystem.ANDROID, "1.0.1"),
+                new OSAndVersion(OperationSystem.IOS, "2.0.2")
+        );
+
+        then(appVersionRepository).shouldHaveNoMoreInteractions();
     }
 }

@@ -1,6 +1,7 @@
 package com.playkuround.playkuroundserver.domain.auth.token.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.TestUtil;
 import com.playkuround.playkuroundserver.domain.auth.token.api.request.TokenReissueRequest;
 import com.playkuround.playkuroundserver.domain.auth.token.dao.RefreshTokenRepository;
@@ -15,8 +16,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -28,8 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@SpringBootTest(properties = "spring.profiles.active=test")
+@IntegrationControllerTest
 class TokenApiTest {
 
     @Autowired
@@ -49,16 +47,15 @@ class TokenApiTest {
 
     @AfterEach
     void clean() {
-        refreshTokenRepository.deleteAll();
-        userRepository.deleteAll();
+        refreshTokenRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
     }
 
     @Test
-    @DisplayName("토큰 재발급 성공")
+    @DisplayName("refreshToken이 유효한 상태라면, accessToken과 refreshToken이 모두 재발급된다.")
     void reissueSuccess() throws Exception {
         // given
-        User user = TestUtil.createUser();
-        userRepository.save(user);
+        User user = userRepository.save(TestUtil.createUser());
         TokenDto tokenDto = userLoginService.login(user.getEmail());
 
         TokenReissueRequest tokenReissueRequest = new TokenReissueRequest(tokenDto.getRefreshToken());
@@ -67,8 +64,7 @@ class TokenApiTest {
         // expected
         mockMvc.perform(post("/api/auth/reissue")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request)
-                )
+                        .content(request))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isSuccess").value(true))
                 .andExpect(jsonPath("$.response.grantType").value(GrantType.BEARER.getType()))
@@ -77,7 +73,9 @@ class TokenApiTest {
                 .andDo(print());
 
         List<RefreshToken> refreshTokens = refreshTokenRepository.findAll();
-        assertThat(refreshTokens.size()).isEqualTo(1);
+        assertThat(refreshTokens).hasSize(1)
+                .extracting("userEmail")
+                .containsExactly(user.getEmail());
     }
 
     @Test
@@ -90,22 +88,22 @@ class TokenApiTest {
         // expected
         mockMvc.perform(post("/api/auth/reissue")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request)
-                )
+                        .content(request))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.isSuccess").value(false))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.INVALID_TOKEN.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.INVALID_TOKEN.getMessage()))
                 .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_TOKEN.getStatus().value()))
                 .andDo(print());
+
+        assertThat(refreshTokenRepository.count()).isZero();
     }
 
     @Test
     @DisplayName("토큰 재발급 실패 : 존재하지 않는 refreshToken")
     void reissueFailByNotFoundRefreshToken() throws Exception {
         // given
-        User user = TestUtil.createUser();
-        userRepository.save(user);
+        User user = userRepository.save(TestUtil.createUser());
         TokenDto tokenDto = userLoginService.login(user.getEmail());
         refreshTokenRepository.deleteAll();
 
@@ -115,13 +113,14 @@ class TokenApiTest {
         // expected
         mockMvc.perform(post("/api/auth/reissue")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(request)
-                )
+                        .content(request))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.isSuccess").value(false))
                 .andExpect(jsonPath("$.errorResponse.code").value(ErrorCode.INVALID_TOKEN.getCode()))
                 .andExpect(jsonPath("$.errorResponse.message").value(ErrorCode.INVALID_TOKEN.getMessage()))
                 .andExpect(jsonPath("$.errorResponse.status").value(ErrorCode.INVALID_TOKEN.getStatus().value()))
                 .andDo(print());
+
+        assertThat(refreshTokenRepository.count()).isZero();
     }
 }

@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/badges")
+@RequestMapping("api/badges")
 @RequiredArgsConstructor
-@Tag(name = "Badge", description = "Badge API")
+@Tag(name = "Badge", description = "배지 API")
 public class BadgeApi {
 
     private final BadgeService badgeService;
 
     @GetMapping
-    @Operation(summary = "뱃지조회", description = "사용자가 획득한 뱃지를 조회합니다.")
+    @Operation(summary = "배지조회", description = "사용자가 획득한 배지를 조회합니다.")
     public ApiResponse<List<BadgeFindResponse>> findBadge(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<Badge> badges = badgeService.findBadgeByEmail(userDetails.getUser());
         return ApiUtils.success(badges.stream()
@@ -32,9 +32,9 @@ public class BadgeApi {
                 .toList());
     }
 
-    @PostMapping("/dream-of-duck")
+    @PostMapping("dream-of-duck")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "오리의꿈 뱃지 획득", description = "오리의 꿈 뱃지를 획득합니다. 이미 획득한 뱃지였다면 false를 반환합니다.")
+    @Operation(summary = "오리의꿈 배지 획득", description = "오리의 꿈 배지를 획득합니다. 이미 획득한 배지였다면 false를 반환합니다.")
     public ApiResponse<Boolean> saveTheDreamOfDuckBadge(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         boolean response = badgeService.saveTheDreamOfDuckBadge(userDetails.getUser());
         return ApiUtils.success(response);

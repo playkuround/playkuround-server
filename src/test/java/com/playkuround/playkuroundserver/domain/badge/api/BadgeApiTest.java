@@ -1,5 +1,6 @@
 package com.playkuround.playkuroundserver.domain.badge.api;
 
+import com.playkuround.playkuroundserver.IntegrationControllerTest;
 import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
 import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
@@ -11,8 +12,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -25,8 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@SpringBootTest(properties = "spring.profiles.active=test")
+@IntegrationControllerTest
 class BadgeApiTest {
 
     @Autowired
@@ -40,13 +38,13 @@ class BadgeApiTest {
 
     @AfterEach
     void clean() {
-        badgeRepository.deleteAll();
-        userRepository.deleteAll();
+        badgeRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
     }
 
     @Nested
     @WithMockCustomUser
-    @DisplayName("뱃지 조회하기")
+    @DisplayName("배지 조회하기")
     class findBadge {
 
         @Test
@@ -83,11 +81,11 @@ class BadgeApiTest {
 
     @Nested
     @WithMockCustomUser
-    @DisplayName("오리의 꿈 뱃지 획득")
+    @DisplayName("오리의 꿈 배지 획득")
     class saveTheDreamOfDuckBadge {
 
         @Test
-        @DisplayName("기존에 안가지고 있었다면 새롭게 뱃지를 획득하고 true가 반환된다")
+        @DisplayName("기존에 안가지고 있었다면 새롭게 배지를 획득하고 true가 반환된다")
         void success_1() throws Exception {
             mockMvc.perform(post("/api/badges/dream-of-duck"))
                     .andExpect(status().isCreated())
@@ -100,7 +98,6 @@ class BadgeApiTest {
         }
 
         @Test
-        @WithMockCustomUser
         @DisplayName("기존에 이미 가지고 있었다면 false가 반환된다")
         void fail_1() throws Exception {
             // given

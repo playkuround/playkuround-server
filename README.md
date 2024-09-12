@@ -10,11 +10,12 @@
 <a href="https://play.google.com/store/apps/details?id=com.umc.playkuround"> 
   <img src="https://img.shields.io/badge/android-%2334A853.svg?style=for-the-badge&logo=Android&logoColor=white" alt="Android"/>
 </a>
-
+<a href="https://apps.apple.com/kr/app/playkuround/id6664073073"> 
+  <img src="https://img.shields.io/badge/iOS-0D96F6.svg?style=for-the-badge&logo=appstore&logoColor=white" alt="appstore"/>
+</a>
 <a href="https://www.instagram.com/playkuround_"> 
   <img src="https://img.shields.io/badge/instagram-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white" alt="Instagram"/>
 </a>
-
 <a href="https://litt.ly/playkuround"> 
   <img src="https://img.shields.io/badge/Linktree-%2343E55E.svg?style=for-the-badge&logo=Linktree&logoColor=white" alt="Linktree"/>
 </a>
@@ -32,9 +33,9 @@
 <img src="https://github.com/playkuround/playkuround-server/assets/51076814/a6d0e3f5-fe40-48fa-ac6f-7297ee7d7137" width="190"/> |
 
 ## Server Stack
-- Java 17
+- JDK 17
 - Spring Boot 3.1.3
-- AWS EC2
+- AWS EC2, ELB
 - AWS RDS
 - AWS ElastiCache for Redis
 - Prometheus, Grafana

@@ -1,8 +1,7 @@
 package com.playkuround.playkuroundserver.domain.appversion.domain;
 
-import com.playkuround.playkuroundserver.domain.common.NotSupportOSException;
-
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
@@ -14,11 +13,8 @@ public enum OperationSystem {
             Stream.of(values())
                     .collect(toMap(Object::toString, e -> e));
 
-    public static OperationSystem fromString(String os) {
+    public static Optional<OperationSystem> fromString(String os) {
         OperationSystem appVersion = stringToEnum.get(os.toUpperCase());
-        if (appVersion == null) {
-            throw new NotSupportOSException();
-        }
-        return appVersion;
+        return Optional.ofNullable(appVersion);
     }
 }

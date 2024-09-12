@@ -1,11 +1,13 @@
 package com.playkuround.playkuroundserver.domain.score.application;
 
+import com.playkuround.playkuroundserver.domain.score.api.response.ScoreRankingResponse;
+import com.playkuround.playkuroundserver.domain.score.dto.NickNameAndBadge;
 import com.playkuround.playkuroundserver.domain.score.dto.RankAndScore;
-import com.playkuround.playkuroundserver.domain.score.dto.response.ScoreRankingResponse;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.EmailAndNickname;
-import org.springframework.data.redis.core.RedisTemplate;
+import com.playkuround.playkuroundserver.domain.user.dto.EmailAndNicknameAndBadge;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,17 +18,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TotalScoreService {
 
-    private final String redisSetKey;
+    @Value("${redis-key}")
+    private String redisSetKey;
+
     private final UserRepository userRepository;
     private final ZSetOperations<String, String> zSetOperations;
-
-    public TotalScoreService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate) {
-        this.redisSetKey = "ranking";
-        this.userRepository = userRepository;
-        this.zSetOperations = redisTemplate.opsForZSet();
-    }
 
     @Transactional
     public Long incrementTotalScore(User user, Long score) {
@@ -48,19 +47,22 @@ public class TotalScoreService {
         }
 
         ScoreRankService scoreRankService = new ScoreRankService(typedTuples);
-        Map<String, String> emailBindingNickname = getNicknameBindingEmailMapList(scoreRankService.getRankUserEmails());
+        Map<String, NickNameAndBadge> emailBindingNickname = getNicknameBindingEmailMapList(scoreRankService.getRankUserEmails());
         ScoreRankingResponse response = scoreRankService.createScoreRankingResponse(emailBindingNickname);
 
         RankAndScore myRank = getMyRank(user);
-        response.setMyRank(myRank.ranking(), myRank.score());
+        response.setMyRank(myRank.ranking(), myRank.score(), user.getProfileBadge());
 
         return response;
     }
 
-    private Map<String, String> getNicknameBindingEmailMapList(List<String> emails) {
-        List<EmailAndNickname> nicknameByEmailIn = userRepository.findNicknameByEmailIn(emails);
+    private Map<String, NickNameAndBadge> getNicknameBindingEmailMapList(List<String> emails) {
+        List<EmailAndNicknameAndBadge> nicknameByEmailIn = userRepository.findNicknameByEmailIn(emails);
         return nicknameByEmailIn.stream()
-                .collect(Collectors.toMap(EmailAndNickname::email, EmailAndNickname::nickname));
+                .collect(Collectors.toMap(
+                        EmailAndNicknameAndBadge::email,
+                        data -> new NickNameAndBadge(data.nickname(), data.badgeType())
+                ));
     }
 
     private RankAndScore getMyRank(User user) {

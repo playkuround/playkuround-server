@@ -48,7 +48,8 @@ public enum ErrorCode {
     EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "E006", "인증 대기 중인 이메일이 아닙니다."),
 
     // Badge
-    INVALID_Badge_TYPE(HttpStatus.BAD_REQUEST, "B001", "올바르지 않은 BadgeType입니다."),
+    INVALID_BADGE_TYPE(HttpStatus.BAD_REQUEST, "B001", "올바르지 않은 BadgeType입니다."),
+    NOT_HAVE_BADGE(HttpStatus.BAD_REQUEST, "B002", "사용자가 가지고 있지 않은 배지입니다."),
 
     // Attendance
     DUPLICATE_ATTENDANCE(HttpStatus.BAD_REQUEST, "AT01", "이미 오늘 출석한 회원입니다."),

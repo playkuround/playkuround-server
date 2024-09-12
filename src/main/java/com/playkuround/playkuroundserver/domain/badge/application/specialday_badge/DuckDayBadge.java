@@ -3,17 +3,16 @@ package com.playkuround.playkuroundserver.domain.badge.application.specialday_ba
 import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.global.util.DateTimeUtils;
 
-import java.util.Set;
+import java.time.LocalDate;
 
-public class DuckDayBadge implements SpecialDayBadge {
+class DuckDayBadge implements SpecialDayBadge {
 
     DuckDayBadge() {
     }
 
     @Override
-    public boolean supports(Set<BadgeType> userBadgeSet) {
-        BadgeType badgeType = getBadgeType();
-        return DateTimeUtils.isTodayDuckDay() && !userBadgeSet.contains(badgeType);
+    public boolean supports(LocalDate localDate) {
+        return DateTimeUtils.isDuckDay(localDate);
     }
 
     @Override

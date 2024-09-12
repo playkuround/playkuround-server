@@ -26,20 +26,17 @@ public class AppVersionService {
     public void changeSupportedList(Set<OSAndVersion> osAndVersions) {
         Set<OSAndVersion> osAndVersionHashSet = new HashSet<>(osAndVersions);
 
-        List<AppVersion> appVersions = appVersionRepository.findAll();
-        for (AppVersion appVersion : appVersions) {
+        List<AppVersion> currentSupportedAppVersions = appVersionRepository.findAll();
+        for (AppVersion appVersion : currentSupportedAppVersions) {
             OSAndVersion osAndVersion = new OSAndVersion(appVersion.getOs(), appVersion.getVersion());
-            if (osAndVersionHashSet.contains(osAndVersion)) {
-                osAndVersionHashSet.remove(osAndVersion);
-            }
-            else {
+            if (!osAndVersionHashSet.remove(osAndVersion)) {
                 appVersionRepository.delete(appVersion);
             }
         }
 
-        for (OSAndVersion osAndVersion : osAndVersionHashSet) {
-            AppVersion appVersion = new AppVersion(osAndVersion.os(), osAndVersion.version());
-            appVersionRepository.save(appVersion);
-        }
+        List<AppVersion> newAppVersions = osAndVersionHashSet.stream()
+                .map(osAndVersion -> new AppVersion(osAndVersion.os(), osAndVersion.version()))
+                .toList();
+        appVersionRepository.saveAll(newAppVersions);
     }
 }

@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("api/admin")
 @RequiredArgsConstructor
 @Tag(name = "Admin", description = "Admin API(관리자 권한이 없는 경우 403 에러가 발생합니다.)")
 public class AdminApi {
@@ -24,11 +24,11 @@ public class AdminApi {
 
     @PostMapping("badges/manual")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "수동 뱃지 등록", description = "수동으로 뱃지를 등록합니다. 이미 획득한 뱃지였다면 false를 반환합니다. " +
-            "설정에 따라 개인 메시지로 등록할 수 있습니다.")
-    public ApiResponse<Boolean> saveManualBadge(@RequestBody @Valid ManualBadgeSaveRequest request) {
+    @Operation(summary = "수동 배지 등록",
+            description = "수동으로 배지를 등록합니다. 성공적으로 배지 저장에 성공한 개수를 반환합니다. 설정에 따라 개인 메시지로 등록할 수 있습니다.")
+    public ApiResponse<Integer> saveManualBadge(@RequestBody @Valid ManualBadgeSaveRequest request) {
         BadgeType badgeType = BadgeType.valueOf(request.getBadge());
-        boolean response = badgeService.saveManualBadge(request.getUserEmail(), badgeType, request.isRegisterMessage());
+        int response = badgeService.saveManualBadge(request.getUserEmail(), badgeType, request.isRegisterMessage());
         return ApiUtils.success(response);
     }
 

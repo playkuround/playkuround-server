@@ -26,7 +26,6 @@ public class AuthEmail extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime expiredAt;
 
-    @Column(nullable = false)
     private boolean validate;
 
     private AuthEmail(String target, String code, LocalDateTime expiredAt) {

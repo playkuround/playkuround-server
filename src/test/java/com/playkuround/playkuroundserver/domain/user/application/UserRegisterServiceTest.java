@@ -1,6 +1,9 @@
 package com.playkuround.playkuroundserver.domain.user.application;
 
 import com.playkuround.playkuroundserver.domain.auth.token.dto.TokenDto;
+import com.playkuround.playkuroundserver.domain.badge.dao.BadgeRepository;
+import com.playkuround.playkuroundserver.domain.badge.domain.Badge;
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.domain.user.dao.UserRepository;
 import com.playkuround.playkuroundserver.domain.user.domain.Major;
 import com.playkuround.playkuroundserver.domain.user.domain.User;
@@ -14,17 +17,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserRegisterServiceTest {
@@ -37,6 +39,9 @@ class UserRegisterServiceTest {
 
     @Mock
     private UserLoginService userLoginService;
+
+    @Mock
+    private BadgeRepository badgeRepository;
 
     private final String nickname = "tester";
     private final String major = "컴퓨터공학부";
@@ -61,12 +66,6 @@ class UserRegisterServiceTest {
                     .thenReturn(false);
             when(userRepository.existsByNickname(nickname))
                     .thenReturn(false);
-            when(userRepository.save(any(User.class)))
-                    .then(invocation -> {
-                        User savedUser = invocation.getArgument(0);
-                        ReflectionTestUtils.setField(savedUser, "id", 1L);
-                        return savedUser;
-                    });
             when(userLoginService.login(email))
                     .thenReturn(tokenDto);
 
@@ -78,6 +77,12 @@ class UserRegisterServiceTest {
             assertThat(result.getGrantType()).isEqualTo(tokenDto.getGrantType());
             assertThat(result.getAccessToken()).isEqualTo(tokenDto.getAccessToken());
             assertThat(result.getRefreshToken()).isEqualTo(tokenDto.getRefreshToken());
+
+            verify(userRepository, times(1)).save(any(User.class));
+
+            ArgumentCaptor<Badge> badgeArgument = ArgumentCaptor.forClass(Badge.class);
+            verify(badgeRepository, times(1)).save(badgeArgument.capture());
+            assertThat(badgeArgument.getValue().getBadgeType()).isEqualTo(BadgeType.COLLEGE_OF_ENGINEERING);
         }
 
         @Test

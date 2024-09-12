@@ -22,7 +22,7 @@ public class UserLoginService {
             throw new UserNotFoundException();
         }
         TokenDto tokenDto = tokenManager.createTokenDto(userEmail);
-        tokenService.registerRefreshToken(userEmail, tokenDto.getRefreshToken());
+        tokenService.saveRefreshToken(userEmail, tokenDto.getRefreshToken());
 
         return tokenDto;
     }

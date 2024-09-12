@@ -5,7 +5,7 @@ import com.playkuround.playkuroundserver.domain.attendance.api.response.Attendan
 import com.playkuround.playkuroundserver.domain.attendance.api.response.AttendanceSearchResponse;
 import com.playkuround.playkuroundserver.domain.attendance.application.AttendanceRegisterService;
 import com.playkuround.playkuroundserver.domain.attendance.application.AttendanceSearchService;
-import com.playkuround.playkuroundserver.domain.badge.dto.NewlyRegisteredBadge;
+import com.playkuround.playkuroundserver.domain.badge.domain.BadgeType;
 import com.playkuround.playkuroundserver.global.common.response.ApiResponse;
 import com.playkuround.playkuroundserver.global.security.UserDetailsImpl;
 import com.playkuround.playkuroundserver.global.util.ApiUtils;
@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/attendances")
+@RequestMapping("api/attendances")
 @Tag(name = "Attendance", description = "출석 관련 API")
 public class AttendanceApi {
 
@@ -31,11 +31,11 @@ public class AttendanceApi {
 
     @PostMapping
     @Operation(summary = "출석하기", description = "오늘 출석을 저장합니다. 출석은 하루에 한번만 가능하며, " +
-            "새롭게 얻은 뱃지가 있을 시 반환됩니다. 뱃지는 DB에 자동 반영됩니다.")
+            "새롭게 얻은 배지가 있을 시 반환됩니다. 배지는 DB에 자동 반영됩니다.")
     public ApiResponse<AttendanceRegisterResponse> saveAttendance(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                   @Valid @RequestBody AttendanceRegisterRequest registerRequest) {
         Location location = new Location(registerRequest.getLatitude(), registerRequest.getLongitude());
-        NewlyRegisteredBadge newlyRegisteredBadge = attendanceRegisterService.registerAttendance(userDetails.getUser(), location);
+        List<BadgeType> newlyRegisteredBadge = attendanceRegisterService.registerAttendance(userDetails.getUser(), location);
         return ApiUtils.success(AttendanceRegisterResponse.from(newlyRegisteredBadge));
     }
 

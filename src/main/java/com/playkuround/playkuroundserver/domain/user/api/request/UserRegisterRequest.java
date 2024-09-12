@@ -1,7 +1,5 @@
 package com.playkuround.playkuroundserver.domain.user.api.request;
 
-import com.playkuround.playkuroundserver.domain.user.domain.Major;
-import com.playkuround.playkuroundserver.global.validation.ValidEnum;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
@@ -30,7 +28,8 @@ public class UserRegisterRequest {
     @Schema(description = "사용할 닉네임(한글, 영어, 숫자만 허용)", example = "tester", minLength = 2, maxLength = 8)
     private String nickname;
 
-    @ValidEnum(enumClass = Major.class, message = "잘못된 학과명입니다.")
+    //@ValidEnum(enumClass = Major.class, message = "잘못된 학과명입니다.")
+    @NotBlank(message = "학과는 필수값입니다.")
     @Schema(description = "학과. 학과 리스트는 외부 문서 참고", example = "컴퓨터공학부", requiredMode = RequiredMode.REQUIRED)
     private String major;
 

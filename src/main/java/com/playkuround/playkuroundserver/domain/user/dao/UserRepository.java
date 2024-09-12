@@ -1,7 +1,7 @@
 package com.playkuround.playkuroundserver.domain.user.dao;
 
 import com.playkuround.playkuroundserver.domain.user.domain.User;
-import com.playkuround.playkuroundserver.domain.user.dto.EmailAndNickname;
+import com.playkuround.playkuroundserver.domain.user.dto.EmailAndNicknameAndBadge;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,10 +16,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-    @Query("select new com.playkuround.playkuroundserver.domain.user.dto.EmailAndNickname(u.email, u.nickname) " +
+    @Query("select new com.playkuround.playkuroundserver.domain.user.dto.EmailAndNicknameAndBadge(u.email, u.nickname, u.profileBadge) " +
             "from User u " +
             "where u.email in :emails")
-    List<EmailAndNickname> findNicknameByEmailIn(List<String> emails);
+    List<EmailAndNicknameAndBadge> findNicknameByEmailIn(List<String> emails);
 
     List<User> findByEmailIn(List<String> emailList);
 }

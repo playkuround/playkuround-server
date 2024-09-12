@@ -49,7 +49,7 @@ public class WebSecurityConfig {
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui/**"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/swagger-ui.html"),
                                 AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api-docs/**"),
-                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/admin/system-available"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/system-available"),
                                 AntPathRequestMatcher.antMatcher("/actu/**")
                         ).permitAll()
                         .requestMatchers(
@@ -62,19 +62,5 @@ public class WebSecurityConfig {
                 .userDetailsService(userDetailsService)
                 .build();
     }
-//
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//
-//        configuration.setAllowCredentials(true);
-//        configuration.setAllowedOriginPatterns(List.of("*"));
-//        configuration.setAllowedMethods(List.of("HEAD", "POST", "GET", "DELETE", "PUT"));
-//        configuration.setAllowedHeaders(List.of("*"));
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
 }
 

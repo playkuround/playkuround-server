@@ -33,6 +33,9 @@ public class AuthEmailSendServiceImpl implements AuthEmailSendService {
     @Value("${authentication.email.domain}")
     private String emailDomain;
 
+    @Value("${authentication.email.title}")
+    private String emailTitle;
+
     @Value("${authentication.email.max-send-count}")
     private Long maxSendingCount;
 
@@ -83,12 +86,11 @@ public class AuthEmailSendServiceImpl implements AuthEmailSendService {
     }
 
     private void sendEmail(String target, String authenticationCode) {
-        String title = "[플레이쿠라운드] 회원가입 인증코드입니다.";
         Context context = new Context();
         context.setVariable("code", authenticationCode);
         String content = templateEngine.process("mail-template", context);
 
-        Mail mail = new Mail(target, title, content);
+        Mail mail = new Mail(target, emailTitle, content);
         emailService.sendMail(mail);
     }
 }

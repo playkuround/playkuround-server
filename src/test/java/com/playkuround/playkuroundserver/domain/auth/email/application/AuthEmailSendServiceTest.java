@@ -48,9 +48,10 @@ class AuthEmailSendServiceTest {
     @Mock
     private DateTimeService dateTimeService;
 
+    private final String emailDomain = "test.com";
+    private final String emailTitle = "[플레이쿠라운드] 회원가입 인증코드입니다.";
     private final long codeLength = 6L;
     private final long maxSendingCount = 3L;
-    private final String emailDomain = "test.com";
     private final long codeExpirationSeconds = 300L;
 
     @BeforeEach
@@ -59,6 +60,7 @@ class AuthEmailSendServiceTest {
         ReflectionTestUtils.setField(authEmailSendService, "maxSendingCount", maxSendingCount);
         ReflectionTestUtils.setField(authEmailSendService, "emailDomain", emailDomain);
         ReflectionTestUtils.setField(authEmailSendService, "codeExpirationSeconds", codeExpirationSeconds);
+        ReflectionTestUtils.setField(authEmailSendService, "emailTitle", emailTitle);
     }
 
     @Test
@@ -91,7 +93,7 @@ class AuthEmailSendServiceTest {
         assertThat(authEmail.getTarget()).isEqualTo(target);
         assertThat(authEmail.getCode()).containsPattern("[0-9]{" + codeLength + "}");
 
-        verify(emailService, times(1)).sendMail(new Mail(target, "[플레이쿠라운드] 회원가입 인증코드입니다.", content));
+        verify(emailService, times(1)).sendMail(new Mail(target, emailTitle, content));
     }
 
     @ParameterizedTest

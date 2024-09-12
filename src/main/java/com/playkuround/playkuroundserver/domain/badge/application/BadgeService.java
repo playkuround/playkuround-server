@@ -144,19 +144,40 @@ public class BadgeService {
         return true;
     }
 
-    public boolean saveManualBadge(String userEmail, BadgeType badgeType, boolean registerMessage) {
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(UserNotFoundException::new);
-        if (badgeRepository.existsByUserAndBadgeType(user, badgeType)) {
-            return false;
+    public int saveManualBadge(List<String> userEmails, BadgeType badgeType, boolean registerMessage) {
+        validateEmailsSize(userEmails);
+
+        List<User> users = findUsersExactlyIn(userEmails);
+        int successCount = 0;
+        for (User user : users) {
+            if (badgeRepository.existsByUserAndBadgeType(user, badgeType)) {
+                continue;
+            }
+
+            Badge badge = Badge.createBadge(user, badgeType);
+            badgeRepository.save(badge);
+            successCount++;
+            if (registerMessage) {
+                user.addNewBadgeNotification(badgeType);
+            }
         }
 
-        Badge badge = Badge.createBadge(user, badgeType);
-        badgeRepository.save(badge);
-        if (registerMessage) {
-            user.addNewBadgeNotification(badgeType);
+        return successCount;
+    }
+
+    private void validateEmailsSize(List<String> userEmails) {
+        if (userEmails.size() == Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("The number of emails is too large.");
         }
-        return true;
+    }
+
+    private List<User> findUsersExactlyIn(List<String> userEmails) {
+        List<User> users = userRepository.findByEmailIn(userEmails);
+        if (users.size() != userEmails.size()) {
+            throw new UserNotFoundException();
+        }
+
+        return users;
     }
 
 }

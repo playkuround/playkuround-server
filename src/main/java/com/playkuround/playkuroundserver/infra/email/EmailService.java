@@ -23,7 +23,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
 
             message.addRecipients(MimeMessage.RecipientType.TO, mail.target());
-            message.setSubject(mail.title());
+            message.setSubject(mail.title(), mail.encoding());
             message.setText(mail.content(), mail.encoding(), mail.subtype());
             message.setFrom(new InternetAddress(mail.fromAddress(), mail.fromPersonal()));
 
